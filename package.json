@@ -1,0 +1,22 @@
+{
+	"name": "discordrpg",
+	"version": "1.0.0",
+	"main": "dist/main.js",
+	"type": "module",
+	"scripts": {
+		"start": "node --env-file=.env --import tsx/esm main.ts",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"devDependencies": {
+		"tsx": "^4.19.2",
+		"typescript": "^5.7.2"
+	},
+	"dependencies": {
+		"discord.js": "^14.16.3",
+		"redis": "^4.7.0"
+	}
+}
