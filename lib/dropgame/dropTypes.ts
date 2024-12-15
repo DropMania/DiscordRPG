@@ -44,10 +44,10 @@ const dropTypes: Record<string, DropType> = {
 				),
 			],
 		},
-		handler: async (player) => {
+		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 14) + 1
-			await player.addGold(gold)
-			await player.giveExperience(15)
+			await player.addGold(gold, channel)
+			await player.giveExperience(15, channel)
 		},
 	},
 	[DropNames.DOG]: {
@@ -116,7 +116,7 @@ const dropTypes: Record<string, DropType> = {
 			attack: 30,
 		},
 		response: {
-			files: ['https://cdn.7tv.app/emote/01FGW6D3WG00047CPSV86K67HB/4x.avif'],
+			files: ['https://cdn.7tv.app/emote/01FGW6D3WG00047CPSV86K67HB/4x.gif'],
 			content: 'Ein wilder Ork erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(

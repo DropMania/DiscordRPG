@@ -3,7 +3,7 @@ import dcClient from './discord'
 import registerCommands from './registerCommands'
 import commandHandler from './commands'
 import guilds from './guilds'
-import { callModules, getModule } from './modules'
+import { callAllModules, callModules, getModule } from './modules'
 import { refreshAccessToken } from './twitch'
 import game from './Game'
 
@@ -14,12 +14,8 @@ guilds.forEach((guildId) => {
 })
 
 dcClient.once(Events.ClientReady, (readyClient) => {
-	guilds.forEach((guildId) => {
-		callModules('init', guildId)
-	})
-	let dropper = getModule('980947206863470622', 'DropGame')
-	//@ts-ignore
-	dropper.drop('1084937706045444197', 'Rat')
+	callAllModules('init')
+
 	/* const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
 	if (testChannel) {
 		testChannel.send({

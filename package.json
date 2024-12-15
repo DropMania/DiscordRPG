@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "node --env-file=.env --import tsx/esm main.ts",
+		"cache:spotify": "node --env-file=.env cacheSpotifySongs.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
@@ -16,6 +17,7 @@
 		"typescript": "^5.7.2"
 	},
 	"dependencies": {
+		"cheerio": "^1.0.0",
 		"discord.js": "^14.16.3",
 		"redis": "^4.7.0"
 	}

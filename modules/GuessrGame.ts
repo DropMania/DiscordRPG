@@ -1,14 +1,17 @@
 import { GuessrDifficulty, GuessrType } from '../enums'
 import { similarity } from '../util/similarity'
-import getMovie from '../lib/guessrGameData/getMovie'
+import getTMDB from '../lib/guessrGameData/getTMDB'
 import getGame from '../lib/guessrGameData/getGame'
 import Module from './_Module'
 import { GuessrGameItem } from '../types/varTypes'
 import Log from '../util/log'
+import getSong from '../lib/guessrGameData/getSong'
 
 const getData = {
-	[GuessrType.MOVIE]: getMovie,
+	[GuessrType.MOVIE]: getTMDB,
+	[GuessrType.SHOW]: getTMDB,
 	[GuessrType.GAME]: getGame,
+	[GuessrType.SONG]: getSong,
 }
 
 export default class GuessrGame extends Module {

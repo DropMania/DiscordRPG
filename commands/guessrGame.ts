@@ -39,9 +39,15 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	let correct = guessrGame.guessItem(guess)
 	if (!correct) return await interaction.editReply(`❌ **${guess}** ist leider nicht korrekt!`)
 	let item = guessrGame.getItem()
+	let content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
+	let files = [item.cover || 'https://via.placeholder.com/150.png']
+	if (!item.cover.endsWith('.png') && !item.cover.endsWith('.jpg')) {
+		files = []
+		content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**\n${item.cover}`
+	}
 	await interaction.editReply({
-		content: `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`,
-		files: [item.cover || 'https://via.placeholder.com/150.png'],
+		content,
+		files,
 	})
 	const difficultyExp = {
 		[GuessrDifficulty.VERY_EASY]: 10,
@@ -52,6 +58,7 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 		[GuessrDifficulty.IMPOSSIBLE]: 75,
 		[GuessrDifficulty.TERMINSENDUNG]: 100,
 	}
+	guessrGame.item = null
 	player?.giveExperience(difficultyExp[guessrGame.difficulty], interaction.channel)
 }
 
@@ -59,9 +66,16 @@ export async function showItem({ interaction, getModule }: CommandParams) {
 	const guessrGame = getModule('GuessrGame')
 	if (!guessrGame.item) return await interaction.editReply(`Es wurde noch kein ${guessrGame.type} ausgewählt!`)
 	let item = guessrGame.getItem()
+	let content = `Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
+	let files = [item.cover || 'https://via.placeholder.com/150.png']
+	if (!item.cover.endsWith('.png') && !item.cover.endsWith('.jpg')) {
+		files = []
+		content = `Der gesuchte ${guessrGame.type} war: **${item.names[0]}**\n${item.cover}`
+	}
 	await interaction.editReply({
-		content: `Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`,
-		files: [item.cover || 'https://via.placeholder.com/150.png'],
+		content,
+		files,
 	})
+
 	guessrGame.item = null
 }

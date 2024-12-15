@@ -18,7 +18,7 @@ export default class DropGame extends Module {
 
 		setInterval(async () => {
 			let random = Math.floor(Math.random() * 100)
-			Log.info('DropGame', `trying to drop with ${random} and ${chance}`)
+			//Log.info('DropGame', `trying to drop with ${random} and ${chance}`)
 			if (random > chance) return
 			let channel = channels[Math.floor(Math.random() * channels.length)]
 			let dropName = this.getRandDrop()

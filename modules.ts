@@ -25,7 +25,7 @@ const modules = moduleClasses.reduce((acc, module) => {
 	})
 	return acc
 }, moduleTmp) as {
-	[channel: string]: {
+	[guild: string]: {
 		[module: string]: ModuleType<Modules>
 	}
 }
@@ -33,9 +33,9 @@ const modules = moduleClasses.reduce((acc, module) => {
 export default modules
 
 export function callAllModules(method: string, ...args: any[]) {
-	for (const channel in modules) {
-		for (const module in modules[channel]) {
-			modules[channel][module][method]?.(...args)
+	for (const guild in modules) {
+		for (const module in modules[guild]) {
+			modules[guild][module][method]?.(...args)
 		}
 	}
 }

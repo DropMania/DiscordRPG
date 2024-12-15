@@ -14,6 +14,8 @@ export enum Command {
 export enum GuessrType {
 	MOVIE = 'Movie',
 	GAME = 'Game',
+	SHOW = 'TV Show',
+	SONG = 'Song',
 }
 
 export enum GuessrDifficulty {
