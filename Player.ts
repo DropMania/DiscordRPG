@@ -1,5 +1,6 @@
 import type { GuildTextBasedChannel, User } from 'discord.js'
 import redisClient from './redis'
+import messageDeleter from './messageDeleter'
 
 export default class Player {
 	user: string
@@ -40,14 +41,11 @@ export default class Player {
 	}
 	async addStats(stats: { exp?: number; gold?: number }, channel?: GuildTextBasedChannel) {
 		let message = ''
+		const requiredExperience = Math.floor(1000 * Math.pow(1.1, this.level - 1))
 		Object.keys(stats).forEach((key) => {
 			switch (key) {
 				case 'exp':
 					this.experience += stats.exp
-					const requiredExperience = Math.floor(1000 * Math.pow(1.1, this.level - 1))
-					if (this.experience >= requiredExperience) {
-						return this.levelUp(channel)
-					}
 					message += `+**${stats.exp} EXP** (jetzt ${this.experience}/${requiredExperience} EXP)\n`
 					break
 				case 'gold':
@@ -56,11 +54,15 @@ export default class Player {
 					break
 			}
 		})
+		if (this.experience >= requiredExperience) {
+			return this.levelUp(channel)
+		}
 
-		await channel?.send({
+		let m = await channel?.send({
 			content: `Gratulation ${this.user}!\n${message}`,
 		})
 		await this.save()
+		await messageDeleter.addMessage(m, 1000 * 60 * 60)
 		return message
 	}
 
@@ -70,7 +72,7 @@ export default class Player {
 		this.attack += 5
 		this.defense += 2
 		this.health += 10
-		await channel?.send({
+		let m = await channel?.send({
 			content: `LEVEL UP ${this.user}!
 Du bist jetzt Level **${this.level}**!
 Deine Stats wurden erhöht:
@@ -78,6 +80,8 @@ Deine Stats wurden erhöht:
 **+2 Defense** (jetzt **${this.defense}**)
 **+10 Health** (jetzt **${this.health}**)`,
 		})
+
+		await messageDeleter.addMessage(m, 1000 * 60 * 60)
 		await this.save()
 	}
 }

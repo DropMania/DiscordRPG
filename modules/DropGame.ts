@@ -4,6 +4,7 @@ import { DropNames } from '../enums'
 import dropTypes from '../lib/dropgame/dropTypes'
 import Module from './_Module'
 import Log from '../util/log'
+import messageDeleter from '../messageDeleter'
 
 export default class DropGame extends Module {
 	constructor(guildId: string) {
@@ -22,7 +23,7 @@ export default class DropGame extends Module {
 			if (random > chance) return
 			let channel = channels[Math.floor(Math.random() * channels.length)]
 			let dropName = this.getRandDrop()
-			this.drop(channel, dropName)
+			await this.drop(channel, dropName)
 		}, frequency)
 	}
 	getChannels() {
@@ -58,11 +59,19 @@ export default class DropGame extends Module {
 		}
 		return dropName
 	}
-	drop(channelId: string, dropName: DropNames) {
+	async drop(channelId: string, dropName: DropNames) {
 		const dropType = dropTypes[dropName]
 		let channel = dcClient.channels.cache.get(channelId) as TextChannel
 		Log.info(`Dropping ${dropName} in ${channel.guild.name} > ${channel.name}`)
-		channel.send(dropType.response)
+		let requires = Object.entries(dropType.requirements)
+			.map(([stat, value]) => `${stat} = **${value}**`)
+			.join(', ')
+		let response = {
+			...dropType.response,
+			content: `${dropType.response.content}\n-# *Benötigt: ${requires}*`,
+		}
+		let m = await channel.send(response)
+		await messageDeleter.addMessage(m, 1000 * 60 * 60)
 	}
 	onButtonPress(id: DropNames, { player, interaction }: ButtonParams) {
 		if (!(id in dropTypes)) return

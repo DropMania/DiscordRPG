@@ -6,6 +6,7 @@ import guilds from './guilds'
 import { callAllModules, callModules, getModule } from './modules'
 import { refreshAccessToken } from './twitch'
 import game from './Game'
+import messageDeleter from './messageDeleter'
 
 await refreshAccessToken()
 
@@ -16,12 +17,11 @@ guilds.forEach((guildId) => {
 dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
-	/* const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
-	if (testChannel) {
-		testChannel.send({
-			files: ['https://p.scdn.co/mp3-preview/de49789586cd99aa0cd341283289e86f436c5f30.mp3'],
-		})
-	} */
+	const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
+	//@ts-ignore
+	getModule(guilds[0], 'DropGame').drop(testChannel.id, 'Rat')
+
+	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
 })
 

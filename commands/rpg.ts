@@ -7,8 +7,7 @@ export async function addPlayer({ interaction }: CommandParams) {
 	await interaction.editReply('Du wurdest als Spieler hinzugefügt!')
 }
 
-export async function showStats({ interaction }: CommandParams) {
-	let player = game.players.find((player) => player.userId === interaction.user.id)
+export async function showStats({ interaction, player }: CommandParams) {
 	if (!player) return await interaction.editReply('Du bist noch nicht als Spieler hinzugefügt!')
 	const embed = new EmbedBuilder()
 		.setTitle(`${interaction.user['displayName']}'s Stats`)
