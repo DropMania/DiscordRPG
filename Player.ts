@@ -44,7 +44,7 @@ export default class Player {
 			switch (key) {
 				case 'exp':
 					this.experience += stats.exp
-					const requiredExperience = 1000 * Math.pow(1.1, this.level - 1)
+					const requiredExperience = Math.floor(1000 * Math.pow(1.1, this.level - 1))
 					if (this.experience >= requiredExperience) {
 						return this.levelUp(channel)
 					}
