@@ -94,7 +94,7 @@ export default class Hangman extends Module {
 		if (this.isGameOver()) {
 			if (this.isGameWon()) {
 				await message.channel.send('Du hast Gewonnen!')
-				player?.giveExperience(5, message.channel as GuildTextBasedChannel)
+				player?.addStats({ exp: 5 }, message.channel as GuildTextBasedChannel)
 			} else {
 				await message.channel.send(`Verloren! Das Wort war: ${this.word}`)
 			}

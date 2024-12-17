@@ -26,8 +26,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 10) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(10, channel)
+			await player?.addStats({ exp: 10, gold }, channel)
 		},
 	},
 	[DropNames.SHEEP]: {
@@ -46,8 +45,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 14) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(15, channel)
+			await player?.addStats({ exp: 15, gold }, channel)
 		},
 	},
 	[DropNames.DOG]: {
@@ -66,8 +64,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 20) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(30, channel)
+			await player?.addStats({ exp: 30, gold }, channel)
 		},
 	},
 	[DropNames.WOLF]: {
@@ -86,8 +83,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 30) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(100, channel)
+			await player?.addStats({ exp: 100, gold }, channel)
 		},
 	},
 	[DropNames.LIZARD]: {
@@ -106,8 +102,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 40) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(200, channel)
+			await player?.addStats({ exp: 200, gold }, channel)
 		},
 	},
 	[DropNames.ORC]: {
@@ -116,7 +111,7 @@ const dropTypes: Record<string, DropType> = {
 			attack: 30,
 		},
 		response: {
-			files: ['https://cdn.7tv.app/emote/01FGW6D3WG00047CPSV86K67HB/4x.gif'],
+			files: ['https://cdn.7tv.app/emote/01FGW6D3WG00047CPSV86K67HB/4x.png'],
 			content: 'Ein wilder Ork erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -126,8 +121,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 50) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(500, channel)
+			await player?.addStats({ exp: 500, gold }, channel)
 		},
 	},
 	[DropNames.DRAGON]: {
@@ -146,8 +140,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 100) + 1
-			await player.addGold(gold, channel)
-			await player.giveExperience(1000, channel)
+			await player?.addStats({ exp: 1000, gold }, channel)
 		},
 	},
 }

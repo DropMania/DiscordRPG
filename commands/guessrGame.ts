@@ -59,7 +59,7 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 		[GuessrDifficulty.TERMINSENDUNG]: 100,
 	}
 	guessrGame.item = null
-	player?.giveExperience(difficultyExp[guessrGame.difficulty], interaction.channel)
+	player?.addStats({ exp: difficultyExp[guessrGame.difficulty] }, interaction.channel)
 }
 
 export async function showItem({ interaction, getModule }: CommandParams) {

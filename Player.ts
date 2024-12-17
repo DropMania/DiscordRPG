@@ -38,19 +38,32 @@ export default class Player {
 			gold: this.gold,
 		})
 	}
-	async giveExperience(amount: number, channel?: GuildTextBasedChannel) {
-		this.experience += amount
-		if (this.experience >= 1000) {
-			return this.levelUp(channel)
-		}
+	async addStats(stats: { exp?: number; gold?: number }, channel?: GuildTextBasedChannel) {
+		let message = ''
+		Object.keys(stats).forEach((key) => {
+			switch (key) {
+				case 'exp':
+					this.experience += stats.exp
+					const requiredExperience = 1000 * Math.pow(1.1, this.level - 1)
+					if (this.experience >= requiredExperience) {
+						return this.levelUp(channel)
+					}
+					message += `+**${stats.exp} EXP** (jetzt ${this.experience}/${requiredExperience} EXP)\n`
+					break
+				case 'gold':
+					this.gold += stats.gold
+					message += `+**${stats.gold} Gold** (jetzt ${this.gold} Gold)\n`
+					break
+			}
+		})
+
 		await channel?.send({
-			content: `Gratulation ${this.user}! 
-Du hast **${amount} EXP** erhalten!
-Du hast jetzt **${this.experience} EXP** und bist Level **${this.level}**!
-Noch **${1000 - this.experience} EXP** bis zum nächsten Level!`,
+			content: `Gratulation ${this.user}!\n${message}`,
 		})
 		await this.save()
+		return message
 	}
+
 	async levelUp(channel?: GuildTextBasedChannel) {
 		this.experience = 0
 		this.level++
@@ -58,22 +71,12 @@ Noch **${1000 - this.experience} EXP** bis zum nächsten Level!`,
 		this.defense += 2
 		this.health += 10
 		await channel?.send({
-			content: `Gratulation ${this.user}!
+			content: `LEVEL UP ${this.user}!
 Du bist jetzt Level **${this.level}**!
 Deine Stats wurden erhöht:
 **+5 Attack** (jetzt **${this.attack}**)
 **+2 Defense** (jetzt **${this.defense}**)
 **+10 Health** (jetzt **${this.health}**)`,
-		})
-		await this.save()
-	}
-
-	async addGold(amount: number, channel?: GuildTextBasedChannel) {
-		this.gold += amount
-		await channel?.send({
-			content: `Gratulation ${this.user}!
-Du hast **${amount} Gold** erhalten!
-Du hast jetzt **${this.gold} Gold**!`,
 		})
 		await this.save()
 	}
