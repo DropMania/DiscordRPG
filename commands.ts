@@ -19,6 +19,21 @@ const commands: Record<string, CommandHandler> = {
 		description: 'Zeigt deine Statistiken',
 		handler: rpg.showStats,
 	},
+	[Command.SHOW_ITEMS]: {
+		description: 'Zeigt deine Items',
+		handler: rpg.showItems,
+	},
+	[Command.USE_ITEM]: {
+		description: 'Benutzt ein Item',
+		handler: rpg.useItem,
+		options: (builder) =>
+			builder.addIntegerOption((o) =>
+				o
+					.setName('benutze')
+					.setDescription('Das zu benutzende Item (siehe Nummer mit /show-items')
+					.setRequired(true)
+			),
+	},
 
 	[Command.GUESSR_PICK]: {
 		description: 'Startet ein neues GuessrGame',

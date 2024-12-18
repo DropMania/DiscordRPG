@@ -1,5 +1,6 @@
 import type { ButtonInteraction, CommandInteraction, Message, OmitPartialGroupDMChannel, User } from 'discord.js'
-import Player from '../Player.js'
+import Player from '../rpg/Player.js'
+import { ItemNames } from '../enums.js'
 
 export {}
 
@@ -12,6 +13,7 @@ declare global {
 		level: number
 		experience: number
 		gold: number
+		items: ItemNames[]
 	}
 
 	type Modules = 'GuessrGame' | 'Hangman' | 'DropGame'

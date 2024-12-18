@@ -1,6 +1,7 @@
 import type { GuildTextBasedChannel, User } from 'discord.js'
-import redisClient from './redis'
-import messageDeleter from './messageDeleter'
+import redisClient from '../redis'
+import messageDeleter from '../messageDeleter'
+import Items, { Item } from './Items'
 
 export default class Player {
 	user: string
@@ -10,9 +11,9 @@ export default class Player {
 	attack: number
 	defense: number
 	level: number
-
 	experience: number
 	gold: number
+	items: Item[]
 	constructor(playerConfig: PlayerConfig) {
 		this.user = `<@${playerConfig.userId}>`
 		this.userId = playerConfig.userId
@@ -23,6 +24,11 @@ export default class Player {
 		this.level = playerConfig.level
 		this.experience = playerConfig.experience
 		this.gold = playerConfig.gold
+		this.items = []
+		if (!playerConfig.items) playerConfig.items = []
+		playerConfig.items.forEach((item) => {
+			this.items.push(new Items[item]())
+		})
 	}
 	async save() {
 		return await redisClient.setPlayer(this.userId, this)
@@ -37,7 +43,17 @@ export default class Player {
 			level: this.level,
 			experience: this.experience,
 			gold: this.gold,
+			items: this.items.map((item) => item.name),
 		})
+	}
+	async addItem(item: Item) {
+		this.items.push(item)
+		await this.save()
+	}
+	async useItem(item: Item, channel?: GuildTextBasedChannel) {
+		await item.effect(this, channel)
+		this.items = this.items.filter((i) => i !== item)
+		await this.save()
 	}
 	async addStats(stats: { exp?: number; gold?: number }, channel?: GuildTextBasedChannel) {
 		let message = ''

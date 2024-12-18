@@ -5,8 +5,9 @@ import commandHandler from './commands'
 import guilds from './guilds'
 import { callAllModules, callModules, getModule } from './modules'
 import { refreshAccessToken } from './twitch'
-import game from './Game'
+import game from './rpg/Game'
 import messageDeleter from './messageDeleter'
+import { DropNames } from './enums'
 
 await refreshAccessToken()
 
@@ -18,8 +19,7 @@ dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
 	const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
-	//@ts-ignore
-	getModule(guilds[0], 'DropGame').drop(testChannel.id, 'Rat')
+	//getModule(guilds[0], 'DropGame').drop(testChannel.id, DropNames.STRENGTH_POTION)
 
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)

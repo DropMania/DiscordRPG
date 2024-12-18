@@ -1,6 +1,8 @@
 export enum Command {
 	ADD_ME = 'add-me',
 	SHOW_STATS = 'show-stats',
+	SHOW_ITEMS = 'show-items',
+	USE_ITEM = 'use-item',
 
 	GUESSR_PICK = 'guessr-game',
 	GUESSR_NEW_IMAGE = 'new-image',
@@ -28,6 +30,12 @@ export enum GuessrDifficulty {
 	TERMINSENDUNG = 'terminsendung',
 }
 
+export enum ItemNames {
+	HEAL_POTION = 'Health Potion',
+	STRENGTH_POTION = 'Strength Potion',
+	EXP_POTION = 'EXP Potion',
+}
+
 export enum DropNames {
 	RAT = 'Rat',
 	SHEEP = 'Sheep',
@@ -36,4 +44,8 @@ export enum DropNames {
 	LIZARD = 'Lizard',
 	ORC = 'Ork',
 	DRAGON = 'Dragon',
+
+	HEAL_POTION = 'Health Potion',
+	STRENGTH_POTION = 'Strength Potion',
+	EXP_POTION = 'EXP Potion',
 }

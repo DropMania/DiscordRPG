@@ -1,5 +1,5 @@
 import Player from './Player'
-import redisClient from './redis'
+import redisClient from '../redis'
 
 class Game {
 	players: Player[] = []
@@ -24,6 +24,7 @@ class Game {
 			level: 1,
 			experience: 0,
 			gold: 0,
+			items: [],
 		}
 		const player = new Player(config)
 		this.players.push(player)

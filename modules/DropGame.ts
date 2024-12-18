@@ -43,8 +43,10 @@ export default class DropGame extends Module {
 		return channelIds
 	}
 	getRandDrop() {
-		let random = Math.floor(Math.random() * 100)
-		let chanceTable = Object.entries(dropTypes).reduce((a, [name, dropType]) => {
+		let allDropTypes = Object.entries(dropTypes)
+		let totalChance = allDropTypes.reduce((a, [_, dropType]) => a + dropType.chance, 0)
+		let random = Math.floor(Math.random() * totalChance)
+		let chanceTable = allDropTypes.reduce((a, [name, dropType]) => {
 			a[name] = dropType.chance
 			return a
 		}, {} as Record<DropNames, number>)
@@ -66,6 +68,7 @@ export default class DropGame extends Module {
 		let requires = Object.entries(dropType.requirements)
 			.map(([stat, value]) => `${stat} = **${value}**`)
 			.join(', ')
+
 		let response = {
 			...dropType.response,
 			content: `${dropType.response.content}\n-# *Benötigt: ${requires}*`,
@@ -91,6 +94,6 @@ export default class DropGame extends Module {
 		})
 		if (!doable) return interaction.update({ components: [], files: [], content: missingText })
 		dropType.handler(player, interaction.channel)
-		interaction.update({ components: [], files: [], content: `${interaction.user} Du hast **${id}** besiegt!` })
+		interaction.update({ components: [], files: [], content: `${interaction.user} ${dropType.winMessage}` })
 	}
 }
