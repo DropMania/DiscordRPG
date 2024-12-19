@@ -1,52 +1,30 @@
 import { GuildTextBasedChannel } from 'discord.js'
 import { ItemNames } from '../enums'
 import Player from './Player'
-import messageDeleter from '../messageDeleter'
+import { Item } from '../types/varTypes'
 
-export class Item {
-	name: string
-	description: string
-	async effect(player: Player, channel?: GuildTextBasedChannel) {}
+const Items: Record<ItemNames, Item> = {
+	[ItemNames.HEAL_POTION]: {
+		name: ItemNames.HEAL_POTION,
+		description: 'Heilt 50 HP',
+		async effect(player: Player, channel?: GuildTextBasedChannel) {
+			await player.addStats({ health: 50 }, channel)
+		},
+	},
+	[ItemNames.STRENGTH_POTION]: {
+		name: ItemNames.STRENGTH_POTION,
+		description: 'Erhöht den Angriff um 10',
+		async effect(player: Player, channel?: GuildTextBasedChannel) {
+			await player.addStats({ attack: 10 }, channel)
+		},
+	},
+	[ItemNames.EXP_POTION]: {
+		name: ItemNames.EXP_POTION,
+		description: 'Erhöht die Erfahrung um 100',
+		async effect(player: Player, channel?: GuildTextBasedChannel) {
+			await player.addStats({ exp: 100 }, channel)
+		},
+	},
 }
 
-export default {
-	[ItemNames.HEAL_POTION]: class extends Item {
-		constructor() {
-			super()
-			this.name = ItemNames.HEAL_POTION
-			this.description = 'Heilt 50 HP'
-		}
-		async effect(player: Player, channel?: GuildTextBasedChannel) {
-			player.health += 50
-			if (player.health > player.maxHealth) player.health = player.maxHealth
-			let m = await channel?.send(
-				`${player.user} hat sich um **50 HP** geheilt! (HP: ${player.health}/${player.maxHealth})`
-			)
-			await messageDeleter.addMessage(m, 1000 * 60 * 60)
-		}
-	},
-	[ItemNames.STRENGTH_POTION]: class extends Item {
-		constructor() {
-			super()
-			this.name = ItemNames.STRENGTH_POTION
-			this.description = 'Erhöht den Angriff um 10'
-		}
-		async effect(player: Player, channel?: GuildTextBasedChannel) {
-			player.attack += 10
-			let m = await channel?.send(`${player.user} hat **10 Attack** erhalten! (Angriff: ${player.attack})`)
-			await messageDeleter.addMessage(m, 1000 * 60 * 60)
-		}
-	},
-	[ItemNames.EXP_POTION]: class extends Item {
-		constructor() {
-			super()
-			this.name = ItemNames.EXP_POTION
-			this.description = 'Erhöht die Erfahrung um 100'
-		}
-		async effect(player: Player, channel?: GuildTextBasedChannel) {
-			player.experience += 100
-			let m = await channel?.send(`${player.user} hat **100 EXP** erhalten! (EXP: ${player.experience})`)
-			await messageDeleter.addMessage(m, 1000 * 60 * 60)
-		}
-	},
-}
+export default Items

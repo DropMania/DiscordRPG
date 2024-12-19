@@ -37,13 +37,20 @@ export enum ItemNames {
 }
 
 export enum DropNames {
+	BUG = 'Bug',
 	RAT = 'Rat',
 	SHEEP = 'Sheep',
 	DOG = 'Dog',
+	CAT = 'Cat',
 	WOLF = 'Wolf',
+	BEAR = 'Bear',
 	LIZARD = 'Lizard',
+	APE = 'Ape',
 	ORC = 'Ork',
 	DRAGON = 'Dragon',
+	GODZILLA = 'Godzilla',
+
+	COIN = 'Coin',
 
 	HEAL_POTION = 'Health Potion',
 	STRENGTH_POTION = 'Strength Potion',

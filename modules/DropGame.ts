@@ -25,6 +25,16 @@ export default class DropGame extends Module {
 			let dropName = this.getRandDrop()
 			await this.drop(channel, dropName)
 		}, frequency)
+		this.calculateChances()
+	}
+	calculateChances() {
+		let allDropTypes = Object.entries(dropTypes)
+		let totalChance = allDropTypes.reduce((a, [_, dropType]) => a + dropType.chance, 0)
+		let chanceTable = allDropTypes.reduce((a, [name, dropType]) => {
+			a.push([name, `${Math.round((dropType.chance / totalChance) * 100)}%`])
+			return a
+		}, [] as [string, string][])
+		Log.info('DropGame', 'Drop Chances:', chanceTable)
 	}
 	getChannels() {
 		let validRoles = [dcClient.guilds.cache.get(this.guildId).roles.cache.get('1071029552186396782')]

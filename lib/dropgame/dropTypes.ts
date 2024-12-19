@@ -12,6 +12,26 @@ type DropType = {
 }
 
 const dropTypes: Record<string, DropType> = {
+	[DropNames.BUG]: {
+		chance: 20,
+		requirements: {
+			attack: 1,
+		},
+		winMessage: 'Du hast den Käfer besiegt!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01FJSMF4X8000FZHS49NWQT3D8/4x.gif'],
+			content: 'Ein Käfer erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.BUG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 5) + 1
+			await player?.addStats({ exp: 5, gold }, channel)
+		},
+	},
 	[DropNames.RAT]: {
 		chance: 30,
 		requirements: {
@@ -72,6 +92,26 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 30, gold }, channel)
 		},
 	},
+	[DropNames.CAT]: {
+		chance: 20,
+		requirements: {
+			attack: 18,
+		},
+		winMessage: 'Du hast die Katze besiegt!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01GR5X7SPG00059JN12W34XF6K/4x.gif'],
+			content: 'Eine wilde Katze erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.CAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 25) + 1
+			await player?.addStats({ exp: 50, gold }, channel)
+		},
+	},
 	[DropNames.WOLF]: {
 		chance: 20,
 		requirements: {
@@ -92,10 +132,30 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 100, gold }, channel)
 		},
 	},
-	[DropNames.LIZARD]: {
+	[DropNames.BEAR]: {
 		chance: 10,
 		requirements: {
 			attack: 25,
+		},
+		winMessage: 'Du hast den Bären besiegt!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01G3VZPB5R000C2T35N8NWC31N/4x.gif'],
+			content: 'Ein wilder Bär erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.BEAR).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 35) + 1
+			await player?.addStats({ exp: 150, gold }, channel)
+		},
+	},
+	[DropNames.LIZARD]: {
+		chance: 10,
+		requirements: {
+			attack: 30,
 		},
 		winMessage: 'Du hast die Echse besiegt!',
 		response: {
@@ -112,10 +172,30 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 200, gold }, channel)
 		},
 	},
+	[DropNames.APE]: {
+		chance: 10,
+		requirements: {
+			attack: 40,
+		},
+		winMessage: 'Du hast den Affen besiegt!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01G1M1ZYR00000Q39XATK1PBFT/4x.gif'],
+			content: 'Ein wilder Affe erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.APE).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 45) + 1
+			await player?.addStats({ exp: 300, gold }, channel)
+		},
+	},
 	[DropNames.ORC]: {
 		chance: 5,
 		requirements: {
-			attack: 40,
+			attack: 50,
 		},
 		winMessage: 'Du hast den Ork besiegt!',
 		response: {
@@ -152,7 +232,45 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 1000, gold }, channel)
 		},
 	},
+	[DropNames.GODZILLA]: {
+		chance: 3,
+		requirements: {
+			attack: 100,
+		},
+		winMessage: 'Du hast Godzilla besiegt!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01HJ9454080004CQ4RYKKQQXZJ/4x.gif'],
+			content: 'Godzilla erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.GODZILLA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 200) + 1
+			await player?.addStats({ exp: 2000, gold }, channel)
+		},
+	},
 
+	[DropNames.COIN]: {
+		chance: 30,
+		requirements: {},
+		winMessage: 'Du hast ein haufen Münzen gefunden!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01GS6E1C0R00086WJ6ZZH15Z62/4x.gif'],
+			content: 'Ein haufen mit Münzen erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.COIN).setEmoji('💰').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player) => {
+			let gold = Math.floor(Math.random() * 10) + 1
+			await player.addStats({ gold })
+		},
+	},
 	[DropNames.HEAL_POTION]: {
 		chance: 10,
 		requirements: {},
@@ -167,12 +285,12 @@ const dropTypes: Record<string, DropType> = {
 			],
 		},
 		handler: async (player) => {
-			let item = new Items[ItemNames.HEAL_POTION]()
+			let item = Items[ItemNames.HEAL_POTION]
 			await player.addItem(item)
 		},
 	},
 	[DropNames.STRENGTH_POTION]: {
-		chance: 10,
+		chance: 3,
 		requirements: {},
 		winMessage: 'Du hast den Stärketrank gefunden!',
 		response: {
@@ -188,7 +306,7 @@ const dropTypes: Record<string, DropType> = {
 			],
 		},
 		handler: async (player) => {
-			let item = new Items[ItemNames.STRENGTH_POTION]()
+			let item = Items[ItemNames.STRENGTH_POTION]
 			await player.addItem(item)
 		},
 	},
@@ -206,7 +324,7 @@ const dropTypes: Record<string, DropType> = {
 			],
 		},
 		handler: async (player) => {
-			let item = new Items[ItemNames.EXP_POTION]()
+			let item = Items[ItemNames.EXP_POTION]
 			await player.addItem(item)
 		},
 	},

@@ -1,7 +1,8 @@
 import type { GuildTextBasedChannel, User } from 'discord.js'
 import redisClient from '../redis'
 import messageDeleter from '../messageDeleter'
-import Items, { Item } from './Items'
+import Items from './Items'
+import { Item } from '../types/varTypes'
 
 export default class Player {
 	user: string
@@ -27,7 +28,7 @@ export default class Player {
 		this.items = []
 		if (!playerConfig.items) playerConfig.items = []
 		playerConfig.items.forEach((item) => {
-			this.items.push(new Items[item]())
+			this.items.push(Items[item])
 		})
 	}
 	async save() {
@@ -55,7 +56,10 @@ export default class Player {
 		this.items = this.items.filter((i) => i !== item)
 		await this.save()
 	}
-	async addStats(stats: { exp?: number; gold?: number }, channel?: GuildTextBasedChannel) {
+	async addStats(
+		stats: { exp?: number; gold?: number; attack?: number; health?: number },
+		channel?: GuildTextBasedChannel
+	) {
 		let message = ''
 		const requiredExperience = Math.floor(1000 * Math.pow(1.1, this.level - 1))
 		Object.keys(stats).forEach((key) => {
@@ -67,6 +71,15 @@ export default class Player {
 				case 'gold':
 					this.gold += stats.gold
 					message += `+**${stats.gold} Gold** (jetzt ${this.gold} Gold)\n`
+					break
+				case 'attack':
+					this.attack += stats.attack
+					message += `+**${stats.attack} Attack** (jetzt ${this.attack} Attack)\n`
+					break
+				case 'health':
+					this.health += stats.health
+					if (this.health > this.maxHealth) this.health = this.maxHealth
+					message += `+**${stats.health} Health** (jetzt ${this.health}/${this.maxHealth} Health)\n`
 					break
 			}
 		})
