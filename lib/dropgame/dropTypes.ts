@@ -179,7 +179,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 		winMessage: 'Du hast den Affen besiegt!',
 		response: {
-			files: ['https://cdn.7tv.app/emote/01G1M1ZYR00000Q39XATK1PBFT/4x.gif'],
+			files: ['https://cdn.7tv.app/emote/01H1AJF3V00006K2DSP3A6S1SM/4x.png'],
 			content: 'Ein wilder Affe erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -266,9 +266,9 @@ const dropTypes: Record<string, DropType> = {
 				),
 			],
 		},
-		handler: async (player) => {
+		handler: async (player, channel) => {
 			let gold = Math.floor(Math.random() * 10) + 1
-			await player.addStats({ gold })
+			await player.addStats({ gold }, channel)
 		},
 	},
 	[DropNames.HEAL_POTION]: {

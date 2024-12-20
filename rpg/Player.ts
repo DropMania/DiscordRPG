@@ -100,7 +100,8 @@ export default class Player {
 		this.level++
 		this.attack += 5
 		this.defense += 2
-		this.health += 10
+		this.maxHealth += 10
+		this.health = this.maxHealth
 		let m = await channel?.send({
 			content: `LEVEL UP ${this.user}!
 Du bist jetzt Level **${this.level}**!
