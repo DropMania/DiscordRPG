@@ -6,16 +6,15 @@ import { callTMDBApi } from '../../util/fetchData'
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'
 
 export default async function getTMDB(type: GuessrType, difficulty: GuessrDifficulty): Promise<GuessrGameItem> {
-	let page = Math.floor(Math.random() * getPages(difficulty)) + 1
 	switch (type) {
 		case GuessrType.MOVIE:
-			return await getMovieData(page)
+			return await getMovieData(difficulty)
 		case GuessrType.SHOW:
-			return await getShowData(page)
+			return await getShowData(difficulty)
 	}
 }
 
-function getPages(difficulty: GuessrDifficulty) {
+function getMoviePages(difficulty: GuessrDifficulty) {
 	switch (difficulty) {
 		case GuessrDifficulty.VERY_EASY:
 			return 100
@@ -26,16 +25,17 @@ function getPages(difficulty: GuessrDifficulty) {
 		case GuessrDifficulty.HARD:
 			return 300
 		case GuessrDifficulty.VERY_HARD:
-			return 400
+			return 350
 		case GuessrDifficulty.IMPOSSIBLE:
-			return 500
+			return 400
 		case GuessrDifficulty.TERMINSENDUNG:
-			return 500
+			return 492
 	}
 }
 
-async function getMovieData(page: number) {
-	let movies = await callTMDBApi<TMDB.TMDBResponse<TMDB.Movie>>('movie/popular', {
+async function getMovieData(difficulty: GuessrDifficulty) {
+	let page = Math.floor(Math.random() * getMoviePages(difficulty)) + 1
+	let movies = await callTMDBApi<TMDB.TMDBResponse<TMDB.Movie>>('movie/top_rated', {
 		page: page.toString(),
 	})
 	let movie = movies.results[Math.floor(Math.random() * movies.results.length)]
@@ -88,8 +88,27 @@ function createMovieHints(movieData: TMDB.FullMovieResponse) {
 	return hints
 }
 
-async function getShowData(page: number) {
-	let shows = await callTMDBApi<TMDB.TMDBResponse<TMDB.Show>>('tv/popular', {
+function getShowPages(difficulty: GuessrDifficulty) {
+	switch (difficulty) {
+		case GuessrDifficulty.VERY_EASY:
+			return 25
+		case GuessrDifficulty.EASY:
+			return 40
+		case GuessrDifficulty.MEDIUM:
+			return 50
+		case GuessrDifficulty.HARD:
+			return 60
+		case GuessrDifficulty.VERY_HARD:
+			return 75
+		case GuessrDifficulty.IMPOSSIBLE:
+			return 90
+		case GuessrDifficulty.TERMINSENDUNG:
+			return 105
+	}
+}
+async function getShowData(difficulty: GuessrDifficulty) {
+	let page = Math.floor(Math.random() * getShowPages(difficulty)) + 1
+	let shows = await callTMDBApi<TMDB.TMDBResponse<TMDB.Show>>('tv/top_rated', {
 		page: page.toString(),
 	})
 	let show = shows.results[Math.floor(Math.random() * shows.results.length)]
