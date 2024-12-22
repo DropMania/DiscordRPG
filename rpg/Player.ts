@@ -91,6 +91,7 @@ export default class Player {
 			content: `Gratulation ${this.user}!\n${message}`,
 		})
 		await this.save()
+		if (!m) return
 		await messageDeleter.addMessage(m, 1000 * 60 * 60)
 		return message
 	}
