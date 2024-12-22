@@ -16,6 +16,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 20,
 		requirements: {
 			attack: 1,
+			health: 1,
 		},
 		winMessage: 'Du hast den Käfer besiegt!',
 		response: {
@@ -36,6 +37,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 30,
 		requirements: {
 			attack: 10,
+			health: 1,
 		},
 		winMessage: 'Du hast die Ratte besiegt!',
 		response: {
@@ -56,6 +58,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 10,
 		requirements: {
 			attack: 12,
+			health: 1,
 		},
 		winMessage: 'Du hast das Schaf besiegt!',
 		response: {
@@ -76,6 +79,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 20,
 		requirements: {
 			attack: 15,
+			health: 1,
 		},
 		winMessage: 'Du hast den Hund besiegt!',
 		response: {
@@ -96,6 +100,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 20,
 		requirements: {
 			attack: 18,
+			health: 1,
 		},
 		winMessage: 'Du hast die Katze besiegt!',
 		response: {
@@ -116,6 +121,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 20,
 		requirements: {
 			attack: 20,
+			health: 1,
 		},
 		winMessage: 'Du hast den Wolf besiegt!',
 		response: {
@@ -136,6 +142,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 10,
 		requirements: {
 			attack: 25,
+			health: 1,
 		},
 		winMessage: 'Du hast den Bären besiegt!',
 		response: {
@@ -156,6 +163,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 10,
 		requirements: {
 			attack: 30,
+			health: 1,
 		},
 		winMessage: 'Du hast die Echse besiegt!',
 		response: {
@@ -176,6 +184,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 10,
 		requirements: {
 			attack: 40,
+			health: 1,
 		},
 		winMessage: 'Du hast den Affen besiegt!',
 		response: {
@@ -196,6 +205,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 5,
 		requirements: {
 			attack: 50,
+			health: 1,
 		},
 		winMessage: 'Du hast den Ork besiegt!',
 		response: {
@@ -216,6 +226,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 5,
 		requirements: {
 			attack: 80,
+			health: 1,
 		},
 		winMessage: 'Du hast den Drachen besiegt!',
 		response: {
@@ -236,6 +247,7 @@ const dropTypes: Record<string, DropType> = {
 		chance: 3,
 		requirements: {
 			attack: 100,
+			health: 1,
 		},
 		winMessage: 'Du hast Godzilla besiegt!',
 		response: {

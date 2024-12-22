@@ -37,7 +37,12 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	if (!guessrGame.item) return await interaction.editReply(`Es wurde noch kein ${guessrGame.type} ausgewählt!`)
 	let guess = interaction.options.get('guess', true).value as string
 	let correct = guessrGame.guessItem(guess)
-	if (!correct) return await interaction.editReply(`❌ **${guess}** ist leider nicht korrekt!`)
+	if (!correct) {
+		await player?.addStats({ health: -1 })
+		return await interaction.editReply(
+			`❌ **${guess}** ist leider nicht korrekt!\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
+		)
+	}
 	let item = guessrGame.getItem()
 	let content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
 	let files = [item.cover || 'https://via.placeholder.com/150.png']

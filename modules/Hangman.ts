@@ -96,7 +96,10 @@ export default class Hangman extends Module {
 				await message.channel.send('Du hast Gewonnen!')
 				player?.addStats({ exp: 5 }, message.channel as GuildTextBasedChannel)
 			} else {
-				await message.channel.send(`Verloren! Das Wort war: ${this.word}`)
+				await player?.addStats({ health: -1 })
+				await message.channel.send(
+					`Verloren! Das Wort war: ${this.word}\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
+				)
 			}
 			this.going = false
 		}
