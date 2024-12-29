@@ -8,6 +8,7 @@ declare global {
 	type PlayerConfig = {
 		userId: string
 		health: number
+		maxHealth: number
 		attack: number
 		defense: number
 		level: number

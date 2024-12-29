@@ -4,6 +4,7 @@ import { GuessrDifficulty, GuessrType } from '../../enums'
 import { SpotifyItem } from '../../types/responses'
 import { GuessrGameItem } from '../../types/varTypes'
 const SONGS = JSON.parse(fs.readFileSync('./lib/data/spotifySongs.json', 'utf-8')) as SpotifyItem[]
+const GAME_SONGS = JSON.parse(fs.readFileSync('./lib/data/spotifySongs_games.json', 'utf-8')) as SpotifyItem[]
 
 async function getPreviewUrl(song: string) {
 	let res = await fetch(song)
@@ -14,12 +15,16 @@ async function getPreviewUrl(song: string) {
 }
 
 export default async function getSong(type: GuessrType, difficulty: GuessrDifficulty): Promise<GuessrGameItem> {
+	let songs = SONGS
+	if (type === GuessrType.GAME_SONG) {
+		songs = GAME_SONGS
+	}
 	let pages = getPages(difficulty)
 	if (difficulty === GuessrDifficulty.TERMINSENDUNG) {
-		pages = SONGS.length
+		pages = songs.length
 	}
 	let page = Math.floor(Math.random() * pages)
-	let song = SONGS[page]
+	let song = songs[page]
 	let preview = await getPreviewUrl(song.url)
 	let names = [song.name]
 	let images = [preview]
@@ -28,6 +33,13 @@ export default async function getSong(type: GuessrType, difficulty: GuessrDiffic
 		`Album des Songs: **${song.albumName}**`,
 		`Dauer des Songs: **${Math.floor(song.duration / 60000)} Minuten**`,
 	]
+	if (type === GuessrType.GAME_SONG) {
+		names.push(song.albumName)
+		hints = [
+			`Interpreten: **${song.artists}**`,
+			`Dauer des Songs: **${Math.floor(song.duration / 60000)} Minuten**`,
+		]
+	}
 	let cover = song.url
 	return { names, images, hints, cover }
 }

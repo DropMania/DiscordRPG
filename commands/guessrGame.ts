@@ -8,7 +8,7 @@ export async function pickItem({ interaction, getModule }: CommandParams) {
 	await guessrGame.pickItem(typName, difficulty)
 	let image = guessrGame.getImage()
 	if (!image) return await interaction.editReply('Es ist ein Fehler aufgetreten!')
-	const content = `Rate den ${guessrGame.type}! *Schwierigkeit: **${difficulty}** *
+	const content = `Rate den **${guessrGame.type}**! *Schwierigkeit: **${difficulty}** *
 Mit **/${Command.GUESSR_GUESS}** kannst du den ${guessrGame.type} raten.
 Mit **/${Command.GUESSR_NEW_IMAGE}** kannst du ein neues Bild anfordern.
 Mit **/${Command.GUESSR_HINT}** kannst du einen Hinweis anfordern.

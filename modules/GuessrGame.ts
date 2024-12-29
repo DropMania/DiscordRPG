@@ -12,6 +12,7 @@ const getData = {
 	[GuessrType.SHOW]: getTMDB,
 	[GuessrType.GAME]: getGame,
 	[GuessrType.SONG]: getSong,
+	[GuessrType.GAME_SONG]: getSong,
 }
 
 export default class GuessrGame extends Module {

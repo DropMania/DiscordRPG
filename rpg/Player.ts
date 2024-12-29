@@ -20,7 +20,7 @@ export default class Player {
 		this.userId = playerConfig.userId
 		this.health = playerConfig.health
 		this.attack = playerConfig.attack
-		this.maxHealth = playerConfig.health
+		this.maxHealth = playerConfig.maxHealth
 		this.defense = playerConfig.defense
 		this.level = playerConfig.level
 		this.experience = playerConfig.experience

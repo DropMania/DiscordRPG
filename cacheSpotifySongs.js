@@ -22,12 +22,13 @@ async function cacheSpotifySongs() {
 		artists: song.track.artists.map((artist) => artist.name).join(', '),
 	}))
 	let json = JSON.stringify(data)
-	fs.writeFileSync('./lib/data/spotifySongs.json', json)
+	fs.writeFileSync('./lib/data/spotifySongs_games.json', json)
 }
-
+//const PLAYLIST_ID = '2YRe7HRKNRvXdJBp9nXFza' // popular
+const PLAYLIST_ID = '2mIgGNvWhF6f45XIBWNWx7' // games
 async function getItems(offset) {
 	let at = await getAccessToken()
-	const URL = `https://api.spotify.com/v1/playlists/2YRe7HRKNRvXdJBp9nXFza/tracks?offset=${offset}&limit=100`
+	const URL = `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?offset=${offset}&limit=100`
 	const headers = {
 		Authorization: 'Bearer ' + at,
 	}
