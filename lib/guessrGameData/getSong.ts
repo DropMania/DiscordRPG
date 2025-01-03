@@ -19,6 +19,7 @@ export default async function getSong(type: GuessrType, difficulty: GuessrDiffic
 	if (type === GuessrType.GAME_SONG) {
 		songs = GAME_SONGS
 	}
+	songs.sort((a, b) => a.popularity - b.popularity)
 	let pages = getPages(difficulty)
 	if (difficulty === GuessrDifficulty.TERMINSENDUNG) {
 		pages = songs.length
