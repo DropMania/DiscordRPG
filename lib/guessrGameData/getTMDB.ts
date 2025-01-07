@@ -14,12 +14,12 @@ export default async function getTMDB(type: GuessrType, difficulty: GuessrDiffic
 	}
 }
 const moviePages = {
-	[GuessrDifficulty.VERY_EASY]: 100,
-	[GuessrDifficulty.EASY]: 150,
-	[GuessrDifficulty.MEDIUM]: 250,
-	[GuessrDifficulty.HARD]: 300,
-	[GuessrDifficulty.VERY_HARD]: 350,
-	[GuessrDifficulty.IMPOSSIBLE]: 400,
+	[GuessrDifficulty.VERY_EASY]: 10,
+	[GuessrDifficulty.EASY]: 20,
+	[GuessrDifficulty.MEDIUM]: 50,
+	[GuessrDifficulty.HARD]: 100,
+	[GuessrDifficulty.VERY_HARD]: 200,
+	[GuessrDifficulty.IMPOSSIBLE]: 300,
 	[GuessrDifficulty.TERMINSENDUNG]: 492,
 }
 async function getMovieData(difficulty: GuessrDifficulty) {
@@ -83,13 +83,13 @@ function createMovieHints(movieData: TMDB.FullMovieResponse) {
 	return hints
 }
 const showPages = {
-	[GuessrDifficulty.VERY_EASY]: 30,
-	[GuessrDifficulty.EASY]: 50,
-	[GuessrDifficulty.MEDIUM]: 70,
-	[GuessrDifficulty.HARD]: 100,
-	[GuessrDifficulty.VERY_HARD]: 150,
-	[GuessrDifficulty.IMPOSSIBLE]: 200,
-	[GuessrDifficulty.TERMINSENDUNG]: 275,
+	[GuessrDifficulty.VERY_EASY]: 10,
+	[GuessrDifficulty.EASY]: 20,
+	[GuessrDifficulty.MEDIUM]: 50,
+	[GuessrDifficulty.HARD]: 75,
+	[GuessrDifficulty.VERY_HARD]: 100,
+	[GuessrDifficulty.IMPOSSIBLE]: 150,
+	[GuessrDifficulty.TERMINSENDUNG]: 200,
 }
 async function getShowData(difficulty: GuessrDifficulty) {
 	let page = Math.floor(Math.random() * showPages[difficulty]) + 1
