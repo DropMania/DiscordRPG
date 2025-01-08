@@ -51,6 +51,6 @@ export async function useItem({ interaction, player }: CommandParams) {
 	let itemIdx = interaction.options.get('benutze', true).value as number
 	let item = player.items[itemIdx - 1]
 	if (!item) return await interaction.editReply('Dieses Item existiert nicht!')
-	await player.useItem(item, interaction.channel)
+	await player.useItem(itemIdx - 1, interaction.channel)
 	await interaction.deleteReply()
 }

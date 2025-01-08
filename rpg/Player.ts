@@ -51,9 +51,11 @@ export default class Player {
 		this.items.push(item)
 		await this.save()
 	}
-	async useItem(item: Item, channel?: GuildTextBasedChannel) {
+	async useItem(itemIdx: number, channel?: GuildTextBasedChannel) {
+		let item = this.items[itemIdx]
+		if (!item) return
 		await item.effect(this, channel)
-		this.items = this.items.filter((i) => i !== item)
+		this.items.splice(itemIdx, 1)
 		await this.save()
 	}
 	async addStats(
