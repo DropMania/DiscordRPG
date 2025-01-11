@@ -1,4 +1,5 @@
 import { Command, GuessrDifficulty, GuessrType } from '../enums'
+import redisClient from '../redis'
 
 export async function pickItem({ interaction, getModule }: CommandParams) {
 	const guessrGame = getModule('GuessrGame')
@@ -36,8 +37,8 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	const guessrGame = getModule('GuessrGame')
 	if (!guessrGame.item) return await interaction.editReply(`Es wurde noch kein ${guessrGame.type} ausgewählt!`)
 	let guess = interaction.options.get('guess', true).value as string
-	let correct = guessrGame.guessItem(guess)
-	if (!correct) {
+	let result = guessrGame.guessItem(guess)
+	if (!result.correct) {
 		await player?.addStats({ health: -1 })
 		return await interaction.editReply(
 			`❌ **${guess}** ist leider nicht korrekt!\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
@@ -45,10 +46,15 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	}
 	let item = guessrGame.getItem()
 	let content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
+	let bonus = 1
+	if (result.bonus) {
+		content = `${content}\n🎉 Du hast den exakten Titel gewusst! **+10% Bonus EXP!**`
+		bonus = 1.1
+	}
 	let files = [item.cover || 'https://via.placeholder.com/150.png']
 	if (!item.cover.endsWith('.png') && !item.cover.endsWith('.jpg')) {
 		files = []
-		content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**\n${item.cover}`
+		content = `${content}\n${item.cover}`
 	}
 	await interaction.editReply({
 		content,
@@ -64,7 +70,9 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 		[GuessrDifficulty.TERMINSENDUNG]: 100,
 	}
 	guessrGame.item = null
-	player?.addStats({ exp: difficultyExp[guessrGame.difficulty] }, interaction.channel)
+	let exp = Math.floor(difficultyExp[guessrGame.difficulty] * bonus)
+	await player?.addStats({ exp }, interaction.channel)
+	await redisClient.deleteCache(`${guessrGame.guildId}:guessrItem`)
 }
 
 export async function showItem({ interaction, getModule }: CommandParams) {

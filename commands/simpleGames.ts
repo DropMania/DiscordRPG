@@ -6,3 +6,10 @@ export async function hangman({ interaction, getModule }: CommandParams) {
 	)
 	await interaction.followUp(hangman.display())
 }
+export async function battleships({ interaction, getModule }: CommandParams) {
+	let battleships = getModule('Battleships')
+	battleships.startGame()
+	await interaction.editReply(
+		`Neues Spiel Schiffe versenken gestartet! Screibe \`!bomb a,1\` um zu Bomben!\n${battleships.showBoard()}`
+	)
+}

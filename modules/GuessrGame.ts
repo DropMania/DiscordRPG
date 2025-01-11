@@ -6,6 +6,7 @@ import Module from './_Module'
 import { GuessrGameItem } from '../types/varTypes'
 import Log from '../util/log'
 import getSong from '../lib/guessrGameData/getSong'
+import redisClient from '../redis'
 
 const getData = {
 	[GuessrType.MOVIE]: getTMDB,
@@ -13,6 +14,11 @@ const getData = {
 	[GuessrType.GAME]: getGame,
 	[GuessrType.SONG]: getSong,
 	[GuessrType.GAME_SONG]: getSong,
+}
+type CacheType = {
+	item: GuessrGameItem
+	type: GuessrType
+	difficulty: GuessrDifficulty
 }
 
 export default class GuessrGame extends Module {
@@ -22,12 +28,21 @@ export default class GuessrGame extends Module {
 	constructor(guildId: string) {
 		super(guildId)
 	}
+	async init() {
+		let chachedItem = await redisClient.getCache<CacheType>(`${this.guildId}:guessrItem`)
+		if (chachedItem) {
+			this.item = chachedItem.item
+			this.type = chachedItem.type
+			this.difficulty = chachedItem.difficulty
+		}
+	}
 
 	async pickItem(type: GuessrType, difficulty: GuessrDifficulty) {
 		this.item = await getData[type](type, difficulty)
 		Log.info('GuessrGame', 'pickItem', this.item)
 		this.difficulty = difficulty
 		this.type = type
+		await redisClient.setCache<CacheType>(`${this.guildId}:guessrItem`, { item: this.item, type, difficulty })
 	}
 
 	getImage() {
@@ -44,7 +59,9 @@ export default class GuessrGame extends Module {
 	}
 
 	guessItem(name: string) {
-		return this.item.names.some((itemName) => similarity(name, itemName) > 0.5)
+		let correct = this.item.names.some((itemName) => similarity(name, itemName) > 0.5)
+		let bonus = this.item.names.some((itemName) => similarity(name, itemName) > 0.95)
+		return { correct, bonus }
 	}
 
 	getItem() {

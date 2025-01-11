@@ -86,6 +86,10 @@ const commands: Record<string, CommandHandler> = {
 		description: 'Startet ein neues Hangman Spiel',
 		handler: simpleGames.hangman,
 	},
+	[Command.GAME_BATTLESHIP]: {
+		description: 'Startet ein neues Battleship Spiel',
+		handler: simpleGames.battleships,
+	},
 }
 
 export default commands

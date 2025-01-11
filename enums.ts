@@ -11,6 +11,7 @@ export enum Command {
 	GUESSR_GIVE_UP = 'give-up',
 
 	GAME_HANGMAN = 'hangman',
+	GAME_BATTLESHIP = 'battleships',
 }
 
 export enum GuessrType {
