@@ -171,6 +171,12 @@ async function getActorData(difficulty: GuessrDifficulty) {
 		append_to_response: 'images,combined_credits',
 	})
 	let characters = actorData.combined_credits.cast.map((credit) => credit.character)
+	let set = new Set(characters)
+	characters = [...set]
+	characters = characters.filter((character, i) => {
+		if (!character) return false
+		if (character.includes('self')) return false
+	}, [])
 	let names = [actor.name, ...actorData.also_known_as, ...characters]
 	let images = actorData.images.profiles.map((image) => `${IMAGE_BASE_URL}${image.file_path}`)
 	let hints = createActorHints(actorData)
