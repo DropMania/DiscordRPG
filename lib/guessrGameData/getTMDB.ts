@@ -170,7 +170,8 @@ async function getActorData(difficulty: GuessrDifficulty) {
 	let actorData = await callTMDBApi<TMDB.FullActorResponse>(`person/${actor.id}`, {
 		append_to_response: 'images,combined_credits',
 	})
-	let names = [actor.name, ...actorData.also_known_as]
+	let characters = actorData.combined_credits.cast.map((credit) => credit.character)
+	let names = [actor.name, ...actorData.also_known_as, ...characters]
 	let images = actorData.images.profiles.map((image) => `${IMAGE_BASE_URL}${image.file_path}`)
 	let hints = createActorHints(actorData)
 	let cover = `${IMAGE_BASE_URL}${actor.profile_path}`
