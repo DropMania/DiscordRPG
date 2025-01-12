@@ -175,7 +175,7 @@ async function getActorData(difficulty: GuessrDifficulty) {
 	characters = [...set]
 	characters = characters.filter((character, i) => {
 		if (!character) return false
-		if (character.includes('self')) return false
+		if (character.toLowerCase().includes('self')) return false
 		return true
 	}, [])
 	let names = [actor.name, ...actorData.also_known_as, ...characters]
