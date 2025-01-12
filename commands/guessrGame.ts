@@ -89,6 +89,6 @@ export async function showItem({ interaction, getModule }: CommandParams) {
 		content,
 		files,
 	})
-
+	await redisClient.deleteCache(`${guessrGame.guildId}:guessrItem`)
 	guessrGame.item = null
 }
