@@ -19,7 +19,8 @@ export enum GuessrType {
 	GAME = 'Game',
 	SHOW = 'TV Show',
 	SONG = 'Song',
-	GAME_SONG = 'Game Song',
+	//GAME_SONG = 'Game Song',
+	ACTOR = 'Actor',
 }
 
 export enum GuessrDifficulty {

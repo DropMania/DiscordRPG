@@ -11,9 +11,10 @@ import redisClient from '../redis'
 const getData = {
 	[GuessrType.MOVIE]: getTMDB,
 	[GuessrType.SHOW]: getTMDB,
+	[GuessrType.ACTOR]: getTMDB,
 	[GuessrType.GAME]: getGame,
 	[GuessrType.SONG]: getSong,
-	[GuessrType.GAME_SONG]: getSong,
+	//[GuessrType.GAME_SONG]: getSong,
 }
 type CacheType = {
 	item: GuessrGameItem

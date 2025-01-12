@@ -11,6 +11,8 @@ export default async function getTMDB(type: GuessrType, difficulty: GuessrDiffic
 			return await getMovieData(difficulty)
 		case GuessrType.SHOW:
 			return await getShowData(difficulty)
+		case GuessrType.ACTOR:
+			return await getActorData(difficulty)
 	}
 }
 const moviePages = {
@@ -49,7 +51,6 @@ async function getMovieData(difficulty: GuessrDifficulty) {
 		cover,
 	}
 }
-
 function createMovieHints(movieData: TMDB.FullMovieResponse) {
 	let hints: string[] = []
 	if (movieData.genres.length > 0) {
@@ -82,6 +83,7 @@ function createMovieHints(movieData: TMDB.FullMovieResponse) {
 	}
 	return hints
 }
+
 const showPages = {
 	[GuessrDifficulty.VERY_EASY]: 10,
 	[GuessrDifficulty.EASY]: 20,
@@ -116,7 +118,6 @@ async function getShowData(difficulty: GuessrDifficulty) {
 		cover,
 	}
 }
-
 function createShowHints(showData: TMDB.FullShowResponse) {
 	let hints: string[] = []
 	if (showData.genres?.length > 0) {
@@ -147,6 +148,65 @@ function createShowHints(showData: TMDB.FullShowResponse) {
 	}
 	if (showData.vote_average > 0) {
 		hints.push(`Bewertung: **${showData.vote_average}/10**`)
+	}
+	return hints
+}
+
+const actorPages = {
+	[GuessrDifficulty.VERY_EASY]: 10,
+	[GuessrDifficulty.EASY]: 20,
+	[GuessrDifficulty.MEDIUM]: 50,
+	[GuessrDifficulty.HARD]: 75,
+	[GuessrDifficulty.VERY_HARD]: 100,
+	[GuessrDifficulty.IMPOSSIBLE]: 150,
+	[GuessrDifficulty.TERMINSENDUNG]: 200,
+}
+async function getActorData(difficulty: GuessrDifficulty) {
+	let page = Math.floor(Math.random() * actorPages[difficulty]) + 1
+	let actors = await callTMDBApi<TMDB.TMDBResponse<TMDB.Actor>>('person/popular', {
+		page: page.toString(),
+	})
+	let actor = actors.results[Math.floor(Math.random() * actors.results.length)]
+	let actorData = await callTMDBApi<TMDB.FullActorResponse>(`person/${actor.id}`, {
+		append_to_response: 'images,combined_credits',
+	})
+	let names = [actor.name, ...actorData.also_known_as]
+	let images = actorData.images.profiles.map((image) => `${IMAGE_BASE_URL}${image.file_path}`)
+	let hints = createActorHints(actorData)
+	let cover = `${IMAGE_BASE_URL}${actor.profile_path}`
+	return {
+		names,
+		images,
+		hints,
+		cover,
+	}
+}
+function createActorHints(actorData: TMDB.FullActorResponse) {
+	let hints: string[] = []
+	if (actorData.birthday) {
+		let date = new Date(actorData.birthday)
+		hints.push(`Geburtstag: **${date.toLocaleDateString()}**`)
+	}
+	if (actorData.place_of_birth) {
+		hints.push(`Geburtsort: **${actorData.place_of_birth}**`)
+	}
+	if (actorData.combined_credits.cast.length > 0) {
+		let list = actorData.combined_credits.cast.filter((_, i) => i < 5)
+		let credits = list.map((credit) => {
+			if (credit.media_type === 'movie') {
+				return `Film: **${credit.title}** (${credit.release_date})`
+			} else {
+				return `Serie: **${credit.name}** (${credit.first_air_date})`
+			}
+		})
+		hints.push(`Bekannte Rollen:\n${credits.join('\n')}`)
+	}
+	if (actorData.deathday) {
+		let date = new Date(actorData.deathday)
+		hints.push(`Todesdatum: **${date.toLocaleDateString()}**`)
+	}
+	if (actorData.known_for_department) {
+		hints.push(`Bekannt für: **${actorData.known_for_department}**`)
 	}
 	return hints
 }
