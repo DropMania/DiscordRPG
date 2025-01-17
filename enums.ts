@@ -52,6 +52,8 @@ export enum DropNames {
 	ORC = 'Ork',
 	DRAGON = 'Dragon',
 	GODZILLA = 'Godzilla',
+	GHIDORAH = 'Ghidorah',
+	SAITAMA = 'Saitama',
 
 	COIN = 'Coin',
 

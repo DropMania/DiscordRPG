@@ -264,6 +264,48 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 2000, gold }, channel)
 		},
 	},
+	[DropNames.GHIDORAH]: {
+		chance: 2,
+		requirements: {
+			attack: 150,
+			health: 1,
+		},
+		winMessage: 'Du hast Ghidorah besiegt!',
+		response: {
+			files: ['https://i.pinimg.com/originals/34/8e/94/348e947cc10f4169ebe45abdeb7eaba1.gif'],
+			content: 'Ghidorah erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.GHIDORAH).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 300) + 1
+			await player?.addStats({ exp: 3000, gold }, channel)
+		},
+	},
+	[DropNames.SAITAMA]: {
+		chance: 1,
+		requirements: {
+			attack: 200,
+			health: 1,
+		},
+		winMessage: 'Du hast Saitama besiegt!',
+		response: {
+			files: ['https://cdn.7tv.app/emote/01H5MGBRY80000G7YCGMVHYZ1Q/4x.png'],
+			content: 'Saitama erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(DropNames.SAITAMA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 500) + 1
+			await player?.addStats({ exp: 5000, gold }, channel)
+		},
+	},
 
 	[DropNames.COIN]: {
 		chance: 30,

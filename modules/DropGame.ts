@@ -31,7 +31,7 @@ export default class DropGame extends Module {
 		let allDropTypes = Object.entries(dropTypes)
 		let totalChance = allDropTypes.reduce((a, [_, dropType]) => a + dropType.chance, 0)
 		let chanceTable = allDropTypes.reduce((a, [name, dropType]) => {
-			a.push([name, `${Math.round((dropType.chance / totalChance) * 100)}%`])
+			a.push([name, `${((dropType.chance / totalChance) * 100).toFixed(2)}%`])
 			return a
 		}, [] as [string, string][])
 		Log.info('DropGame', 'Drop Chances:', chanceTable)

@@ -19,7 +19,7 @@ dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
 	const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
-	//getModule(guilds[0], 'DropGame').drop(testChannel.id, DropNames.STRENGTH_POTION)
+	//getModule(guilds[0], 'DropGame').drop('980947904422379520', DropNames.GHIDORAH)
 
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
