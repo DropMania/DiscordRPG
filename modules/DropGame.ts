@@ -5,6 +5,7 @@ import dropTypes from '../lib/dropgame/dropTypes'
 import Module from './_Module'
 import Log from '../util/log'
 import messageDeleter from '../messageDeleter'
+import { BDAY } from '../constants'
 
 export default class DropGame extends Module {
 	constructor(guildId: string) {
@@ -86,7 +87,7 @@ export default class DropGame extends Module {
 		let m = await channel.send(response)
 		await messageDeleter.addMessage(m, 1000 * 60 * 60)
 	}
-	onButtonPress(id: Drops, { player, interaction }: ButtonParams) {
+	async onButtonPress(id: Drops, { player, interaction }: ButtonParams) {
 		if (!(id in dropTypes)) return
 		if (!player)
 			return interaction.channel.send({
@@ -96,6 +97,12 @@ export default class DropGame extends Module {
 		let required = dropType.requirements
 		let doable = true
 		let missingText = ''
+		if (id === Drops.PRESENT && interaction.user.id !== BDAY) {
+			await player.addStats({ health: -10 })
+			return await interaction.channel.send(
+				`${interaction.user} Kannst du nicht lesen?! -10 HP! (HP: ${player.health}/${player.maxHealth})`
+			)
+		}
 		Object.entries(required).forEach(([stat, value]) => {
 			if (player[stat] < value) {
 				doable = false
@@ -103,7 +110,7 @@ export default class DropGame extends Module {
 			}
 		})
 		if (!doable) return interaction.update({ components: [], files: [], content: missingText })
-		dropType.handler(player, interaction.channel)
-		interaction.update({ components: [], files: [], content: `${interaction.user} ${dropType.winMessage}` })
+		await dropType.handler(player, interaction.channel)
+		await interaction.update({ components: [], files: [], content: `${interaction.user} ${dropType.winMessage}` })
 	}
 }

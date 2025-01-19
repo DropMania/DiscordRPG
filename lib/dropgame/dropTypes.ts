@@ -2,6 +2,7 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildTextBasedChannel, Me
 import { Drops, ItemNames } from '../../enums'
 import Player from '../../rpg/Player'
 import Items from '../../rpg/Items'
+import { BDAY } from '../../constants'
 
 type DropType = {
 	chance: number
@@ -399,6 +400,23 @@ const dropTypes: Record<string, DropType> = {
 		handler: async (player) => {
 			let item = Items[ItemNames.POISON_SHROOM]
 			await player.addItem(item)
+		},
+	},
+	[Drops.PRESENT]: {
+		chance: 0,
+		requirements: {},
+		winMessage: `Du hast ein Geschenk gefunden! Happy Birthday! <@${BDAY}>`,
+		response: {
+			files: ['https://media.tenor.com/t7aI5VVWTvwAAAAM/gift-christmas-gift.gif'],
+			content: `Ein Geschenk erscheint!  (Nur für <@${BDAY}>)`,
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(Drops.PRESENT).setEmoji('🎁').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			await player.addStats({ gold: 100, exp: 400, attack: 10 }, channel)
 		},
 	},
 }

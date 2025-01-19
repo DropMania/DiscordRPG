@@ -63,4 +63,6 @@ export enum Drops {
 	EXP_POTION = 'EXP Potion',
 
 	POISON_SHROOM = 'Poison Shroom',
+
+	PRESENT = 'Present',
 }
