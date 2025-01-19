@@ -7,7 +7,9 @@ import { callAllModules, callModules, getModule } from './modules'
 import { refreshAccessToken } from './twitch'
 import game from './rpg/Game'
 import messageDeleter from './messageDeleter'
-import { DropNames } from './enums'
+import { Drops } from './enums'
+import readline from 'node:readline/promises'
+import { stdin, stdout } from 'node:process'
 
 await refreshAccessToken()
 
@@ -18,8 +20,8 @@ guilds.forEach((guildId) => {
 dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
-	const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
-	//getModule(guilds[0], 'DropGame').drop('980947904422379520', DropNames.GHIDORAH)
+	//const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
+	//getModule(guilds[0], 'DropGame').drop('1198632876984508486', Drops.POISON_SHROOM)
 
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
@@ -53,3 +55,16 @@ function getCommandParams<Interaction extends ButtonInteraction | CommandInterac
 }
 
 dcClient.login(process.env.BOT_TOKEN)
+
+const rl = readline.createInterface({ input: stdin, output: stdout })
+
+rl.on('line', (input) => {
+	let [command, ...args] = input.split(' ')
+	if (command === 'exit') {
+		process.exit(0)
+	}
+	if (command === 'drop') {
+		let [channelId, ...dropName] = args
+		getModule(guilds[0], 'DropGame').drop(channelId, dropName.join(' ') as Drops)
+	}
+})

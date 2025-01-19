@@ -37,9 +37,10 @@ export enum ItemNames {
 	HEAL_POTION = 'Health Potion',
 	STRENGTH_POTION = 'Strength Potion',
 	EXP_POTION = 'EXP Potion',
+	POISON_SHROOM = 'Poison Shroom',
 }
 
-export enum DropNames {
+export enum Drops {
 	BUG = 'Bug',
 	RAT = 'Rat',
 	SHEEP = 'Sheep',
@@ -60,4 +61,6 @@ export enum DropNames {
 	HEAL_POTION = 'Health Potion',
 	STRENGTH_POTION = 'Strength Potion',
 	EXP_POTION = 'EXP Potion',
+
+	POISON_SHROOM = 'Poison Shroom',
 }

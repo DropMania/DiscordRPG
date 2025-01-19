@@ -25,6 +25,13 @@ const Items: Record<ItemNames, Item> = {
 			await player.addStats({ exp: 100 }, channel)
 		},
 	},
+	[ItemNames.POISON_SHROOM]: {
+		name: ItemNames.POISON_SHROOM,
+		description: 'Reduziert die Gesundheit um 25 und erhöht die Erfahrung um 300',
+		async effect(player: Player, channel?: GuildTextBasedChannel) {
+			await player.addStats({ health: -25, exp: 300 }, channel)
+		},
+	},
 }
 
 export default Items

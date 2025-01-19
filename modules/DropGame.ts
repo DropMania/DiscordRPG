@@ -1,6 +1,6 @@
 import { ChannelType, PermissionFlagsBits, TextChannel } from 'discord.js'
 import dcClient from '../discord'
-import { DropNames } from '../enums'
+import { Drops } from '../enums'
 import dropTypes from '../lib/dropgame/dropTypes'
 import Module from './_Module'
 import Log from '../util/log'
@@ -59,19 +59,19 @@ export default class DropGame extends Module {
 		let chanceTable = allDropTypes.reduce((a, [name, dropType]) => {
 			a[name] = dropType.chance
 			return a
-		}, {} as Record<DropNames, number>)
+		}, {} as Record<Drops, number>)
 		let total = 0
-		let dropName = DropNames.RAT
+		let dropName = Drops.RAT
 		for (let [name, chance] of Object.entries(chanceTable)) {
 			total += chance
 			if (random <= total) {
-				dropName = name as DropNames
+				dropName = name as Drops
 				break
 			}
 		}
 		return dropName
 	}
-	async drop(channelId: string, dropName: DropNames) {
+	async drop(channelId: string, dropName: Drops) {
 		const dropType = dropTypes[dropName]
 		let channel = dcClient.channels.cache.get(channelId) as TextChannel
 		Log.info(`Dropping ${dropName} in ${channel.guild.name} > ${channel.name}`)
@@ -86,7 +86,7 @@ export default class DropGame extends Module {
 		let m = await channel.send(response)
 		await messageDeleter.addMessage(m, 1000 * 60 * 60)
 	}
-	onButtonPress(id: DropNames, { player, interaction }: ButtonParams) {
+	onButtonPress(id: Drops, { player, interaction }: ButtonParams) {
 		if (!(id in dropTypes)) return
 		if (!player)
 			return interaction.channel.send({

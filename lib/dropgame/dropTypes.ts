@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildTextBasedChannel, MessageCreateOptions } from 'discord.js'
-import { DropNames, ItemNames } from '../../enums'
+import { Drops, ItemNames } from '../../enums'
 import Player from '../../rpg/Player'
 import Items from '../../rpg/Items'
 
@@ -12,7 +12,7 @@ type DropType = {
 }
 
 const dropTypes: Record<string, DropType> = {
-	[DropNames.BUG]: {
+	[Drops.BUG]: {
 		chance: 20,
 		requirements: {
 			attack: 1,
@@ -24,7 +24,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Käfer erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.BUG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.BUG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -33,7 +33,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 5, gold }, channel)
 		},
 	},
-	[DropNames.RAT]: {
+	[Drops.RAT]: {
 		chance: 30,
 		requirements: {
 			attack: 10,
@@ -45,7 +45,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Eine wilde Ratte erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.RAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.RAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -54,7 +54,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 10, gold }, channel)
 		},
 	},
-	[DropNames.SHEEP]: {
+	[Drops.SHEEP]: {
 		chance: 10,
 		requirements: {
 			attack: 12,
@@ -66,7 +66,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Schaf erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.SHEEP).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.SHEEP).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -75,7 +75,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 15, gold }, channel)
 		},
 	},
-	[DropNames.DOG]: {
+	[Drops.DOG]: {
 		chance: 20,
 		requirements: {
 			attack: 15,
@@ -87,7 +87,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Hund erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.DOG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.DOG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -96,7 +96,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 30, gold }, channel)
 		},
 	},
-	[DropNames.CAT]: {
+	[Drops.CAT]: {
 		chance: 20,
 		requirements: {
 			attack: 18,
@@ -108,7 +108,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Eine wilde Katze erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.CAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.CAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -117,7 +117,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 50, gold }, channel)
 		},
 	},
-	[DropNames.WOLF]: {
+	[Drops.WOLF]: {
 		chance: 20,
 		requirements: {
 			attack: 20,
@@ -129,7 +129,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Wolf erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.WOLF).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.WOLF).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -138,7 +138,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 100, gold }, channel)
 		},
 	},
-	[DropNames.BEAR]: {
+	[Drops.BEAR]: {
 		chance: 10,
 		requirements: {
 			attack: 25,
@@ -150,7 +150,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Bär erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.BEAR).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.BEAR).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -159,7 +159,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 150, gold }, channel)
 		},
 	},
-	[DropNames.LIZARD]: {
+	[Drops.LIZARD]: {
 		chance: 10,
 		requirements: {
 			attack: 30,
@@ -171,7 +171,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Eine wilde Echse erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.LIZARD).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.LIZARD).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -180,7 +180,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 200, gold }, channel)
 		},
 	},
-	[DropNames.APE]: {
+	[Drops.APE]: {
 		chance: 10,
 		requirements: {
 			attack: 40,
@@ -192,7 +192,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Affe erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.APE).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.APE).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -201,7 +201,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 300, gold }, channel)
 		},
 	},
-	[DropNames.ORC]: {
+	[Drops.ORC]: {
 		chance: 5,
 		requirements: {
 			attack: 50,
@@ -213,7 +213,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Ork erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.ORC).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.ORC).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -222,7 +222,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 500, gold }, channel)
 		},
 	},
-	[DropNames.DRAGON]: {
+	[Drops.DRAGON]: {
 		chance: 5,
 		requirements: {
 			attack: 80,
@@ -234,7 +234,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Drache erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.DRAGON).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.DRAGON).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -243,7 +243,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 1000, gold }, channel)
 		},
 	},
-	[DropNames.GODZILLA]: {
+	[Drops.GODZILLA]: {
 		chance: 3,
 		requirements: {
 			attack: 100,
@@ -255,7 +255,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Godzilla erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.GODZILLA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.GODZILLA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -264,7 +264,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 2000, gold }, channel)
 		},
 	},
-	[DropNames.GHIDORAH]: {
+	[Drops.GHIDORAH]: {
 		chance: 2,
 		requirements: {
 			attack: 150,
@@ -276,7 +276,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ghidorah erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.GHIDORAH).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.GHIDORAH).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -285,7 +285,7 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 3000, gold }, channel)
 		},
 	},
-	[DropNames.SAITAMA]: {
+	[Drops.SAITAMA]: {
 		chance: 1,
 		requirements: {
 			attack: 200,
@@ -297,7 +297,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Saitama erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.SAITAMA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.SAITAMA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -307,7 +307,7 @@ const dropTypes: Record<string, DropType> = {
 		},
 	},
 
-	[DropNames.COIN]: {
+	[Drops.COIN]: {
 		chance: 30,
 		requirements: {},
 		winMessage: 'Du hast ein haufen Münzen gefunden!',
@@ -316,7 +316,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein haufen mit Münzen erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.COIN).setEmoji('💰').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.COIN).setEmoji('💰').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -325,7 +325,8 @@ const dropTypes: Record<string, DropType> = {
 			await player.addStats({ gold }, channel)
 		},
 	},
-	[DropNames.HEAL_POTION]: {
+
+	[Drops.HEAL_POTION]: {
 		chance: 10,
 		requirements: {},
 		winMessage: 'Du hast den Heiltrank gefunden!',
@@ -334,7 +335,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Heiltrank erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.HEAL_POTION).setEmoji('🩹').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.HEAL_POTION).setEmoji('🩹').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -343,7 +344,7 @@ const dropTypes: Record<string, DropType> = {
 			await player.addItem(item)
 		},
 	},
-	[DropNames.STRENGTH_POTION]: {
+	[Drops.STRENGTH_POTION]: {
 		chance: 3,
 		requirements: {},
 		winMessage: 'Du hast den Stärketrank gefunden!',
@@ -352,10 +353,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Stärketrank erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder()
-						.setCustomId(DropNames.STRENGTH_POTION)
-						.setEmoji('💪')
-						.setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.STRENGTH_POTION).setEmoji('💪').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
@@ -364,7 +362,7 @@ const dropTypes: Record<string, DropType> = {
 			await player.addItem(item)
 		},
 	},
-	[DropNames.EXP_POTION]: {
+	[Drops.EXP_POTION]: {
 		chance: 10,
 		requirements: {},
 		winMessage: 'Du hast den Erfahrungstrank gefunden!',
@@ -373,12 +371,33 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Erfahrungstrank erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(DropNames.EXP_POTION).setEmoji('📚').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.EXP_POTION).setEmoji('📚').setStyle(ButtonStyle.Primary)
 				),
 			],
 		},
 		handler: async (player) => {
 			let item = Items[ItemNames.EXP_POTION]
+			await player.addItem(item)
+		},
+	},
+
+	[Drops.POISON_SHROOM]: {
+		chance: 5,
+		requirements: {},
+		winMessage: 'Du hast den Giftigen Pilz gefunden!',
+		response: {
+			files: [
+				'https://mario.wiki.gallery/images/thumb/d/d4/SMP_Poison_Mushroom.png/200px-SMP_Poison_Mushroom.png',
+			],
+			content: 'Ein giftiger Pilz erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(Drops.POISON_SHROOM).setEmoji('🍄').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player) => {
+			let item = Items[ItemNames.POISON_SHROOM]
 			await player.addItem(item)
 		},
 	},
