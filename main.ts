@@ -21,8 +21,7 @@ dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
 	//const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
-	//getModule(guilds[0], 'DropGame').drop('980947899628273714', Drops.PRESENT)
-
+	/* getModule(guilds[0], 'DropGame').drop('980947899628273714', Drops.JHO) */
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
 })

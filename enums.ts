@@ -55,6 +55,7 @@ export enum Drops {
 	GODZILLA = 'Godzilla',
 	GHIDORAH = 'Ghidorah',
 	SAITAMA = 'Saitama',
+	JHO = 'Deviljho',
 
 	COIN = 'Coin',
 

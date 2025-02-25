@@ -16,7 +16,8 @@ export default class DropGame extends Module {
 		Log.info('DropGame', channels)
 		const frequency = 1000 * 60 * 5
 		const chance = 5
-		//const chance = 1
+		/* const chance = 100
+		const frequency = 1000 * 5 */
 
 		setInterval(async () => {
 			let random = Math.floor(Math.random() * 100)

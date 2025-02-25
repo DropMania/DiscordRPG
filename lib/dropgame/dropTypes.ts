@@ -307,6 +307,27 @@ const dropTypes: Record<string, DropType> = {
 			await player?.addStats({ exp: 5000, gold }, channel)
 		},
 	},
+	[Drops.JHO]: {
+		chance: 1,
+		requirements: {
+			attack: 250,
+			health: 1,
+		},
+		winMessage: 'Du hast Jho besiegt!',
+		response: {
+			files: ['https://art.ngfiles.com/images/2232000/2232839_sovanjedi_deviljho-monster-hunter.gif'],
+			content: 'Jho erscheint!',
+			components: [
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					new ButtonBuilder().setCustomId(Drops.JHO).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+				),
+			],
+		},
+		handler: async (player, channel) => {
+			let gold = Math.floor(Math.random() * 1000) + 1
+			await player?.addStats({ exp: 10000, gold }, channel)
+		},
+	},
 
 	[Drops.COIN]: {
 		chance: 30,
