@@ -14,7 +14,7 @@ export default class Battleships extends Module {
 	onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
 		if (command !== 'bomb') return
 		if (!this.board)
-			return message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/start-battleships`')
+			return message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/battleships`')
 		if (this.lastUser?.id === message.author.id)
 			return message.channel.send('Du darfst nicht zweimal hintereinander!')
 		let [x, y] = args.split(',').map((a) => a.trim())

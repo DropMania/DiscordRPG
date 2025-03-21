@@ -40,6 +40,7 @@ class MessageDeleter {
 		}, 1000 * 60)
 	}
 	async addMessage(message: Message, deleteIn: number) {
+		if (!message) return
 		this.messages.push({
 			cId: message.channel.id,
 			mId: message.id,

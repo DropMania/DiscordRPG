@@ -12,6 +12,7 @@ export enum Command {
 
 	GAME_HANGMAN = 'hangman',
 	GAME_BATTLESHIP = 'battleships',
+	GAME_PICROSS = 'picross',
 }
 
 export enum GuessrType {

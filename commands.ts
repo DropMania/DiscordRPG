@@ -90,6 +90,10 @@ const commands: Record<string, CommandHandler> = {
 		description: 'Startet ein neues Battleship Spiel',
 		handler: simpleGames.battleships,
 	},
+	[Command.GAME_PICROSS]: {
+		description: 'Startet ein neues Picross Spiel',
+		handler: simpleGames.picross,
+	},
 }
 
 export default commands
