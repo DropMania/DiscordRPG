@@ -16,7 +16,9 @@ export async function battleships({ interaction, getModule }: CommandParams) {
 
 export async function picross({ interaction, getModule }: CommandParams) {
 	let picross = getModule('Picross')
-	picross.startGame(5)
+	let dim = interaction.options.get('dim')?.value as number
+	if (dim < 5 || dim > 15) return await interaction.editReply('Dimension muss zwischen 5 und 15 liegen!')
+	picross.startGame(dim)
 	await interaction.editReply({
 		content: `Neues Spiel Picross gestartet! Schreibe \`!pic a,1\` um das Feld A,1 zu füllen!`,
 		files: [{ attachment: picross.renderBoard(), name: 'picross.png' }],

@@ -107,15 +107,6 @@ export default class Picross extends Module {
 		}
 		for (let i = 0; i < dim; i++) {
 			for (let j = 0; j < dim; j++) {
-				ctx.lineWidth = 1
-				ctx.strokeStyle = 'white'
-				ctx.rect(
-					j * cellSize + longestVertical * cellSize,
-					i * cellSize + longestHorizontal * cellSize,
-					cellSize,
-					cellSize
-				)
-				ctx.stroke()
 				if (this.board[i][j].filled) {
 					ctx.fillStyle = this.board[i][j].block ? 'green' : 'red'
 					ctx.fillRect(
@@ -143,6 +134,22 @@ export default class Picross extends Module {
 				(dim + longestVertical) * cellSize + letterOffset / 2,
 				i * cellSize + longestHorizontal * cellSize + cellSize / 2
 			)
+		}
+
+		//add grid lines
+		ctx.strokeStyle = 'white'
+		ctx.lineWidth = 2
+		for (let i = 0; i <= dim; i++) {
+			ctx.beginPath()
+			ctx.moveTo(i * cellSize + longestVertical * cellSize, longestHorizontal * cellSize)
+			ctx.lineTo(i * cellSize + longestVertical * cellSize, canvas.height - letterOffset)
+			ctx.stroke()
+		}
+		for (let i = 0; i <= dim; i++) {
+			ctx.beginPath()
+			ctx.moveTo(longestVertical * cellSize, i * cellSize + longestHorizontal * cellSize)
+			ctx.lineTo(canvas.width - letterOffset, i * cellSize + longestHorizontal * cellSize)
+			ctx.stroke()
 		}
 		return canvas.toBuffer()
 	}

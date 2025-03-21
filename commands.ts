@@ -92,6 +92,8 @@ const commands: Record<string, CommandHandler> = {
 	},
 	[Command.GAME_PICROSS]: {
 		description: 'Startet ein neues Picross Spiel',
+		options: (builder) =>
+			builder.addIntegerOption((o) => o.setName('dim').setDescription('Dimension').setRequired(true)),
 		handler: simpleGames.picross,
 	},
 }
