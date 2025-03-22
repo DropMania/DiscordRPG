@@ -36,24 +36,29 @@ export default class Minesweeper extends Module {
 		if (this.board[x][y].explored) return await message.channel.send('Hier wurde bereits gegraben!')
 		this.lastUser = message.author
 		let result = this.digCell(x, y, player)
-		let out = ``
 		if (result) {
-			out += '💥 Du hast eine Bombe getroffen!\n Ihr Habt verloren!'
 			this.revealBoard()
+			let rewardText = '💥 Du hast eine Bombe getroffen!\n Ihr Habt verloren!\n'
+			this.rewards.forEach(({ correct }, player) => {
+				if (!player) return
+				player.addStats({ exp: correct * 15 })
+				rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 15} EXP** (jetzt ${
+					player.experience
+				})\n`
+			})
 			await message.channel.send({
-				content: out,
+				content: rewardText,
 				files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
 			})
 			this.board = null
 			return
 		}
-		out += '✅ Erfolgreich gegraben!'
 		this.correct++
 		if (!this.rewards.has(player)) this.rewards.set(player, { correct: 0 })
 		this.rewards.get(player).correct++
 
 		await message.channel.send({
-			content: out,
+			content: '✅ Erfolgreich gegraben!',
 			files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
 		})
 		if (this.checkWin()) {
