@@ -24,3 +24,13 @@ export async function picross({ interaction, getModule }: CommandParams) {
 		files: [{ attachment: picross.renderBoard(), name: 'picross.png' }],
 	})
 }
+
+export async function minesweeper({ interaction, getModule }: CommandParams) {
+	let minesweeper = getModule('Minesweeper')
+	let difficulty = (interaction.options.get('difficulty')?.value as string) ?? 'medium'
+	minesweeper.startGame(difficulty)
+	await interaction.editReply({
+		content: `Neues Spiel Minesweeper gestartet! Schreibe \`!dig a,1\` um das Feld A,1 aufzudecken!\nSchwierigkeit: **${difficulty}**`,
+		files: [{ attachment: minesweeper.renderBoard(), name: 'minesweeper.png' }],
+	})
+}

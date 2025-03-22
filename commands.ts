@@ -96,6 +96,22 @@ const commands: Record<string, CommandHandler> = {
 			builder.addIntegerOption((o) => o.setName('dim').setDescription('Dimension').setRequired(true)),
 		handler: simpleGames.picross,
 	},
+	[Command.GAME_MINESWEEPER]: {
+		description: 'Startet ein neues Minesweeper Spiel',
+		options: (builder) =>
+			builder.addStringOption((o) =>
+				o
+					.setName('difficulty')
+					.setDescription('Schwierigkeit')
+					.setRequired(false)
+					.addChoices(
+						{ name: 'leicht', value: 'easy' },
+						{ name: 'mittel', value: 'medium' },
+						{ name: 'schwer', value: 'hard' }
+					)
+			),
+		handler: simpleGames.minesweeper,
+	},
 }
 
 export default commands

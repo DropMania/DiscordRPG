@@ -17,7 +17,7 @@ declare global {
 		items: ItemNames[]
 	}
 
-	type Modules = 'GuessrGame' | 'Hangman' | 'DropGame' | 'Battleships' | 'Picross'
+	type Modules = 'GuessrGame' | 'Hangman' | 'DropGame' | 'Battleships' | 'Picross' | 'Minesweeper'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
@@ -29,6 +29,8 @@ declare global {
 		? import('../modules/Battleships.js').default
 		: T extends 'Picross'
 		? import('../modules/Picross.js').default
+		: T extends 'Minesweeper'
+		? import('../modules/Minesweeper.js').default
 		: never
 
 	type CommandParams = {
