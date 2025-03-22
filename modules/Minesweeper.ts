@@ -95,7 +95,7 @@ export default class Minesweeper extends Module {
 		for (let i = 0; i < size; i++) {
 			let row: MineCell[] = []
 			for (let j = 0; j < size; j++) {
-				row.push({ bomb: Math.random() < 0.1, explored: false, nearbyBombs: 0 })
+				row.push({ bomb: Math.random() < bombChance, explored: false, nearbyBombs: 0 })
 			}
 			board.push(row)
 		}
