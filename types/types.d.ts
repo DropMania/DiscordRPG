@@ -5,6 +5,10 @@ import { ItemNames } from '../enums.js'
 export {}
 
 declare global {
+	type GuildConfig = {
+		id: string
+		goldRole: string
+	}
 	type PlayerConfig = {
 		userId: string
 		health: number
@@ -17,7 +21,7 @@ declare global {
 		items: ItemNames[]
 	}
 
-	type Modules = 'GuessrGame' | 'Hangman' | 'DropGame' | 'Battleships' | 'Picross' | 'Minesweeper'
+	type Modules = 'GuessrGame' | 'Hangman' | 'DropGame' | 'Battleships' | 'Picross' | 'Minesweeper' | 'Shop'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
@@ -31,6 +35,8 @@ declare global {
 		? import('../modules/Picross.js').default
 		: T extends 'Minesweeper'
 		? import('../modules/Minesweeper.js').default
+		: T extends 'Shop'
+		? import('../modules/Shop.js').default
 		: never
 
 	type CommandParams = {

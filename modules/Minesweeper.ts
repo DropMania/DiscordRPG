@@ -24,8 +24,8 @@ export default class Minesweeper extends Module {
 		if (command !== 'dig') return
 		if (!this.board)
 			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
-		if (this.lastUser?.id === message.author.id)
-			return await message.channel.send('Du darfst nicht zweimal hintereinander!')
+		/* if (this.lastUser?.id === message.author.id)
+			return await message.channel.send('Du darfst nicht zweimal hintereinander!') */
 		let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
 		let x = letters.indexOf(letter)
@@ -95,8 +95,13 @@ export default class Minesweeper extends Module {
 		}
 		if (difficulty === 'hard') {
 			size = 12
+			bombChance = 0.17
+		}
+		if (difficulty === 'insane') {
+			size = 15
 			bombChance = 0.2
 		}
+		//bombChance = 1
 		for (let i = 0; i < size; i++) {
 			let row: MineCell[] = []
 			for (let j = 0; j < size; j++) {

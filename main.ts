@@ -13,8 +13,8 @@ import { stdin, stdout } from 'node:process'
 
 await refreshAccessToken()
 
-guilds.forEach((guildId) => {
-	registerCommands(guildId)
+guilds.forEach((guild) => {
+	registerCommands(guild.id)
 })
 
 dcClient.once(Events.ClientReady, (readyClient) => {
@@ -64,6 +64,6 @@ rl.on('line', (input) => {
 	}
 	if (command === 'drop') {
 		let [channelId, ...dropName] = args
-		getModule(guilds[0], 'DropGame').drop(channelId, dropName.join(' ') as Drops)
+		getModule(guilds[0].id, 'DropGame').drop(channelId, dropName.join(' ') as Drops)
 	}
 })

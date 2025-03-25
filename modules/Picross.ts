@@ -29,8 +29,8 @@ export default class Picross extends Module {
 		if (command !== 'pic') return
 		if (!this.board)
 			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/picross`')
-		if (this.lastUser?.id === message.author.id)
-			return await message.channel.send('Du darfst nicht zweimal hintereinander!')
+		/* if (this.lastUser?.id === message.author.id)
+			return await message.channel.send('Du darfst nicht zweimal hintereinander!') */
 		let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
 		let y = letters.indexOf(letter)

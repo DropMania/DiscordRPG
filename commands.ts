@@ -1,6 +1,7 @@
 import * as rpg from './commands/rpg'
 import * as guessrGame from './commands/guessrGame'
 import * as simpleGames from './commands/simpleGames'
+import * as shop from './commands/shop'
 import { Command, GuessrDifficulty, GuessrType } from './enums'
 import { SlashCommandBuilder } from 'discord.js'
 
@@ -33,6 +34,10 @@ const commands: Record<string, CommandHandler> = {
 					.setDescription('Das zu benutzende Item (siehe Nummer mit /show-items')
 					.setRequired(true)
 			),
+	},
+	[Command.SHOP]: {
+		description: 'Zeigt den Shop',
+		handler: shop.showShop,
 	},
 
 	[Command.GUESSR_PICK]: {
@@ -107,7 +112,8 @@ const commands: Record<string, CommandHandler> = {
 					.addChoices(
 						{ name: 'leicht', value: 'easy' },
 						{ name: 'mittel', value: 'medium' },
-						{ name: 'schwer', value: 'hard' }
+						{ name: 'schwer', value: 'hard' },
+						{ name: 'unmöglich', value: 'insane' }
 					)
 			),
 		handler: simpleGames.minesweeper,

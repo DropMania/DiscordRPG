@@ -15,13 +15,13 @@ const moduleClasses = await Promise.all(
 )
 
 if (!moduleClasses) throw new Error('Error loading modules')
-const moduleTmp = guilds.reduce((acc, guildId) => {
-	acc[guildId] = {}
+const moduleTmp = guilds.reduce((acc, guild) => {
+	acc[guild.id] = {}
 	return acc
 }, {})
 const modules = moduleClasses.reduce((acc, module) => {
-	guilds.forEach((guildId) => {
-		acc[guildId][module.default.name] = new module.default(guildId)
+	guilds.forEach((guild) => {
+		acc[guild.id][module.default.name] = new module.default(guild.id)
 	})
 	return acc
 }, moduleTmp) as {

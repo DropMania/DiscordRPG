@@ -4,6 +4,8 @@ export enum Command {
 	SHOW_ITEMS = 'show-items',
 	USE_ITEM = 'use-item',
 
+	SHOP = 'shop',
+
 	GUESSR_PICK = 'guessr-game',
 	GUESSR_NEW_IMAGE = 'new-image',
 	GUESSR_HINT = 'hint',
