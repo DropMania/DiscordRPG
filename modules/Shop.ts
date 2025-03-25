@@ -20,7 +20,7 @@ type ShopItem = {
 	id: string
 	price: number
 	description: string
-	handler: (params: ShopHandlerParams) => Promise<void>
+	handler: (params: ShopHandlerParams) => Promise<boolean>
 }
 const SHOP_ITEMS: ShopItem[] = [
 	{
@@ -33,11 +33,16 @@ const SHOP_ITEMS: ShopItem[] = [
 			let role = interaction.guild.roles.cache.get(guildConfig.goldRole)
 			if (!role) {
 				await interaction.reply('Die Gold-Rolle wurde nicht gefunden!')
-				return
+				return false
 			}
 			let member = interaction.guild.members.cache.get(user.id)
+			if (member.roles.cache.has(role.id)) {
+				await interaction.reply(`${user} Du hast die Gold-Rolle bereits!`)
+				return false
+			}
 			await member.roles.add(role)
 			await interaction.reply(`${user} Du hast die Gold-Rolle erhalten!`)
+			return true
 		},
 	},
 ]
@@ -51,11 +56,13 @@ export default class Shop extends Module {
 		let item = SHOP_ITEMS.find((item) => item.id === id.slice(5))
 		if (!item) return
 		if (player.gold < item.price) {
-			await interaction.reply('Du hast nicht genug Gold!')
+			await interaction.reply(`${interaction.user} Du hast nicht genug Gold!`)
 			return
 		}
-		player.gold -= item.price
-		await item.handler({ interaction, player, guildConfig: this.guildConfig })
+		let success = await item.handler({ interaction, player, guildConfig: this.guildConfig })
+		if (success) {
+			await player.addStats({ gold: -item.price })
+		}
 	}
 	showShop(): InteractionEditReplyOptions {
 		let components = []
