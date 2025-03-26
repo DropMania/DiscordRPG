@@ -25,7 +25,7 @@ export default class Minesweeper extends Module {
 		if (!this.board)
 			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
 		let time = new Date().getUTCHours() + (1 % 24)
-		if (this.lastUser?.id === message.author.id && (time > 6 || time < 23))
+		if (this.lastUser?.id === message.author.id && (time > 6 && time < 23))
 			return await message.channel.send('Du darfst nicht zweimal hintereinander!')
 		let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
