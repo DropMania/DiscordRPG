@@ -5,8 +5,9 @@ export async function pickItem({ interaction, getModule }: CommandParams) {
 	const guessrGame = getModule('GuessrGame')
 	let typName = interaction.options.get('typ', true).value as GuessrType
 	let difficulty = interaction.options.get('difficulty')?.value as GuessrDifficulty
+	let filter = interaction.options.get('filter')?.value as string
 	difficulty = difficulty || GuessrDifficulty.MEDIUM
-	await guessrGame.pickItem(typName, difficulty)
+	await guessrGame.pickItem(typName, difficulty, filter)
 	let image = guessrGame.getImage()
 	if (!image) return await interaction.editReply('Es ist ein Fehler aufgetreten!')
 	const content = `Rate den **${guessrGame.type}**! *Schwierigkeit: **${difficulty}** *
@@ -91,4 +92,54 @@ export async function showItem({ interaction, getModule }: CommandParams) {
 	})
 	await redisClient.deleteCache(`${guessrGame.guildId}:guessrItem`)
 	guessrGame.item = null
+}
+
+export async function autocompleteFilter({ interaction, getModule }: AutocompleteParams) {
+	let guessrType = interaction.options.get('typ', true).value as GuessrType
+	let options = []
+	if (guessrType === GuessrType.GAME) {
+		options = [
+			{
+				value: '2',
+				name: 'Point-and-click',
+			},
+			{
+				value: '4',
+				name: 'Fighting',
+			},
+			{
+				value: '5',
+				name: 'Shooter',
+			},
+			{
+				value: '7',
+				name: 'Music',
+			},
+			{
+				value: '8',
+				name: 'Platform',
+			},
+			{
+				value: '9',
+				name: 'Puzzle',
+			},
+			{
+				value: '10',
+				name: 'Racing',
+			},
+			{
+				value: '11',
+				name: 'Real Time Strategy (RTS)',
+			},
+			{
+				value: '12',
+				name: 'Role-playing (RPG)',
+			},
+			{
+				value: '13',
+				name: 'Simulator',
+			},
+		]
+	}
+	return options
 }

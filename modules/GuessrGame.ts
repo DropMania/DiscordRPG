@@ -38,8 +38,8 @@ export default class GuessrGame extends Module {
 		}
 	}
 
-	async pickItem(type: GuessrType, difficulty: GuessrDifficulty) {
-		this.item = await getData[type](type, difficulty)
+	async pickItem(type: GuessrType, difficulty: GuessrDifficulty, filter: string) {
+		this.item = await getData[type](type, difficulty, filter)
 		Log.info('GuessrGame', 'pickItem', this.item)
 		this.difficulty = difficulty
 		this.type = type

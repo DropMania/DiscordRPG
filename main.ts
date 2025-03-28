@@ -1,4 +1,4 @@
-import { Events, CommandInteraction, TextChannel, ButtonInteraction } from 'discord.js'
+import { Events, CommandInteraction, TextChannel, ButtonInteraction, AutocompleteInteraction } from 'discord.js'
 import dcClient from './discord'
 import registerCommands from './registerCommands'
 import commandHandler from './commands'
@@ -27,6 +27,13 @@ dcClient.once(Events.ClientReady, (readyClient) => {
 })
 
 dcClient.on(Events.InteractionCreate, async (interaction) => {
+	if (interaction.isAutocomplete()) {
+		const params = getCommandParams(interaction)
+		const focusedValue = interaction.options.getFocused()
+		if (!commandHandler[interaction.commandName].automcomplete) return
+		let options = await commandHandler[interaction.commandName].automcomplete({ ...params, value: focusedValue })
+		await interaction.respond(options)
+	}
 	if (interaction.isButton()) {
 		const params = getCommandParams(interaction)
 		callModules('onButton', interaction.guildId, params)
@@ -46,7 +53,9 @@ dcClient.on(Events.MessageCreate, (message) => {
 	callModules('onMessage', message.guildId, params)
 })
 
-function getCommandParams<Interaction extends ButtonInteraction | CommandInteraction>(interaction: Interaction) {
+function getCommandParams<Interaction extends ButtonInteraction | CommandInteraction | AutocompleteInteraction>(
+	interaction: Interaction
+) {
 	const getGuildModule = <T extends Modules>(moduleName: T): ModuleType<T> =>
 		getModule(interaction.guildId, moduleName)
 	const player = game.getPlayer(interaction.user.id)

@@ -2,7 +2,7 @@ import { User } from 'discord.js'
 import Player from '../rpg/Player'
 import Module from './_Module'
 import { createCanvas } from 'canvas'
-type MineCell = { bomb: boolean; explored: boolean; nearbyBombs: number }
+type MineCell = { bomb: boolean; explored: boolean; nearbyBombs: number; marked: boolean }
 type MineBoard = MineCell[][]
 export default class Minesweeper extends Module {
 	board: MineBoard
@@ -21,58 +21,90 @@ export default class Minesweeper extends Module {
 		this.board = this.generateBoard(difficulty)
 	}
 	async onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
-		if (command !== 'dig') return
-		if (!this.board)
-			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
-		let time = new Date().getUTCHours() + (1 % 24)
-		if (this.lastUser?.id === message.author.id && (time > 6 || time < 23))
-			return await message.channel.send('Du darfst nicht zweimal hintereinander!')
-		let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-		let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
-		let x = letters.indexOf(letter)
-		let y = parseInt(number) - 1
-		if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
-		if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
-			return await message.channel.send('Ungültige Koordinaten!')
-		if (this.board[x][y].explored) return await message.channel.send('Hier wurde bereits gegraben!')
-		this.lastUser = message.author
-		let result = this.digCell(x, y, player)
-		if (result) {
-			this.revealBoard()
-			let rewardText = '💥 Du hast eine Bombe getroffen!\n Ihr Habt verloren!\n'
-			this.rewards.forEach(({ correct }, player) => {
-				if (!player) return
-				player.addStats({ exp: correct * 15 })
-				rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 15} EXP** (jetzt ${
-					player.experience
-				})\n`
-			})
+		if (!['dig', 'mark', 'unmark'].includes(command)) return
+		if (command === 'dig') {
+			if (!this.board)
+				return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
+			let time = new Date().getUTCHours() + (1 % 24)
+			if (this.lastUser?.id === message.author.id && (time > 6 || time < 23))
+				return await message.channel.send('Du darfst nicht zweimal hintereinander!')
+			let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+			let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
+			let x = letters.indexOf(letter)
+			let y = parseInt(number) - 1
+			if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
+			if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
+				return await message.channel.send('Ungültige Koordinaten!')
+			if (this.board[x][y].explored) return await message.channel.send('Hier wurde bereits gegraben!')
+			this.lastUser = message.author
+			let result = this.digCell(x, y, player)
+			if (result) {
+				this.revealBoard()
+				let rewardText = '💥 Du hast eine Bombe getroffen!\n Ihr Habt verloren!\n'
+				this.rewards.forEach(({ correct }, player) => {
+					if (!player) return
+					player.addStats({ exp: correct * 15 })
+					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 15} EXP** (jetzt ${
+						player.experience
+					})\n`
+				})
+				await message.channel.send({
+					content: rewardText,
+					files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
+				})
+				this.board = null
+				return
+			}
+			this.correct++
+			if (!this.rewards.has(player)) this.rewards.set(player, { correct: 0 })
+			this.rewards.get(player).correct++
+
 			await message.channel.send({
-				content: rewardText,
+				content: '✅ Erfolgreich gegraben!',
 				files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
 			})
-			this.board = null
-			return
-		}
-		this.correct++
-		if (!this.rewards.has(player)) this.rewards.set(player, { correct: 0 })
-		this.rewards.get(player).correct++
-
-		await message.channel.send({
-			content: '✅ Erfolgreich gegraben!',
-			files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
-		})
-		if (this.checkWin()) {
-			this.board = null
-			let rewardText = 'Ihr habt gewonnen!\n'
-			this.rewards.forEach(({ correct }, player) => {
-				if (!player) return
-				player.addStats({ exp: correct * 50 })
-				rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 50} EXP** (jetzt ${
-					player.experience
-				})\n`
+			if (this.checkWin()) {
+				this.board = null
+				let rewardText = 'Ihr habt gewonnen!\n'
+				this.rewards.forEach(({ correct }, player) => {
+					if (!player) return
+					player.addStats({ exp: correct * 50 })
+					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 50} EXP** (jetzt ${
+						player.experience
+					})\n`
+				})
+				await message.channel.send(rewardText)
+			}
+		} else if (command === 'mark') {
+			if (!this.board)
+				return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
+			let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+			let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
+			let x = letters.indexOf(letter)
+			let y = parseInt(number) - 1
+			if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
+			if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
+				return await message.channel.send('Ungültige Koordinaten!')
+			this.board[x][y].marked = true
+			await message.channel.send({
+				content: '✅ Erfolgreich markiert!',
+				files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
 			})
-			await message.channel.send(rewardText)
+		} else if (command === 'unmark') {
+			if (!this.board)
+				return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
+			let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+			let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
+			let x = letters.indexOf(letter)
+			let y = parseInt(number) - 1
+			if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
+			if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
+				return await message.channel.send('Ungültige Koordinaten!')
+			this.board[x][y].marked = false
+			await message.channel.send({
+				content: '✅ Erfolgreich abmarkiert!',
+				files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
+			})
 		}
 	}
 	revealBoard() {
@@ -106,7 +138,7 @@ export default class Minesweeper extends Module {
 		for (let i = 0; i < size; i++) {
 			let row: MineCell[] = []
 			for (let j = 0; j < size; j++) {
-				row.push({ bomb: Math.random() < bombChance, explored: false, nearbyBombs: 0 })
+				row.push({ bomb: Math.random() < bombChance, explored: false, nearbyBombs: 0, marked: false })
 			}
 			board.push(row)
 		}
@@ -184,6 +216,23 @@ export default class Minesweeper extends Module {
 					ctx.fillStyle = FRONT_BLOCK_DARK_SIDE
 					ctx.fillRect(x + cellSize - 5, y, 5, cellSize)
 					ctx.fillRect(x, y + cellSize - 5, cellSize, 5)
+					if (cell.marked) {
+						ctx.fillStyle = '#FF0000'
+						ctx.beginPath()
+						ctx.moveTo(x + 15, y + 10) // Flag pole
+						ctx.lineTo(x + 15, y + 35)
+						ctx.strokeStyle = '#000000'
+						ctx.lineWidth = 5
+						ctx.stroke()
+
+						ctx.beginPath()
+						ctx.moveTo(x + 15, y + 10) // Flag
+						ctx.lineTo(x + 30, y + 20)
+						ctx.lineTo(x + 15, y + 25)
+						ctx.closePath()
+						ctx.fillStyle = '#FF0000'
+						ctx.fill()
+					}
 				}
 			}
 		}

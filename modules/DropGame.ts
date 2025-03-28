@@ -39,7 +39,7 @@ export default class DropGame extends Module {
 		Log.info('DropGame', 'Drop Chances:', chanceTable)
 	}
 	getChannels() {
-		let validRoles = [dcClient.guilds.cache.get(this.guildId).roles.cache.get('1071029552186396782')]
+		let validRoles = [dcClient.guilds.cache.get(this.guildId).roles.cache.get(this.guildConfig.dropRole)]
 		let channels = dcClient.channels.cache.toJSON()
 		let channelIds = channels.reduce((a, c) => {
 			if (

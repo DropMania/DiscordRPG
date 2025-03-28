@@ -9,6 +9,7 @@ type CommandHandler = {
 	handler: (params: CommandParams) => void
 	description: string
 	options?: (builder: SlashCommandBuilder) => void
+	automcomplete?: (params: AutocompleteParams) => Promise<{ name: string; value: string }[]>
 }
 
 const commands: Record<string, CommandHandler> = {
@@ -66,7 +67,11 @@ const commands: Record<string, CommandHandler> = {
 						.setName('difficulty')
 						.setDescription('Schwierigkeitsgrad')
 						.setRequired(false)
+				)
+				.addStringOption((o) =>
+					o.setName('filter').setDescription('Filter').setRequired(false).setAutocomplete(true)
 				),
+		automcomplete: guessrGame.autocompleteFilter,
 	},
 	[Command.GUESSR_NEW_IMAGE]: {
 		description: 'Zeigt ein neues Bild',

@@ -5,7 +5,11 @@ import { callTMDBApi } from '../../util/fetchData'
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'
 
-export default async function getTMDB(type: GuessrType, difficulty: GuessrDifficulty): Promise<GuessrGameItem> {
+export default async function getTMDB(
+	type: GuessrType,
+	difficulty: GuessrDifficulty,
+	filter: string
+): Promise<GuessrGameItem> {
 	switch (type) {
 		case GuessrType.MOVIE:
 			return await getMovieData(difficulty)

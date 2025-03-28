@@ -20,11 +20,18 @@ const categoryEnum = [
 	'Pack',
 	'Update',
 ]
-export default async function getGame(type: GuessrType, difficulty: GuessrDifficulty): Promise<GuessrGameItem> {
+export default async function getGame(
+	type: GuessrType,
+	difficulty: GuessrDifficulty,
+	filter: string
+): Promise<GuessrGameItem> {
 	let ratings = getRatings(difficulty)
-	let countQuery = `where total_rating_count > ${ratings};`
+	let countQuery = `where total_rating_count > ${ratings}`
 	if (difficulty === GuessrDifficulty.TERMINSENDUNG) {
-		countQuery = `where name != null;`
+		countQuery = `where name != null`
+	}
+	if (filter) {
+		//countQuery += ` & genres = ${filter}`
 	}
 	let countResponse = await callIGDBApi<{ count: number }>('games/count', countQuery)
 	let count = countResponse.count || 800
@@ -44,9 +51,10 @@ export default async function getGame(type: GuessrType, difficulty: GuessrDiffic
             platforms.name,
             game_localizations.name,
             themes.name;
-        ${countQuery}
+        ${countQuery};
         offset ${offset};
         limit 1;`
+	console.log(query)
 	let response = await callIGDBApi<IGDBGame[]>('games', query)
 	let game = response[0]
 	let names = [game.name, ...(game.alternative_names ? game.alternative_names.map((name) => name.name) : [])]

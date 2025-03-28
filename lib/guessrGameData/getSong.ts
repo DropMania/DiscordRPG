@@ -14,11 +14,15 @@ async function getPreviewUrl(song: string) {
 	return previewUrl + '.mp3'
 }
 
-export default async function getSong(type: GuessrType, difficulty: GuessrDifficulty): Promise<GuessrGameItem> {
+export default async function getSong(
+	type: GuessrType,
+	difficulty: GuessrDifficulty,
+	filter: string
+): Promise<GuessrGameItem> {
 	let songs = SONGS
-	if (type === GuessrType.GAME_SONG) {
+	/* if (type === GuessrType.GAME_SONG) {
 		songs = GAME_SONGS
-	}
+	} */
 	songs.sort((a, b) => a.popularity - b.popularity)
 	let pages = getPages(difficulty)
 	if (difficulty === GuessrDifficulty.TERMINSENDUNG) {
@@ -34,13 +38,13 @@ export default async function getSong(type: GuessrType, difficulty: GuessrDiffic
 		`Album des Songs: **${song.albumName}**`,
 		`Dauer des Songs: **${Math.floor(song.duration / 60000)} Minuten**`,
 	]
-	if (type === GuessrType.GAME_SONG) {
+	/* if (type === GuessrType.GAME_SONG) {
 		names.push(song.albumName)
 		hints = [
 			`Interpreten: **${song.artists}**`,
 			`Dauer des Songs: **${Math.floor(song.duration / 60000)} Minuten**`,
 		]
-	}
+	} */
 	let cover = song.url
 	return { names, images, hints, cover }
 }

@@ -1,8 +1,14 @@
 const GUILDS: GuildConfig[] = [
 	{
-		id: '980947206863470622',
+		id: '980947206863470622', //dropma
 		goldRole: '1354157905473179860',
+		dropRole: '1071029552186396782',
 	},
+	/* {
+		id: '1059613070785257494', //illu
+		goldRole: '1354157905473179860',
+		dropRole: '1059634799679115285',
+	}, */
 ]
 export default GUILDS
 

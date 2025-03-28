@@ -1,4 +1,11 @@
-import type { ButtonInteraction, CommandInteraction, Message, OmitPartialGroupDMChannel, User } from 'discord.js'
+import type {
+	AutocompleteInteraction,
+	ButtonInteraction,
+	CommandInteraction,
+	Message,
+	OmitPartialGroupDMChannel,
+	User,
+} from 'discord.js'
 import Player from '../rpg/Player.js'
 import { ItemNames } from '../enums.js'
 
@@ -8,6 +15,7 @@ declare global {
 	type GuildConfig = {
 		id: string
 		goldRole: string
+		dropRole: string
 	}
 	type PlayerConfig = {
 		userId: string
@@ -43,6 +51,10 @@ declare global {
 		interaction: CommandInteraction
 		getModule: <T extends Modules>(moduleName: T) => ModuleType<T>
 		player?: Player
+	}
+	type AutocompleteParams = Omit<CommandParams, 'interaction'> & {
+		interaction: AutocompleteInteraction
+		value: string
 	}
 	type ButtonParams = Omit<CommandParams, 'interaction'> & {
 		interaction: ButtonInteraction
