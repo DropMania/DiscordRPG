@@ -8,9 +8,8 @@ export default class SlotMachine extends Module {
 	symbols: Symbol[] = [
 		{ display: '🍒', value: 2 },
 		{ display: '🍋', value: 3 },
-		{ display: '🍊', value: 4 },
 		{ display: '🍉', value: 5 },
-		{ display: '🍇', value: 6 },
+		{ display: '🍇', value: 7 },
 		{ display: '⭐', value: 10 },
 	]
 	constructor(guildId: string) {
