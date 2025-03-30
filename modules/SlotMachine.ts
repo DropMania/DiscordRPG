@@ -31,7 +31,11 @@ export default class SlotMachine extends Module {
 		if (spinResult[0].value === spinResult[1].value && spinResult[1].value === spinResult[2].value) {
 			multiplier = spinResult[0].value
 		} else if (spinResult[0].value === spinResult[1].value || spinResult[1].value === spinResult[2].value) {
-			multiplier = Math.max(spinResult[0].value, spinResult[1].value, spinResult[2].value) * 0.5
+			if (spinResult[0].value === spinResult[1].value) {
+				multiplier = spinResult[0].value * 0.5
+			} else {
+				multiplier = spinResult[1].value * 0.5
+			}
 		}
 		winnings = bet * multiplier
 		return winnings
