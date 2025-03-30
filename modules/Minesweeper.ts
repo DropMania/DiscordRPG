@@ -22,19 +22,21 @@ export default class Minesweeper extends Module {
 	}
 	async onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
 		if (!['dig', 'mark', 'unmark'].includes(command)) return
+		if (!this.board)
+			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
+		let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+		let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
+		let x = letters.indexOf(letter)
+		let y = parseInt(number) - 1
+		if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
+		if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
+			return await message.channel.send('Ungültige Koordinaten!')
 		if (command === 'dig') {
-			if (!this.board)
-				return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
 			let time = new Date().getUTCHours() + (1 % 24)
-			if (this.lastUser?.id === message.author.id && time > 6 && time < 23)
+			let startTime = this.guildConfig.minesweeper.nightTime.start
+			let endTime = this.guildConfig.minesweeper.nightTime.end
+			if (this.lastUser?.id === message.author.id && time >= endTime && time < startTime)
 				return await message.channel.send('Du darfst nicht zweimal hintereinander!')
-			let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-			let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
-			let x = letters.indexOf(letter)
-			let y = parseInt(number) - 1
-			if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
-			if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
-				return await message.channel.send('Ungültige Koordinaten!')
 			if (this.board[x][y].explored) return await message.channel.send('Hier wurde bereits gegraben!')
 			this.lastUser = message.author
 			let result = this.digCell(x, y, player)
@@ -76,30 +78,12 @@ export default class Minesweeper extends Module {
 				await message.channel.send(rewardText)
 			}
 		} else if (command === 'mark') {
-			if (!this.board)
-				return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
-			let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-			let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
-			let x = letters.indexOf(letter)
-			let y = parseInt(number) - 1
-			if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
-			if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
-				return await message.channel.send('Ungültige Koordinaten!')
 			this.board[x][y].marked = true
 			await message.channel.send({
 				content: '✅ Erfolgreich markiert!',
 				files: [{ attachment: this.renderBoard(), name: 'minesweeper.png' }],
 			})
 		} else if (command === 'unmark') {
-			if (!this.board)
-				return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
-			let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-			let [letter, number] = args.split(',').map((a) => a.trim().toUpperCase())
-			let x = letters.indexOf(letter)
-			let y = parseInt(number) - 1
-			if (isNaN(x) || isNaN(y)) return await message.channel.send('Ungültige Koordinaten!')
-			if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
-				return await message.channel.send('Ungültige Koordinaten!')
 			this.board[x][y].marked = false
 			await message.channel.send({
 				content: '✅ Erfolgreich abmarkiert!',

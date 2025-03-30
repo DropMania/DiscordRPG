@@ -31,9 +31,9 @@ export default async function getGame(
 		countQuery = `where name != null`
 	}
 	if (filter) {
-		//countQuery += ` & genres = ${filter}`
+		countQuery += ` & ${filter}`
 	}
-	let countResponse = await callIGDBApi<{ count: number }>('games/count', countQuery)
+	let countResponse = await callIGDBApi<{ count: number }>('games/count', `${countQuery};`)
 	let count = countResponse.count || 800
 	let offset = Math.floor(Math.random() * count)
 	let query = `

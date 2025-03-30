@@ -123,6 +123,12 @@ const commands: Record<string, CommandHandler> = {
 			),
 		handler: simpleGames.minesweeper,
 	},
+	[Command.GAME_SLOTMACHINE]: {
+		description: 'Startet ein neues Slot Machine Spiel',
+		options: (builder) =>
+			builder.addIntegerOption((o) => o.setName('bet').setDescription('Einsatz').setRequired(true)),
+		handler: simpleGames.slotMachine,
+	},
 }
 
 export default commands

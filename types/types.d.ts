@@ -16,6 +16,12 @@ declare global {
 		id: string
 		goldRole: string
 		dropRole: string
+		minesweeper: {
+			nightTime: {
+				start: number
+				end: number
+			}
+		}
 	}
 	type PlayerConfig = {
 		userId: string
@@ -29,7 +35,15 @@ declare global {
 		items: ItemNames[]
 	}
 
-	type Modules = 'GuessrGame' | 'Hangman' | 'DropGame' | 'Battleships' | 'Picross' | 'Minesweeper' | 'Shop'
+	type Modules =
+		| 'GuessrGame'
+		| 'Hangman'
+		| 'DropGame'
+		| 'Battleships'
+		| 'Picross'
+		| 'Minesweeper'
+		| 'Shop'
+		| 'SlotMachine'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
@@ -45,6 +59,8 @@ declare global {
 		? import('../modules/Minesweeper.js').default
 		: T extends 'Shop'
 		? import('../modules/Shop.js').default
+		: T extends 'SlotMachine'
+		? import('../modules/SlotMachine.js').default
 		: never
 
 	type CommandParams = {

@@ -96,50 +96,50 @@ export async function showItem({ interaction, getModule }: CommandParams) {
 
 export async function autocompleteFilter({ interaction, getModule }: AutocompleteParams) {
 	let guessrType = interaction.options.get('typ', true).value as GuessrType
-	let options = []
+	let filters = []
 	if (guessrType === GuessrType.GAME) {
-		options = [
+		filters = [
 			{
-				value: '2',
+				value: 'genres = (2)',
 				name: 'Point-and-click',
 			},
 			{
-				value: '4',
+				value: 'genres = (4)',
 				name: 'Fighting',
 			},
 			{
-				value: '5',
+				value: 'genres = (5)',
 				name: 'Shooter',
 			},
 			{
-				value: '7',
+				value: 'genres = (7)',
 				name: 'Music',
 			},
 			{
-				value: '8',
+				value: 'genres = (8)',
 				name: 'Platform',
 			},
 			{
-				value: '9',
+				value: 'genres = (9)',
 				name: 'Puzzle',
 			},
 			{
-				value: '10',
+				value: 'genres = (10)',
 				name: 'Racing',
 			},
 			{
-				value: '11',
+				value: 'genres = (11)',
 				name: 'Real Time Strategy (RTS)',
 			},
 			{
-				value: '12',
+				value: 'genres = (12)',
 				name: 'Role-playing (RPG)',
 			},
 			{
-				value: '13',
+				value: 'genres = (13)',
 				name: 'Simulator',
 			},
 		]
 	}
-	return options
+	return filters
 }

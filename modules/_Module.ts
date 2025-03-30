@@ -11,7 +11,7 @@ export default class Module {
 	init() {}
 	onMessage(params: MessageParams) {
 		let parts = params.message.content.split(/\s+/)
-		let command = parts[0]
+		let command = parts[0].toLowerCase()
 		let args = parts.slice(1).join(' ')
 		if (command.startsWith('!')) {
 			this.onMessageCommand(command.slice(1), args, params)
