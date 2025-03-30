@@ -13,7 +13,7 @@ export default class DropGame extends Module {
 	}
 	init() {
 		let channels = this.getChannels()
-		Log.info('DropGame', channels)
+		Log.info('DropGame',this.guildConfig, channels)
 		const frequency = 1000 * 60 * 5
 		const chance = 5
 		/* const chance = 100

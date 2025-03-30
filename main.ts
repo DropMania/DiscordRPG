@@ -20,7 +20,6 @@ guilds.forEach((guild) => {
 dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
-	//const testChannel = dcClient.channels.cache.get('1084937706045444197') as TextChannel
 	/* getModule(guilds[0].id, 'DropGame').drop('1198632876984508486', Drops.GODZILLA) */
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
