@@ -10,11 +10,11 @@ const rest = new REST().setToken(process.env.BOT_TOKEN)
 
 export default async function registerCommands(guildId: string) {
 	try {
-		console.log('Started refreshing application (/) commands.')
+		console.log(`Started refreshing application (/) commands. ${guildId}`)
 
 		await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, guildId), { body: commands })
 
-		console.log('Successfully reloaded application (/) commands.')
+		console.log(`Successfully reloaded application (/) commands. ${guildId}`)
 	} catch (error) {
 		console.error(error)
 	}

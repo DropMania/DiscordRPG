@@ -9,6 +9,10 @@ const GUILDS: GuildConfig[] = [
 				end: 6,
 			},
 		},
+		dropgame: {
+			interval: 1000 * 60 * 5,
+			chance: 5,
+		},
 	},
 	{
 		id: '1059613070785257494', //illu
@@ -20,7 +24,11 @@ const GUILDS: GuildConfig[] = [
 				end: 6,
 			},
 		},
-	}, 
+		dropgame: {
+			interval: 1000 * 60 * 5,
+			chance: 5,
+		},
+	},
 ]
 export default GUILDS
 

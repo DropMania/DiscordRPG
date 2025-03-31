@@ -22,6 +22,10 @@ declare global {
 				end: number
 			}
 		}
+		dropgame: {
+			interval: number
+			chance: number
+		}
 	}
 	type PlayerConfig = {
 		userId: string
@@ -44,6 +48,7 @@ declare global {
 		| 'Minesweeper'
 		| 'Shop'
 		| 'SlotMachine'
+		| 'Blackjack'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
@@ -61,6 +66,8 @@ declare global {
 		? import('../modules/Shop.js').default
 		: T extends 'SlotMachine'
 		? import('../modules/SlotMachine.js').default
+		: T extends 'Blackjack'
+		? import('../modules/Blackjack.js').default
 		: never
 
 	type CommandParams = {

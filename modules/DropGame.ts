@@ -13,11 +13,13 @@ export default class DropGame extends Module {
 	}
 	init() {
 		let channels = this.getChannels()
-		Log.info('DropGame',this.guildConfig, channels)
-		const frequency = 1000 * 60 * 5
-		const chance = 5
-		/* const chance = 100
-		const frequency = 1000 * 5 */
+		//Log.info('DropGame',this.guildConfig, channels)
+		const frequency = this.guildConfig.dropgame.interval
+		const chance = this.guildConfig.dropgame.chance
+		if (channels.length === 0) {
+			Log.info('DropGame', 'No channels found')
+			return
+		}
 
 		setInterval(async () => {
 			let random = Math.floor(Math.random() * 100)
@@ -36,7 +38,7 @@ export default class DropGame extends Module {
 			a.push([name, `${((dropType.chance / totalChance) * 100).toFixed(2)}%`])
 			return a
 		}, [] as [string, string][])
-		Log.info('DropGame', 'Drop Chances:', chanceTable)
+		//Log.info('DropGame', 'Drop Chances:', chanceTable)
 	}
 	getChannels() {
 		let validRoles = [dcClient.guilds.cache.get(this.guildId).roles.cache.get(this.guildConfig.dropRole)]
@@ -44,6 +46,7 @@ export default class DropGame extends Module {
 		let channelIds = channels.reduce((a, c) => {
 			if (
 				c.type === ChannelType.GuildText &&
+				c.guildId === this.guildId &&
 				validRoles.some((r) =>
 					c.permissionsFor(r).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel])
 				)

@@ -2,6 +2,7 @@ import * as rpg from './commands/rpg'
 import * as guessrGame from './commands/guessrGame'
 import * as simpleGames from './commands/simpleGames'
 import * as shop from './commands/shop'
+import * as casino from './commands/casino'
 import { Command, GuessrDifficulty, GuessrType } from './enums'
 import { SlashCommandBuilder } from 'discord.js'
 
@@ -123,11 +124,15 @@ const commands: Record<string, CommandHandler> = {
 			),
 		handler: simpleGames.minesweeper,
 	},
-	[Command.GAME_SLOTMACHINE]: {
+	[Command.CASINO_SLOTMACHINE]: {
 		description: 'Startet ein neues Slot Machine Spiel',
 		options: (builder) =>
 			builder.addIntegerOption((o) => o.setName('bet').setDescription('Einsatz').setRequired(true)),
-		handler: simpleGames.slotMachine,
+		handler: casino.slotMachine,
+	},
+	[Command.CASINO_BLACKJACK]: {
+		description: 'Startet ein neues Blackjack Spiel',
+		handler: casino.blackjack,
 	},
 }
 

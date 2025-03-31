@@ -29,11 +29,17 @@ export default class SlotMachine extends Module {
 		let multiplier = 0
 		if (spinResult[0].value === spinResult[1].value && spinResult[1].value === spinResult[2].value) {
 			multiplier = spinResult[0].value
-		} else if (spinResult[0].value === spinResult[1].value || spinResult[1].value === spinResult[2].value) {
+		} else if (
+			spinResult[0].value === spinResult[1].value ||
+			spinResult[1].value === spinResult[2].value ||
+			spinResult[0].value === spinResult[2].value
+		) {
 			if (spinResult[0].value === spinResult[1].value) {
 				multiplier = spinResult[0].value * 0.5
-			} else {
+			} else if (spinResult[1].value === spinResult[2].value) {
 				multiplier = spinResult[1].value * 0.5
+			} else {
+				multiplier = spinResult[0].value * 0.5
 			}
 		}
 		winnings = bet * multiplier
