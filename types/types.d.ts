@@ -15,6 +15,7 @@ declare global {
 	type GuildConfig = {
 		id: string
 		goldRole: string
+		gambleRole:string
 		dropRole: string
 		minesweeper: {
 			nightTime: {

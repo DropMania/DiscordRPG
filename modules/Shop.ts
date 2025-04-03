@@ -45,6 +45,28 @@ const SHOP_ITEMS: ShopItem[] = [
 			return true
 		},
 	},
+	{
+		name: 'Gamble Addict Rolle',
+		id: 'gamblerole',
+		price: 50000,
+		description: 'Zeige wie unfassbar süchtig du nach gamblen bist :)',
+		handler: async ({ interaction, guildConfig }) => {
+			let user = interaction.user
+			let role = interaction.guild.roles.cache.get(guildConfig.gambleRole)
+			if (!role) {
+				await interaction.reply('Die Gamble-Rolle wurde nicht gefunden!')
+				return false
+			}
+			let member = interaction.guild.members.cache.get(user.id)
+			if (member.roles.cache.has(role.id)) {
+				await interaction.reply(`${user} Du hast die Gamble-Rolle bereits!`)
+				return false
+			}
+			await member.roles.add(role)
+			await interaction.reply(`${user} Du hast die Gamble-Rolle erhalten!`)
+			return true
+		},
+	},
 ]
 export default class Shop extends Module {
 	constructor(guildId: string) {
