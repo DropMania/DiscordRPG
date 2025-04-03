@@ -70,10 +70,10 @@ export default class Minesweeper extends Module {
 				let rewardText = 'Ihr habt gewonnen!\n'
 				this.rewards.forEach(({ correct }, player) => {
 					if (!player) return
-					player.addStats({ exp: correct * 50 })
-					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 50} EXP** (jetzt ${
-						player.experience
-					})\n`
+					player.addStats({ exp: correct * 50, gold: correct * 5 })
+					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 50} EXP** & **+${
+						correct * 5
+					} Gold** (jetzt ${player.experience}EXP, ${player.gold} Gold)\n`
 				})
 				await message.channel.send(rewardText)
 			}

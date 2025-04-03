@@ -10,8 +10,10 @@ import messageDeleter from './messageDeleter'
 import { Drops } from './enums'
 import readline from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
+import { loadGraphics } from './lib/casino/cards'
 
 await refreshAccessToken()
+await loadGraphics()
 
 guilds.forEach((guild) => {
 	registerCommands(guild.id)

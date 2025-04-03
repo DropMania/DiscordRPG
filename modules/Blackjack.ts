@@ -72,6 +72,7 @@ export default class Blackjack extends Module {
 			if (isNaN(bet) || bet < 1) return await reply({ content: 'Bitte einen gültigen Einsatz angeben!' })
 			if (this.game.players.some((p) => p.player.userId === player.userId))
 				return await reply({ content: 'Du bist bereits im Spiel!' })
+			if (bet > player.gold) return await reply({ content: 'Du hast nicht genug Gold!' })
 			await this.addPlayer(player, bet)
 		}
 		if (this.game.state !== GameState.PLAYING) return
