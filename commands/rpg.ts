@@ -1,5 +1,6 @@
 import { EmbedBuilder } from 'discord.js'
 import game from '../rpg/Game'
+import { drawAchievements } from '../rpg/Achievements'
 
 export async function addPlayer({ interaction }: CommandParams) {
 	let success = game.addPlayer(interaction.user.id)
@@ -53,4 +54,11 @@ export async function useItem({ interaction, player }: CommandParams) {
 	if (!item) return await interaction.editReply('Dieses Item existiert nicht!')
 	await player.useItem(itemIdx - 1, interaction.channel)
 	await interaction.deleteReply()
+}
+
+export async function showAchievements({ interaction, player }: CommandParams) {
+	if (!player) return await interaction.editReply('Du bist noch nicht als Spieler hinzugefügt!')
+	var embed = drawAchievements(player)
+	if (!embed) return await interaction.editReply('Du hast noch keine Erfolge!')
+	await interaction.editReply({ embeds: [embed] })
 }

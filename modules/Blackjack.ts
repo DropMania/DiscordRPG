@@ -119,7 +119,7 @@ export default class Blackjack extends Module {
 		if (!this.game) return
 		this.game.activePlayer++
 		if (this.game.activePlayer >= this.game.players.length) {
-			//await this.displayGame()
+			await this.displayGame()
 			await this.dealerTurn()
 		}
 	}
@@ -178,6 +178,8 @@ export default class Blackjack extends Module {
 					.join('|')}** (${playerValue}) - gewonnen! **+${player.bet * 2} Gold** (jetzt ${
 					player.player.gold
 				})\n`
+				player.player.unlockAchievement('blackjack_pro', this.game.channel as TextChannel)
+				player.player.unlockAchievement('blackjack_legend', this.game.channel as TextChannel)
 			} else if (playerValue > 21) {
 				player.player.addStats({ gold: -player.bet })
 				message += `${player.player.user}: **${player.hand
@@ -188,6 +190,8 @@ export default class Blackjack extends Module {
 				message += `${player.player.user}: **${player.hand
 					.map((card) => card.display + card.suit)
 					.join('|')}** (${playerValue}) - gewonnen! **+${player.bet} Gold** (jetzt ${player.player.gold})\n`
+				player.player.unlockAchievement('blackjack_pro', this.game.channel as TextChannel)
+				player.player.unlockAchievement('blackjack_legend', this.game.channel as TextChannel)
 			} else if (playerValue < dealerValue) {
 				player.player.addStats({ gold: -player.bet })
 				message += `${player.player.user}: **${player.hand
@@ -217,7 +221,9 @@ export default class Blackjack extends Module {
 		})
 		let message = `Dealer: **${dealerHand}** (${dealerValue})\n\n`
 		message += `Spieler:\n${playerHands.join('\n')}\n\n`
-		message += `Aktiver Spieler: ${this.game.players[this.game.activePlayer].player.user}`
+		if (this.game.players[this.game.activePlayer]) {
+			message += `Aktiver Spieler: ${this.game.players[this.game.activePlayer].player.user}`
+		}
 		await this.game.channel.send({ content: message })
 	}
 }

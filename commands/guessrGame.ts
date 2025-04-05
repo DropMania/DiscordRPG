@@ -73,6 +73,8 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	guessrGame.item = null
 	let exp = Math.floor(difficultyExp[guessrGame.difficulty] * bonus)
 	await player?.addStats({ exp }, interaction.channel)
+	await player?.unlockAchievement('guessr_pro', interaction.channel)
+	await player?.unlockAchievement('guessr_legend', interaction.channel)
 	await redisClient.deleteCache(`${guessrGame.guildId}:guessrItem`)
 }
 

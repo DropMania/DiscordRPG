@@ -95,6 +95,8 @@ export default class Hangman extends Module {
 			if (this.isGameWon()) {
 				await message.channel.send('Du hast Gewonnen!')
 				player?.addStats({ exp: 5 }, message.channel as GuildTextBasedChannel)
+				await player?.unlockAchievement('hangman_pro', message.channel as GuildTextBasedChannel)
+				await player?.unlockAchievement('hangman_legend', message.channel as GuildTextBasedChannel)
 			} else {
 				await player?.addStats({ health: -1 })
 				await message.channel.send(

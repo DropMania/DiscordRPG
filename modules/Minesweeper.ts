@@ -1,4 +1,4 @@
-import { User } from 'discord.js'
+import { TextChannel, User } from 'discord.js'
 import Player from '../rpg/Player'
 import Module from './_Module'
 import { createCanvas } from 'canvas'
@@ -74,6 +74,8 @@ export default class Minesweeper extends Module {
 					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 50} EXP** & **+${
 						correct * 5
 					} Gold** (jetzt ${player.experience}EXP, ${player.gold} Gold)\n`
+					player.unlockAchievement('mine_pro', message.channel as TextChannel)
+					player.unlockAchievement('mine_legend', message.channel as TextChannel)
 				})
 				await message.channel.send(rewardText)
 			}

@@ -41,6 +41,10 @@ const commands: Record<string, CommandHandler> = {
 		description: 'Zeigt den Shop',
 		handler: shop.showShop,
 	},
+	[Command.SHOW_ACHIEVEMENTS]: {
+		description: 'Zeigt deine Erfolge',
+		handler: rpg.showAchievements,
+	},
 
 	[Command.GUESSR_PICK]: {
 		description: 'Startet ein neues GuessrGame',

@@ -15,7 +15,7 @@ declare global {
 	type GuildConfig = {
 		id: string
 		goldRole: string
-		gambleRole:string
+		gambleRole: string
 		dropRole: string
 		minesweeper: {
 			nightTime: {
@@ -28,6 +28,12 @@ declare global {
 			chance: number
 		}
 	}
+	type AchievementProgress = {
+		id: string
+		progress: number
+		unlocked: boolean
+		unlockDate: number
+	}
 	type PlayerConfig = {
 		userId: string
 		health: number
@@ -38,6 +44,7 @@ declare global {
 		experience: number
 		gold: number
 		items: ItemNames[]
+		achievements: AchievementProgress[]
 	}
 
 	type Modules =

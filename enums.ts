@@ -3,6 +3,7 @@ export enum Command {
 	SHOW_STATS = 'show-stats',
 	SHOW_ITEMS = 'show-items',
 	USE_ITEM = 'use-item',
+	SHOW_ACHIEVEMENTS = 'show-achievements',
 
 	SHOP = 'shop',
 

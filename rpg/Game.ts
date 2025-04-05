@@ -25,6 +25,7 @@ class Game {
 			experience: 0,
 			gold: 0,
 			items: [],
+			achievements: [],
 		}
 		const player = new Player(config)
 		this.players.push(player)
