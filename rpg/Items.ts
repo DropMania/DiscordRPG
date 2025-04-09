@@ -32,6 +32,13 @@ const Items: Record<ItemNames, Item> = {
 			await player.addStats({ health: -25, exp: 300 }, channel)
 		},
 	},
+	[ItemNames.SUPER_EXP_POTION]: {
+		name: ItemNames.SUPER_EXP_POTION,
+		description: 'Erhöht die Erfahrung um 1000',
+		async effect(player: Player, channel?: GuildTextBasedChannel) {
+			await player.addStats({ exp: 1000 }, channel)
+		},
+	},
 }
 
 export default Items

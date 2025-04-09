@@ -1,5 +1,6 @@
 import { GuildTextBasedChannel } from 'discord.js'
 import Player from '../rpg/Player'
+import { ItemNames } from '../enums'
 
 export type GuessrGameItem = {
 	names: string[]
@@ -9,7 +10,7 @@ export type GuessrGameItem = {
 }
 
 export type Item = {
-	name: string
+	name: ItemNames
 	description: string
 	effect: (player: Player, channel?: GuildTextBasedChannel) => Promise<void>
 }

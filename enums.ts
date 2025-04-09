@@ -46,6 +46,7 @@ export enum ItemNames {
 	STRENGTH_POTION = 'Strength Potion',
 	EXP_POTION = 'EXP Potion',
 	POISON_SHROOM = 'Poison Shroom',
+	SUPER_EXP_POTION = 'Super EXP Potion',
 }
 
 export enum Drops {

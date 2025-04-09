@@ -10,6 +10,8 @@ import {
 } from 'discord.js'
 import Module from './_Module'
 import Player from '../rpg/Player'
+import Items from '../rpg/Items'
+import { ItemNames } from '../enums'
 type ShopHandlerParams = {
 	interaction: ButtonInteraction
 	guildConfig: GuildConfig
@@ -64,6 +66,52 @@ const SHOP_ITEMS: ShopItem[] = [
 			}
 			await member.roles.add(role)
 			await interaction.reply(`${user} Du hast die Gamble-Rolle erhalten!`)
+			return true
+		},
+	},
+	{
+		name: 'Super EXP Potion',
+		id: 'superexppotion',
+		price: 500,
+		description: 'Eine Super EXP Potion, die dir 1000 EXP gibt! (kostet 3 EXP Potions)',
+		handler: async ({ interaction, player }) => {
+			if (!player) {
+				await interaction.reply('Du bist kein Spieler!')
+				return false
+			}
+			let itemCount = player.items.filter((item) => item.name === ItemNames.EXP_POTION).length
+			if (itemCount < 3) {
+				await interaction.reply(`${interaction.user} Du nur ${itemCount}/3 EXP Potions!`)
+				return false
+			}
+			await player.removeItem(ItemNames.EXP_POTION, 3)
+			await player.addItem(Items[ItemNames.SUPER_EXP_POTION])
+			await interaction.reply(
+				`${interaction.user} Du hast eine ${ItemNames.SUPER_EXP_POTION} erhalten! (-3 EXP Potions)`
+			)
+			return true
+		},
+	},
+	{
+		name: 'Exp Potion',
+		id: 'exppotion',
+		price: 100,
+		description: 'Eine EXP Potion, die dir 100 EXP gibt! (kostet 2 Health Potions)',
+		handler: async ({ interaction, player }) => {
+			if (!player) {
+				await interaction.reply('Du bist kein Spieler!')
+				return false
+			}
+			let itemCount = player.items.filter((item) => item.name === ItemNames.HEAL_POTION).length
+			if (itemCount < 2) {
+				await interaction.reply(`${interaction.user} Du nur ${itemCount}/2 Health Potions!`)
+				return false
+			}
+			await player.removeItem(ItemNames.HEAL_POTION, 2)
+			await player.addItem(Items[ItemNames.EXP_POTION])
+			await interaction.reply(
+				`${interaction.user} Du hast eine ${ItemNames.EXP_POTION} erhalten! (-2 Health Potions)`
+			)
 			return true
 		},
 	},

@@ -4,6 +4,7 @@ import messageDeleter from '../messageDeleter'
 import Items from './Items'
 import { Item } from '../types/varTypes'
 import achievements from './Achievements'
+import { ItemNames } from '../enums'
 
 export default class Player {
 	user: string
@@ -60,6 +61,17 @@ export default class Player {
 		if (!item) return
 		await item.effect(this, channel)
 		this.items.splice(itemIdx, 1)
+		await this.save()
+	}
+	async removeItem(itemName: ItemNames, count: number) {
+		this.items = this.items.reduce((acc, item) => {
+			if (item.name === itemName && count > 0) {
+				count--
+				return acc
+			}
+			acc.push(item)
+			return acc
+		}, [] as Item[])
 		await this.save()
 	}
 	async addStats(
