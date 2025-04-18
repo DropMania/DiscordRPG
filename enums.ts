@@ -4,6 +4,7 @@ export enum Command {
 	SHOW_ITEMS = 'show-items',
 	USE_ITEM = 'use-item',
 	SHOW_ACHIEVEMENTS = 'show-achievements',
+	GIVE_MONEY = 'give-money',
 
 	SHOP = 'shop',
 

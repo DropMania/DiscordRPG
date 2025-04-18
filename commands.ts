@@ -45,6 +45,18 @@ const commands: Record<string, CommandHandler> = {
 		description: 'Zeigt deine Erfolge',
 		handler: rpg.showAchievements,
 	},
+	[Command.GIVE_MONEY]: {
+		description: 'Gibt Geld an einen anderen Spieler',
+		handler: rpg.giveMoney,
+		options: (builder) =>
+			builder
+				.addUserOption((o) =>
+					o.setName('user').setDescription('Der Spieler, dem du Geld geben willst').setRequired(true)
+				)
+				.addIntegerOption((o) =>
+					o.setName('amount').setDescription('Die Menge an Geld, die du geben willst').setRequired(true)
+				),
+	},
 
 	[Command.GUESSR_PICK]: {
 		description: 'Startet ein neues GuessrGame',

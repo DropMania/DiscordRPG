@@ -62,3 +62,20 @@ export async function showAchievements({ interaction, player }: CommandParams) {
 	if (!embed) return await interaction.editReply('Du hast noch keine Erfolge!')
 	await interaction.editReply({ embeds: [embed] })
 }
+
+export async function giveMoney({ interaction, player }: CommandParams) {
+	if (!player) return await interaction.editReply('Du bist noch nicht als Spieler hinzugefügt!')
+	let user = interaction.options.get('user', true).user
+	if (!user) return await interaction.editReply('Dieser Spieler existiert nicht!')
+	let amount = interaction.options.get('amount', true).value as number
+	if (user.id === interaction.user.id) return await interaction.editReply('Du kannst dir kein Geld geben!')
+	if (amount <= 0) return await interaction.editReply('Du kannst nur Geld geben, wenn es mehr als 0 ist!')
+	if (player.gold < amount) return await interaction.editReply('Du hast nicht genug Geld!')
+	let targetPlayer = game.getPlayer(user.id)
+	if (!targetPlayer) return await interaction.editReply('Dieser Spieler existiert nicht!')
+	await player.addStats({ gold: -amount })
+	await targetPlayer.addStats({ gold: amount })
+	await interaction.editReply(
+		`${interaction.user} hast ${user} **${amount}** Gold gegeben!\n-# ${user} hat jetzt **${targetPlayer.gold}** Gold!\n-# ${interaction.user} hat jetzt **${player.gold}** Gold!`
+	)
+}
