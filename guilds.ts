@@ -14,6 +14,12 @@ const GUILDS: GuildConfig[] = [
 			interval: 1000 * 60 * 5,
 			chance: 5,
 		},
+		ai: {
+			ignoreChannels: ['1080469173127348344'],
+			initiateChance: 0,
+			answerChance: 0,
+			initiateChannels: ['980947899628273714', '980947904422379520', '1248643273522937938'],
+		},
 	},
 	{
 		id: '1059613070785257494', //illu
@@ -29,6 +35,12 @@ const GUILDS: GuildConfig[] = [
 		dropgame: {
 			interval: 1000 * 60 * 5,
 			chance: 5,
+		},
+		ai: {
+			ignoreChannels: [],
+			initiateChance: 0,
+			answerChance: 0,
+			initiateChannels: [],
 		},
 	},
 ]

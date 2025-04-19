@@ -11,6 +11,7 @@ import { Drops } from './enums'
 import readline from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { loadGraphics } from './lib/casino/cards'
+import ai from './util/ai'
 
 await refreshAccessToken()
 await loadGraphics()

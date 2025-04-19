@@ -38,7 +38,7 @@ export default class DropGame extends Module {
 			a.push([name, `${((dropType.chance / totalChance) * 100).toFixed(2)}%`])
 			return a
 		}, [] as [string, string][])
-		Log.info('DropGame', 'Drop Chances:', chanceTable)
+		//Log.info('DropGame', 'Drop Chances:', chanceTable)
 	}
 	getChannels() {
 		let validRoles = [dcClient.guilds.cache.get(this.guildId).roles.cache.get(this.guildConfig.dropRole)]

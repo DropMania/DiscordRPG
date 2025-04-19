@@ -27,6 +27,12 @@ declare global {
 			interval: number
 			chance: number
 		}
+		ai: {
+			ignoreChannels: string[]
+			initiateChance: number
+			answerChance: number
+			initiateChannels: string[]
+		}
 	}
 	type AchievementProgress = {
 		id: string
