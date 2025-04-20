@@ -40,6 +40,7 @@ export default class Player {
 	}
 	toString() {
 		return JSON.stringify({
+			user: this.user,
 			userId: this.userId,
 			health: this.health,
 			maxHealth: this.maxHealth,
