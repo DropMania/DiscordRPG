@@ -81,7 +81,7 @@ export default class AI extends Module {
 			- Hier sind alle Commands, die du ausführen kannst: ${JSON.stringify(Object.values(Command).map((c) => c.toString()))}
 			- Hier sind alle Items, die es gibt: ${JSON.stringify(Object.values(ItemNames).map((c) => c.toString()))}
 			- Hier sind alle Achievements, die es gibt: ${JSON.stringify(
-				achievements.map((a) => ({ name: a.name, description: a.description, icon: a.icon }.toString()))
+				achievements.map((a) => JSON.stringify({ name: a.name, description: a.description, id: a.id }))
 			)}
 
 			Hilf den Nutzern, wenn Sie Fragen haben. Und gib ihnen Tipps, wie sie besser werden können.
