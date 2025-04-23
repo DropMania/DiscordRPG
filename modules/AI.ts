@@ -1,6 +1,6 @@
 import Module from './_Module'
 import ai from '../util/ai'
-import { Chat } from '@google/genai'
+import { Chat, FunctionDeclaration, Type } from '@google/genai'
 import dcClient from '../discord'
 import { sleep } from '../util/misc'
 import { TextChannel } from 'discord.js'
@@ -8,7 +8,53 @@ import game from '../rpg/Game'
 import dropTypes from '../lib/dropgame/dropTypes'
 import { Command, ItemNames } from '../enums'
 import achievements from '../rpg/Achievements'
-
+import Items from '../rpg/Items'
+import Log from '../util/log'
+const aiFunctions: FunctionDeclaration[] = [
+	{
+		name: 'givePlayerGold',
+		description: 'Gibt gold an Spieler',
+		parameters: {
+			type: Type.OBJECT,
+			properties: {
+				userId: {
+					type: Type.STRING,
+					description: 'Die ID des Users',
+				},
+				amount: {
+					type: Type.NUMBER,
+					maximum: 1000,
+					description: 'Die Menge, die du haben willst.',
+				},
+			},
+			required: ['userId', 'amount'],
+		},
+	},
+	{
+		name: 'givePlayerItem',
+		description: 'Gibt dem Spieler ein Item',
+		parameters: {
+			type: Type.OBJECT,
+			properties: {
+				userId: {
+					type: Type.STRING,
+					description: 'Die ID des Users',
+				},
+				item: {
+					type: Type.STRING,
+					description: 'Das Item, das du haben willst.',
+					enum: Object.values(ItemNames),
+				},
+				amount: {
+					type: Type.NUMBER,
+					maximum: 3,
+					description: 'Die Menge, die du haben willst.',
+				},
+			},
+			required: ['userId', 'item', 'amount'],
+		},
+	},
+]
 export default class AI extends Module {
 	chat: Chat
 	constructor(guildId: string) {
@@ -16,11 +62,7 @@ export default class AI extends Module {
 	}
 	init() {
 		this.chat = ai.chats.create({
-			model: 'gemini-2.0-flash-lite',
-			config: {
-				systemInstruction: this.getSystemInstruction(),
-				temperature: 2.0,
-			},
+			model: 'gemini-2.0-flash',
 			history: [],
 		})
 	}
@@ -32,11 +74,24 @@ export default class AI extends Module {
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
 				message.channel.sendTyping()
-				await sleep(3000)
+				if (this.chat.getHistory().length > 0) {
+					const tokenCount = await ai.models.countTokens({
+						model: 'gemini-2.0-flash',
+						contents: this.chat.getHistory(),
+					})
+					Log.info('AI', 'Token count:', tokenCount.totalTokens)
+				}
+				await sleep(4000)
 				const response = await this.chat.sendMessage({
 					config: {
 						systemInstruction: this.getSystemInstruction(),
-						temperature: 2.0,
+						temperature: 2,
+						maxOutputTokens: 2000,
+						tools: [
+							{
+								functionDeclarations: aiFunctions,
+							},
+						],
 					},
 					message: JSON.stringify({
 						date: message.createdAt.toISOString(),
@@ -46,19 +101,59 @@ export default class AI extends Module {
 						channel: (message.channel as TextChannel).name,
 					}),
 				})
+				if (response.functionCalls && response.functionCalls.length > 0) {
+					for (const functionCall of response.functionCalls) {
+						const functionName = functionCall.name
+						const functionArgs = functionCall.args
+						if (functionName === 'givePlayerGold') {
+							const userId = functionArgs.userId as string
+							const amount = functionArgs.amount as number
+							const player = game.getPlayer(userId)
+							if (player) {
+								await player.addStats({ gold: amount }, message.channel as TextChannel)
+							} else {
+								await message.reply({
+									content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
+									allowedMentions: { users: [] },
+								})
+							}
+						}
+						if (functionName === 'givePlayerItem') {
+							const userId = functionArgs.userId as string
+							const itemName = functionArgs.item as ItemNames
+							const item = Items[itemName]
+							const amount = functionArgs.amount as number
+							const player = game.getPlayer(userId)
+							if (player) {
+								for (let i = 0; i < amount; i++) {
+									await player.addItem(item)
+								}
+								await message.reply({
+									content: `Ich habe ${amount} ${itemName} an ${player.user} gegeben.`,
+									allowedMentions: { users: [] },
+								})
+							} else {
+								await message.reply({
+									content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
+									allowedMentions: { users: [] },
+								})
+							}
+						}
+					}
+				}
 				await message.reply({
 					content: response.text,
 					allowedMentions: { users: [] },
 				})
 			} catch (e) {
 				console.log(e)
-				await message.channel.send('Ich kann gerade nicht antworten. Sorry :(')
+				await message.channel.send(`Ich kann gerade nicht antworten. Sorry :(\n${e.message}`)
 			}
 		}
 	}
 	getSystemInstruction() {
 		return `
-			Du bist ein Bot, der in einem Discord Server lebt und gerne mit Menschen redet und versucht menschlich zu agieren.
+			Du bist ein User, der in einem Discord Server lebt und gerne mit Menschen redet und versucht menschlich zu agieren.
 			Nachrichten kommen in folgender Form:
 			{
 				"date": "2023-10-01T12:00:00Z",
@@ -72,6 +167,13 @@ export default class AI extends Module {
 			Entschuldige dich nicht dafür, dass du ein Bot bist. Das ist nicht nötig.
 			Wenn du nicht weiter weißt, dann sag einfach, dass du das nicht weißt. Und frag nach mehr Informationen.
 			Benutze immer neutrale Pronomen, außer die Person hat dir gesagt, dass du sie mit einem bestimmten Pronomen ansprechen sollst.
+			
+
+			Hilf den Nutzern, wenn Sie Fragen haben. Und gib ihnen Tipps, wie sie besser werden können.
+			Du kannst den Nutzern auch helfen, indem du ihnen Gold gibst. Du kannst das tun, indem du die Funktion \`givePlayerGold\` aufrufst.
+			Tu dies aber nur, wenn der Player es auch verdient hat. Gib ihm nicht einfach so Gold ohne grund.
+			Das selbe gilt für Items. Du kannst die Funktion \`givePlayerItem\` benutzen, um Items zu geben.
+
 			Hier sind einige Meta-Informationen, was du als Bot kannst:
 			- Du hast ein eingebautes RPG-System, wo Discord-Nutzer gegen Monster kämpfen können und Aufleveln können.
 			- Hier sind alle Spieler und ihre Stats: ${JSON.stringify(game.players.map((p) => p.toString()))}
@@ -83,8 +185,7 @@ export default class AI extends Module {
 			- Hier sind alle Achievements, die es gibt: ${JSON.stringify(
 				achievements.map((a) => JSON.stringify({ name: a.name, description: a.description, id: a.id }))
 			)}
-
-			Hilf den Nutzern, wenn Sie Fragen haben. Und gib ihnen Tipps, wie sie besser werden können.
+			- Du hasst das videospiel Skyrim und findest es langweilig.
 		`
 	}
 }
