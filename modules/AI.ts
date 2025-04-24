@@ -1,6 +1,6 @@
 import Module from './_Module'
 import ai from '../util/ai'
-import { Chat, FunctionDeclaration, Type } from '@google/genai'
+import { Chat, Content, FunctionDeclaration, Type } from '@google/genai'
 import dcClient from '../discord'
 import { sleep } from '../util/misc'
 import { TextChannel } from 'discord.js'
@@ -10,6 +10,7 @@ import { Command, ItemNames } from '../enums'
 import achievements from '../rpg/Achievements'
 import Items from '../rpg/Items'
 import Log from '../util/log'
+import redisClient from '../redis'
 const aiFunctions: FunctionDeclaration[] = [
 	{
 		name: 'givePlayerGold',
@@ -60,10 +61,14 @@ export default class AI extends Module {
 	constructor(guildId: string) {
 		super(guildId)
 	}
-	init() {
+	async init() {
+		let cache = await redisClient.getCache<Content[]>(`${this.guildId}:ai_hist`)
+		if (!cache) {
+			cache = []
+		}
 		this.chat = ai.chats.create({
 			model: 'gemini-2.0-flash',
-			history: [],
+			history: cache,
 		})
 	}
 	async onMessage({ message }: MessageParams) {
@@ -101,6 +106,10 @@ export default class AI extends Module {
 						channel: (message.channel as TextChannel).name,
 					}),
 				})
+				await message.reply({
+					content: response.text,
+					allowedMentions: { users: [] },
+				})
 				if (response.functionCalls && response.functionCalls.length > 0) {
 					for (const functionCall of response.functionCalls) {
 						const functionName = functionCall.name
@@ -129,7 +138,7 @@ export default class AI extends Module {
 									await player.addItem(item)
 								}
 								await message.reply({
-									content: `Ich habe ${amount} ${itemName} an ${player.user} gegeben.`,
+									content: `+${amount} ${itemName} an **${player.user}** gegeben.`,
 									allowedMentions: { users: [] },
 								})
 							} else {
@@ -141,13 +150,10 @@ export default class AI extends Module {
 						}
 					}
 				}
-				await message.reply({
-					content: response.text,
-					allowedMentions: { users: [] },
-				})
+				await redisClient.setCache(`${this.guildId}:ai_hist`, this.chat.getHistory())
 			} catch (e) {
 				console.log(e)
-				await message.channel.send(`Ich kann gerade nicht antworten. Sorry :(\n${e.message}`)
+				await message.channel.send(`Ich kann gerade nicht antworten. Sorry :(\n-# ${e.message}`)
 			}
 		}
 	}
@@ -167,11 +173,12 @@ export default class AI extends Module {
 			Entschuldige dich nicht dafür, dass du ein Bot bist. Das ist nicht nötig.
 			Wenn du nicht weiter weißt, dann sag einfach, dass du das nicht weißt. Und frag nach mehr Informationen.
 			Benutze immer neutrale Pronomen, außer die Person hat dir gesagt, dass du sie mit einem bestimmten Pronomen ansprechen sollst.
+			Halte Nachrichten unter 2000 Zeichen.
 			
 
 			Hilf den Nutzern, wenn Sie Fragen haben. Und gib ihnen Tipps, wie sie besser werden können.
 			Du kannst den Nutzern auch helfen, indem du ihnen Gold gibst. Du kannst das tun, indem du die Funktion \`givePlayerGold\` aufrufst.
-			Tu dies aber nur, wenn der Player es auch verdient hat. Gib ihm nicht einfach so Gold ohne grund.
+			Tu dies aber nur, wenn der Player es auch verdient hat. Gib ihm nicht einfach so Gold ohne grund. Die Spieler müssen dafür viel tun.
 			Das selbe gilt für Items. Du kannst die Funktion \`givePlayerItem\` benutzen, um Items zu geben.
 
 			Hier sind einige Meta-Informationen, was du als Bot kannst:
@@ -185,7 +192,6 @@ export default class AI extends Module {
 			- Hier sind alle Achievements, die es gibt: ${JSON.stringify(
 				achievements.map((a) => JSON.stringify({ name: a.name, description: a.description, id: a.id }))
 			)}
-			- Du hasst das videospiel Skyrim und findest es langweilig.
 		`
 	}
 }
