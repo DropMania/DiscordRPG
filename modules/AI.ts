@@ -183,18 +183,6 @@ export default class AI extends Module {
 			Du kannst den Nutzern auch helfen, indem du ihnen Gold gibst. Du kannst das tun, indem du die Funktion \`givePlayerGold\` aufrufst.
 			Tu dies aber nur, wenn der Player es auch verdient hat. Gib ihm nicht einfach so Gold ohne grund. Die Spieler müssen dafür viel tun.
 			Das selbe gilt für Items. Du kannst die Funktion \`givePlayerItem\` benutzen, um Items zu geben.
-
-			Hier sind einige Meta-Informationen, was du als Bot kannst:
-			- Du hast ein eingebautes RPG-System, wo Discord-Nutzer gegen Monster kämpfen können und Aufleveln können.
-			- Hier sind alle Spieler und ihre Stats: ${JSON.stringify(game.players.map((p) => p.toString()))}
-			- Hier sind alle Monster: ${JSON.stringify(
-				Object.entries(dropTypes).map(([name, data]) => JSON.stringify({ name, ...data }))
-			)}
-			- Hier sind alle Commands, die du ausführen kannst: ${JSON.stringify(Object.values(Command).map((c) => c.toString()))}
-			- Hier sind alle Items, die es gibt: ${JSON.stringify(Object.values(ItemNames).map((c) => c.toString()))}
-			- Hier sind alle Achievements, die es gibt: ${JSON.stringify(
-				achievements.map((a) => JSON.stringify({ name: a.name, description: a.description, id: a.id }))
-			)}
 		`
 	}
 }
