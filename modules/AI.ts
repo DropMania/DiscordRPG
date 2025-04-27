@@ -80,7 +80,7 @@ export default class AI extends Module {
 			try {
 				if (this.chat.getHistory().length > 160) {
 					let newHistory = this.chat.getHistory().filter((m, i, a) => {
-						if (m.role === 'user' && m.parts[0]?.text?.startsWith('MERKE DIR:')) return true
+						if (m.role === 'user' && m.parts[0]?.text?.includes('MERKE DIR:')) return true
 						if (i < a.length - 150) return false
 						return true
 					})
