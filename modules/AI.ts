@@ -78,8 +78,8 @@ export default class AI extends Module {
 		//if (message.content.length < 5) return
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
-				if (this.chat.getHistory().length > 80) {
-					let newHistory = this.chat.getHistory().slice(-60)
+				if (this.chat.getHistory().length > 160) {
+					let newHistory = this.chat.getHistory().slice(-150)
 					this.chat = ai.chats.create({
 						model: 'gemini-2.0-flash',
 						history: newHistory,
