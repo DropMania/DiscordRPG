@@ -79,7 +79,11 @@ export default class AI extends Module {
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
 				if (this.chat.getHistory().length > 160) {
-					let newHistory = this.chat.getHistory().slice(-150)
+					let newHistory = this.chat.getHistory().filter((m, i, a) => {
+						if (m.role === 'user' && m.parts[0]?.text?.startsWith('MERKE DIR:')) return true
+						if (i < a.length - 150) return false
+						return true
+					})
 					this.chat = ai.chats.create({
 						model: 'gemini-2.0-flash',
 						history: newHistory,
