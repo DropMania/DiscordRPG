@@ -78,13 +78,26 @@ export default class AI extends Module {
 		//if (message.content.length < 5) return
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
+				if (this.chat.getHistory().length > 80) {
+					let newHistory = this.chat.getHistory().slice(-60)
+					this.chat = ai.chats.create({
+						model: 'gemini-2.0-flash',
+						history: newHistory,
+					})
+				}
 				message.channel.sendTyping()
 				if (this.chat.getHistory().length > 0) {
 					const tokenCount = await ai.models.countTokens({
 						model: 'gemini-2.0-flash',
 						contents: this.chat.getHistory(),
 					})
-					Log.info('AI', 'Token count:', tokenCount.totalTokens)
+					Log.info(
+						'AI',
+						'Token count:',
+						tokenCount.totalTokens,
+						'History length:',
+						this.chat.getHistory().length
+					)
 				}
 				await sleep(4000)
 				const response = await this.chat.sendMessage({
