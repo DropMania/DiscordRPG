@@ -78,10 +78,10 @@ export default class AI extends Module {
 		//if (message.content.length < 5) return
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
-				if (this.chat.getHistory().length > 160) {
+				if (this.chat.getHistory().length > 140) {
 					let newHistory = this.chat.getHistory().filter((m, i, a) => {
 						if (m.role === 'user' && m.parts[0]?.text?.includes('MERKE DIR:')) return true
-						if (i < a.length - 150) return false
+						if (i < a.length - 130) return false
 						return true
 					})
 					this.chat = ai.chats.create({
