@@ -1,4 +1,5 @@
 export enum Command {
+	ADMIN_EMOTE = 'add-7tv-emote',
 	ADD_ME = 'add-me',
 	SHOW_STATS = 'show-stats',
 	SHOW_ITEMS = 'show-items',

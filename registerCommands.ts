@@ -1,9 +1,10 @@
 import { REST, Routes, SlashCommandBuilder } from 'discord.js'
 import commandHandler from './commands'
 
-const commands = Object.entries(commandHandler).map(([name, { description, options }]) => {
+const commands = Object.entries(commandHandler).map(([name, { description, options, permission }]) => {
 	let builder = new SlashCommandBuilder().setName(name).setDescription(description)
 	if (options) options(builder)
+	if (permission) builder.setDefaultMemberPermissions(permission)
 	return builder
 })
 const rest = new REST().setToken(process.env.BOT_TOKEN)

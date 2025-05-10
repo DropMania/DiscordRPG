@@ -109,6 +109,7 @@ export default class AI extends Module {
 						systemInstruction: this.getSystemInstruction(),
 						temperature: 2,
 						maxOutputTokens: 2000,
+
 						tools: [
 							{
 								functionDeclarations: aiFunctions,

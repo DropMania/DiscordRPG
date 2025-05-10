@@ -3,17 +3,33 @@ import * as guessrGame from './commands/guessrGame'
 import * as simpleGames from './commands/simpleGames'
 import * as shop from './commands/shop'
 import * as casino from './commands/casino'
+import * as admin from './commands/admin'
 import { Command, GuessrDifficulty, GuessrType } from './enums'
-import { SlashCommandBuilder } from 'discord.js'
+import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 
 type CommandHandler = {
 	handler: (params: CommandParams) => void
 	description: string
 	options?: (builder: SlashCommandBuilder) => void
+	permission?: bigint
 	automcomplete?: (params: AutocompleteParams) => Promise<{ name: string; value: string }[]>
 }
 
 const commands: Record<string, CommandHandler> = {
+	[Command.ADMIN_EMOTE]: {
+		description: 'Fügt einen 7TV Emote hinzu',
+		handler: admin.addEmote,
+		permission: PermissionFlagsBits.ManageGuild,
+		options: (builder) =>
+			builder
+				.addStringOption((o) => o.setName('emote').setDescription('7tv link des Emotes').setRequired(true))
+				.addStringOption((o) =>
+					o
+						.setName('name')
+						.setDescription('Der Name des Emotes, der angezeigt werden soll')
+						.setRequired(false)
+				),
+	},
 	[Command.ADD_ME]: {
 		description: 'Fügt dich als Spieler hinzu',
 		handler: rpg.addPlayer,

@@ -384,3 +384,65 @@ export type SpotifyItem = {
 	popularity: number
 	artists: string
 }
+
+export type Emote7Tv = {
+	id: string
+	name: string
+	flags: number
+	tags: Array<any>
+	lifecycle: number
+	state: Array<string>
+	listed: boolean
+	animated: boolean
+	owner: {
+		id: string
+		username: string
+		display_name: string
+		avatar_url: string
+		style: {}
+		role_ids: Array<string>
+		connections: Array<{
+			id: string
+			platform: string
+			username: string
+			display_name: string
+			linked_at: number
+			emote_capacity: number
+			emote_set_id: string
+		}>
+	}
+	host: {
+		url: string
+		files: Array<{
+			name: string
+			static_name: string
+			width: number
+			height: number
+			frame_count: number
+			size: number
+			format: string
+		}>
+	}
+	versions: Array<{
+		id: string
+		name: string
+		description: string
+		lifecycle: number
+		state: Array<string>
+		listed: boolean
+		animated: boolean
+		host: {
+			url: string
+			files: Array<{
+				name: string
+				static_name: string
+				width: number
+				height: number
+				frame_count: number
+				size: number
+				format: string
+			}>
+		}
+		createdAt: number
+	}>
+}
