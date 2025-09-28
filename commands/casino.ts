@@ -5,7 +5,7 @@ export async function slotMachine({ interaction, getModule, player }: CommandPar
 	let bet = interaction.options.get('bet')?.value as number
 	if (bet < 1) return await interaction.editReply('Der Einsatz muss mindestens 1 sein!')
 	if (bet > player.gold) return await interaction.editReply('Du hast nicht genug Gold!')
-	if (bet > 1000) return await interaction.editReply('Der Einsatz darf maximal 1000 sein!')
+	//if (bet > 1000) return await interaction.editReply('Der Einsatz darf maximal 1000 sein!')
 	await interaction.editReply(
 		`${interaction.user} Neues Spiel Slot Machine gestartet! Einsatz: **${bet}** Gold! (Aktuell: ${player.gold})`
 	)
