@@ -23,7 +23,7 @@ guilds.forEach((guild) => {
 dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
-	/* getModule(guilds[0].id, 'DropGame').drop('1198632876984508486', Drops.GODZILLA) */
+	//getModule(guilds[0].id, 'DropGame').drop('980947899628273714', Drops.PRESENT) 
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
 })
