@@ -1,5 +1,5 @@
 import { getTwitchAccessToken } from '../twitch'
-import { Emote7Tv } from '../types/responses'
+import { Emote7Tv, TenorSearchResponse } from '../types/responses'
 
 export async function callTMDBApi<T>(path: string, queryParameters: Record<string, string>) {
 	const response = await fetch(`https://api.themoviedb.org/3/${path}?${new URLSearchParams(queryParameters)}`, {
@@ -32,4 +32,19 @@ export async function get7TVEmote(emoteId: string) {
 		},
 	})
 	return (await response.json()) as Emote7Tv
+}
+
+export async function searchGifsTenor(query: string, limit: number = 8) {
+	const response = await fetch(
+		`https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${
+			process.env.TENOR_KEY
+		}&limit=${limit}`,
+		{
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}
+	)
+	return (await response.json()) as TenorSearchResponse
 }

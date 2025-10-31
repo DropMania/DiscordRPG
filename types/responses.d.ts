@@ -446,3 +446,168 @@ export type Emote7Tv = {
 		createdAt: number
 	}>
 }
+
+export type TenorSearchResponse = {
+	results: Array<{
+		id: string
+		title: string
+		media_formats: {
+			gifpreview: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			nanomp4: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			nanogif: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			loopedmp4: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			nanowebm: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			webm: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			tinywebm: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			webp: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			tinymp4: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			nanogifpreview: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			tinygifpreview: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			mp4: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			gif: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			mediumgif: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			tinygif: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			tinywebppreview_transparent?: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			tinywebp_transparent?: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			nanowebppreview_transparent?: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			nanowebp_transparent?: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			webp_transparent?: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+			webppreview_transparent?: {
+				url: string
+				duration: number
+				preview: string
+				dims: Array<number>
+				size: number
+			}
+		}
+		created: number
+		content_description: string
+		itemurl: string
+		url: string
+		tags: Array<string>
+		flags: Array<string>
+		hasaudio: boolean
+		content_description_source: string
+	}>
+	next: string
+}
