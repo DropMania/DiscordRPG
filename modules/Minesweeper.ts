@@ -1,5 +1,4 @@
 import { TextChannel, User } from 'discord.js'
-import Player from '../rpg/Player'
 import Module from './_Module'
 import { createCanvas } from 'canvas'
 type MineCell = { bomb: boolean; explored: boolean; nearbyBombs: number; marked: boolean }
@@ -7,7 +6,7 @@ type MineBoard = MineCell[][]
 export default class Minesweeper extends Module {
 	board: MineBoard
 	lastUser: User
-	rewards: Map<Player, { correct: number }>
+	rewards: Map<string, { correct: number }>
 	correct: number
 
 	constructor(guildId: string) {
@@ -20,7 +19,7 @@ export default class Minesweeper extends Module {
 		this.lastUser = null
 		this.board = this.generateBoard(difficulty)
 	}
-	async onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
+	async onMessageCommand(command: string, args: string, { message }: MessageParams) {
 		if (!['dig', 'mark', 'unmark'].includes(command)) return
 		if (!this.board)
 			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/minesweeper`')
@@ -39,16 +38,16 @@ export default class Minesweeper extends Module {
 				return await message.channel.send('Du darfst nicht zweimal hintereinander!')
 			if (this.board[x][y].explored) return await message.channel.send('Hier wurde bereits gegraben!')
 			this.lastUser = message.author
-			let result = this.digCell(x, y, player)
+			let result = this.digCell(x, y)
 			if (result) {
 				this.revealBoard()
 				let rewardText = '💥 Du hast eine Bombe getroffen!\n Ihr Habt verloren!\n'
 				this.rewards.forEach(({ correct }, player) => {
-					if (!player) return
+					/* if (!player) return
 					player.addStats({ exp: correct * 15 })
 					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 15} EXP** (jetzt ${
 						player.experience
-					})\n`
+					})\n` */
 				})
 				await message.channel.send({
 					content: rewardText,
@@ -58,8 +57,8 @@ export default class Minesweeper extends Module {
 				return
 			}
 			this.correct++
-			if (!this.rewards.has(player)) this.rewards.set(player, { correct: 0 })
-			this.rewards.get(player).correct++
+			if (!this.rewards.has(message.author.id)) this.rewards.set(message.author.id, { correct: 0 })
+			this.rewards.get(message.author.id).correct++
 
 			await message.channel.send({
 				content: '✅ Erfolgreich gegraben!',
@@ -69,13 +68,13 @@ export default class Minesweeper extends Module {
 				this.board = null
 				let rewardText = 'Ihr habt gewonnen!\n'
 				this.rewards.forEach(({ correct }, player) => {
-					if (!player) return
+					/* if (!player) return
 					player.addStats({ exp: correct * 50, gold: correct * 5 })
 					rewardText += `${player.user}: ${correct} Korrekt! **+${correct * 50} EXP** & **+${
 						correct * 5
 					} Gold** (jetzt ${player.experience}EXP, ${player.gold} Gold)\n`
 					player.unlockAchievement('mine_pro', message.channel as TextChannel)
-					player.unlockAchievement('mine_legend', message.channel as TextChannel)
+					player.unlockAchievement('mine_legend', message.channel as TextChannel) */
 				})
 				await message.channel.send(rewardText)
 			}
@@ -143,7 +142,7 @@ export default class Minesweeper extends Module {
 		}
 		return board
 	}
-	digCell(x: number, y: number, player: Player) {
+	digCell(x: number, y: number) {
 		let cell = this.board[x][y]
 		if (cell.explored) return false
 		cell.explored = true
@@ -154,7 +153,7 @@ export default class Minesweeper extends Module {
 			for (let i = -1; i <= 1; i++) {
 				for (let j = -1; j <= 1; j++) {
 					if (x + i < 0 || x + i >= this.board.length || y + j < 0 || y + j >= this.board.length) continue
-					this.digCell(x + i, y + j, player)
+					this.digCell(x + i, y + j)
 				}
 			}
 		}

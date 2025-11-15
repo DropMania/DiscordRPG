@@ -1,13 +1,5 @@
 export enum Command {
 	ADMIN_EMOTE = 'add-7tv-emote',
-	ADD_ME = 'add-me',
-	SHOW_STATS = 'show-stats',
-	SHOW_ITEMS = 'show-items',
-	USE_ITEM = 'use-item',
-	SHOW_ACHIEVEMENTS = 'show-achievements',
-	GIVE_MONEY = 'give-money',
-
-	SHOP = 'shop',
 
 	GUESSR_PICK = 'guessr-game',
 	GUESSR_NEW_IMAGE = 'new-image',
@@ -20,10 +12,9 @@ export enum Command {
 	GAME_PICROSS = 'picross',
 	GAME_MINESWEEPER = 'minesweeper',
 
-	CASINO_SLOTMACHINE = 'slot-machine',
-	CASINO_BLACKJACK = 'blackjack',
+	RPG_CREATE_GAME = 'create-rpg-game',
+	RPG_ADD_PLAYER = 'add-rpg-player',
 }
-
 export enum GuessrType {
 	MOVIE = 'Movie',
 	GAME = 'Game',
@@ -41,40 +32,4 @@ export enum GuessrDifficulty {
 	VERY_HARD = 'very_hard',
 	IMPOSSIBLE = 'impossible',
 	TERMINSENDUNG = 'terminsendung',
-}
-
-export enum ItemNames {
-	HEAL_POTION = 'Health Potion',
-	STRENGTH_POTION = 'Strength Potion',
-	EXP_POTION = 'EXP Potion',
-	POISON_SHROOM = 'Poison Shroom',
-	SUPER_EXP_POTION = 'Super EXP Potion',
-}
-
-export enum Drops {
-	BUG = 'Bug',
-	RAT = 'Rat',
-	SHEEP = 'Sheep',
-	DOG = 'Dog',
-	CAT = 'Cat',
-	WOLF = 'Wolf',
-	BEAR = 'Bear',
-	LIZARD = 'Lizard',
-	APE = 'Ape',
-	ORC = 'Ork',
-	DRAGON = 'Dragon',
-	GODZILLA = 'Godzilla',
-	GHIDORAH = 'Ghidorah',
-	SAITAMA = 'Saitama',
-	JHO = 'Deviljho',
-
-	COIN = 'Coin',
-
-	HEAL_POTION = 'Health Potion',
-	STRENGTH_POTION = 'Strength Potion',
-	EXP_POTION = 'EXP Potion',
-
-	POISON_SHROOM = 'Poison Shroom',
-
-	PRESENT = 'Present',
 }

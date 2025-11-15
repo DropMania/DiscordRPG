@@ -1,6 +1,6 @@
 import { searchGifsTenor } from '../util/fetchData'
 import Module from './_Module'
-const BASE_URL = ''
+
 export default class Tenor extends Module {
 	constructor(guildId: string) {
 		super(guildId)

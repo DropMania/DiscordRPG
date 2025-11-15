@@ -4,59 +4,10 @@ import { Chat, Content, FunctionCall, FunctionDeclaration, Type } from '@google/
 import dcClient from '../discord'
 import { sleep } from '../util/misc'
 import { Message, OmitPartialGroupDMChannel, TextChannel } from 'discord.js'
-import game from '../rpg/Game'
-import dropTypes from '../lib/dropgame/dropTypes'
-import { Command, ItemNames } from '../enums'
-import achievements from '../rpg/Achievements'
-import Items from '../rpg/Items'
 import Log from '../util/log'
 import redisClient from '../redis'
 const TEXT_MODEL = 'gemini-2.5-flash-lite'
-const aiFunctions: FunctionDeclaration[] = [
-	{
-		name: 'givePlayerGold',
-		description: 'Gibt gold an Spieler',
-		parameters: {
-			type: Type.OBJECT,
-			properties: {
-				userId: {
-					type: Type.STRING,
-					description: 'Die ID des Users',
-				},
-				amount: {
-					type: Type.NUMBER,
-					maximum: 1000,
-					description: 'Die Menge, die du haben willst.',
-				},
-			},
-			required: ['userId', 'amount'],
-		},
-	},
-	{
-		name: 'givePlayerItem',
-		description: 'Gibt dem Spieler ein Item',
-		parameters: {
-			type: Type.OBJECT,
-			properties: {
-				userId: {
-					type: Type.STRING,
-					description: 'Die ID des Users',
-				},
-				item: {
-					type: Type.STRING,
-					description: 'Das Item, das du haben willst.',
-					enum: Object.values(ItemNames),
-				},
-				amount: {
-					type: Type.NUMBER,
-					maximum: 3,
-					description: 'Die Menge, die du haben willst.',
-				},
-			},
-			required: ['userId', 'item', 'amount'],
-		},
-	},
-]
+
 export default class AI extends Module {
 	chat: Chat
 	constructor(guildId: string) {
@@ -124,11 +75,6 @@ export default class AI extends Module {
 				systemInstruction: this.getSystemInstruction(),
 				temperature: 2,
 				maxOutputTokens: 2000,
-				tools: [
-					{
-						functionDeclarations: aiFunctions,
-					},
-				],
 			},
 			message: JSON.stringify({
 				date: message.createdAt.toISOString(),
@@ -144,7 +90,6 @@ export default class AI extends Module {
 			allowedMentions: { users: [] },
 		})
 
-		await this.handleFunctionCalls(response.functionCalls, message)
 		await redisClient.setCache(`${this.guildId}:ai_hist`, this.chat.getHistory())
 	}
 
@@ -177,70 +122,6 @@ export default class AI extends Module {
 		} else {
 			await message.reply({
 				content: 'Entschuldigung, ich konnte das Bild nicht erstellen.',
-				allowedMentions: { users: [] },
-			})
-		}
-	}
-
-	private async handleFunctionCalls(
-		functionCalls: FunctionCall[],
-		message: OmitPartialGroupDMChannel<Message<boolean>>
-	) {
-		if (!functionCalls || functionCalls.length === 0) return
-
-		for (const functionCall of functionCalls) {
-			const functionName = functionCall.name
-			const functionArgs = functionCall.args
-
-			if (functionName === 'givePlayerGold') {
-				await this.handleGivePlayerGold(functionArgs, message)
-			}
-
-			if (functionName === 'givePlayerItem') {
-				await this.handleGivePlayerItem(functionArgs, message)
-			}
-		}
-	}
-
-	private async handleGivePlayerGold(
-		functionArgs: Record<string, unknown>,
-		message: OmitPartialGroupDMChannel<Message<boolean>>
-	) {
-		const userId = functionArgs.userId as string
-		const amount = functionArgs.amount as number
-		const player = game.getPlayer(userId)
-
-		if (player) {
-			await player.addStats({ gold: amount }, message.channel as TextChannel)
-		} else {
-			await message.reply({
-				content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
-				allowedMentions: { users: [] },
-			})
-		}
-	}
-
-	private async handleGivePlayerItem(
-		functionArgs: Record<string, unknown>,
-		message: OmitPartialGroupDMChannel<Message<boolean>>
-	) {
-		const userId = functionArgs.userId as string
-		const itemName = functionArgs.item as ItemNames
-		const item = Items[itemName]
-		const amount = functionArgs.amount as number
-		const player = game.getPlayer(userId)
-
-		if (player) {
-			for (let i = 0; i < amount; i++) {
-				await player.addItem(item)
-			}
-			await message.reply({
-				content: `+${amount} ${itemName} an **${player.user}** gegeben.`,
-				allowedMentions: { users: [] },
-			})
-		} else {
-			await message.reply({
-				content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
 				allowedMentions: { users: [] },
 			})
 		}

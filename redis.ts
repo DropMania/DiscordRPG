@@ -1,5 +1,4 @@
 import { createClient } from 'redis'
-import Player from './rpg/Player'
 
 const client = await createClient({
 	url: process.env.REDIS_URL,
@@ -13,14 +12,20 @@ class RedisClient {
 	constructor() {
 		this.client = client
 	}
-
-	async setPlayer(userId: string, player: Player) {
-		return await this.client.set(`rpg:${userId}`, player.toString())
+	async set(key: string, value: any) {
+		await this.client.set(key, JSON.stringify(value))
 	}
-	async getPlayers() {
-		return await this.client.keys(`rpg:*`)
+	async get<T>(key: string): Promise<T | null> {
+		let data = await this.client.get(key)
+		if (!data) return null
+		return JSON.parse(data) as T
 	}
-
+	async getAllKeys(pattern: string): Promise<string[]> {
+		return await this.client.keys(pattern)
+	}
+	async del(key: string) {
+		await this.client.del(key)
+	}
 	async setCache<T>(key: string, value: T) {
 		let data = JSON.stringify(value)
 		let chunkSize = 1024 * 1024 // 1MB

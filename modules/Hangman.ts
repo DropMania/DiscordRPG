@@ -84,7 +84,7 @@ export default class Hangman extends Module {
 		this.failedAttempts = 0
 		this.going = true
 	}
-	async onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
+	async onMessageCommand(command: string, args: string, { message }: MessageParams) {
 		if (command !== 'w') return
 		if (!args) return await message.channel.send('Bitte gib einen Buchstaben/Wort an')
 		if (this.isGameOver() && !this.going)
@@ -94,14 +94,8 @@ export default class Hangman extends Module {
 		if (this.isGameOver()) {
 			if (this.isGameWon()) {
 				await message.channel.send('Du hast Gewonnen!')
-				player?.addStats({ exp: 5 }, message.channel as GuildTextBasedChannel)
-				await player?.unlockAchievement('hangman_pro', message.channel as GuildTextBasedChannel)
-				await player?.unlockAchievement('hangman_legend', message.channel as GuildTextBasedChannel)
 			} else {
-				await player?.addStats({ health: -1 })
-				await message.channel.send(
-					`Verloren! Das Wort war: ${this.word}\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
-				)
+				await message.channel.send(`Verloren! Das Wort war: ${this.word}`)
 			}
 			this.going = false
 		}

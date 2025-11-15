@@ -1,17 +1,19 @@
-import { Events, CommandInteraction, TextChannel, ButtonInteraction, AutocompleteInteraction } from 'discord.js'
+import {
+	Events,
+	CommandInteraction,
+	TextChannel,
+	ButtonInteraction,
+	AutocompleteInteraction,
+	ChatInputCommandInteraction,
+} from 'discord.js'
 import dcClient from './discord'
 import registerCommands from './registerCommands'
 import commandHandler from './commands'
 import guilds from './guilds'
 import { callAllModules, callModules, getModule } from './modules'
 import { refreshAccessToken } from './twitch'
-import game from './rpg/Game'
-import messageDeleter from './messageDeleter'
-import { Drops } from './enums'
-import readline from 'node:readline/promises'
-import { stdin, stdout } from 'node:process'
 import { loadGraphics } from './lib/casino/cards'
-import ai from './util/ai'
+import './api'
 
 await refreshAccessToken()
 await loadGraphics()
@@ -23,58 +25,49 @@ guilds.forEach((guild) => {
 dcClient.once(Events.ClientReady, (readyClient) => {
 	callAllModules('init')
 
-	//getModule(guilds[0].id, 'DropGame').drop('980947899628273714', Drops.PRESENT) 
+	//getModule(guilds[0].id, 'DropGame').drop('980947899628273714', Drops.PRESENT)
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
 })
 
-dcClient.on(Events.InteractionCreate, async (interaction) => {
-	if (interaction.isAutocomplete()) {
+dcClient.on(
+	Events.InteractionCreate,
+	async (interaction: ButtonInteraction | ChatInputCommandInteraction | AutocompleteInteraction) => {
+		if (interaction.isAutocomplete()) {
+			const params = getCommandParams(interaction)
+			const focusedValue = interaction.options.getFocused()
+			if (!commandHandler[interaction.commandName].automcomplete) return
+			let options = await commandHandler[interaction.commandName].automcomplete({
+				...params,
+				value: focusedValue,
+			})
+			await interaction.respond(options)
+		}
+		if (interaction.isButton()) {
+			const params = getCommandParams(interaction)
+			callModules('onButton', interaction.guildId, params)
+		}
+		if (!interaction.isCommand()) return
+		await interaction.deferReply()
+		const commandName = interaction.commandName
 		const params = getCommandParams(interaction)
-		const focusedValue = interaction.options.getFocused()
-		if (!commandHandler[interaction.commandName].automcomplete) return
-		let options = await commandHandler[interaction.commandName].automcomplete({ ...params, value: focusedValue })
-		await interaction.respond(options)
+		commandHandler[commandName].handler(params)
 	}
-	if (interaction.isButton()) {
-		const params = getCommandParams(interaction)
-		callModules('onButton', interaction.guildId, params)
-	}
-	if (!interaction.isCommand()) return
-	await interaction.deferReply()
-	const commandName = interaction.commandName
-	const params = getCommandParams(interaction)
-	commandHandler[commandName].handler(params)
-})
+)
 
 dcClient.on(Events.MessageCreate, (message) => {
 	if (message.author.bot) return
 	const getGuildModule = <T extends Modules>(moduleName: T): ModuleType<T> => getModule(message.guildId, moduleName)
-	let player = game.getPlayer(message.author.id)
-	const params = { message, getModule: getGuildModule, player }
+	const params = { message, getModule: getGuildModule }
 	callModules('onMessage', message.guildId, params)
 })
 
-function getCommandParams<Interaction extends ButtonInteraction | CommandInteraction | AutocompleteInteraction>(
-	interaction: Interaction
-) {
+function getCommandParams<
+	Interaction extends ButtonInteraction | ChatInputCommandInteraction | AutocompleteInteraction
+>(interaction: Interaction) {
 	const getGuildModule = <T extends Modules>(moduleName: T): ModuleType<T> =>
 		getModule(interaction.guildId, moduleName)
-	const player = game.getPlayer(interaction.user.id)
-	return { interaction, getModule: getGuildModule, player }
+	return { interaction, getModule: getGuildModule }
 }
 
 dcClient.login(process.env.BOT_TOKEN)
-
-const rl = readline.createInterface({ input: stdin, output: stdout })
-
-rl.on('line', (input) => {
-	let [command, ...args] = input.split(' ')
-	if (command === 'exit') {
-		process.exit(0)
-	}
-	if (command === 'drop') {
-		let [channelId, ...dropName] = args
-		getModule(guilds[0].id, 'DropGame').drop(channelId, dropName.join(' ') as Drops)
-	}
-})

@@ -1,9 +1,7 @@
-import * as rpg from './commands/rpg'
 import * as guessrGame from './commands/guessrGame'
 import * as simpleGames from './commands/simpleGames'
-import * as shop from './commands/shop'
-import * as casino from './commands/casino'
 import * as admin from './commands/admin'
+import * as rpg from './commands/rpg'
 import { Command, GuessrDifficulty, GuessrType } from './enums'
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 
@@ -28,49 +26,6 @@ const commands: Record<string, CommandHandler> = {
 						.setName('name')
 						.setDescription('Der Name des Emotes, der angezeigt werden soll')
 						.setRequired(false)
-				),
-	},
-	[Command.ADD_ME]: {
-		description: 'Fügt dich als Spieler hinzu',
-		handler: rpg.addPlayer,
-	},
-	[Command.SHOW_STATS]: {
-		description: 'Zeigt deine Statistiken',
-		handler: rpg.showStats,
-	},
-	[Command.SHOW_ITEMS]: {
-		description: 'Zeigt deine Items',
-		handler: rpg.showItems,
-	},
-	[Command.USE_ITEM]: {
-		description: 'Benutzt ein Item',
-		handler: rpg.useItem,
-		options: (builder) =>
-			builder.addIntegerOption((o) =>
-				o
-					.setName('benutze')
-					.setDescription('Das zu benutzende Item (siehe Nummer mit /show-items')
-					.setRequired(true)
-			),
-	},
-	[Command.SHOP]: {
-		description: 'Zeigt den Shop',
-		handler: shop.showShop,
-	},
-	[Command.SHOW_ACHIEVEMENTS]: {
-		description: 'Zeigt deine Erfolge',
-		handler: rpg.showAchievements,
-	},
-	[Command.GIVE_MONEY]: {
-		description: 'Gibt Geld an einen anderen Spieler',
-		handler: rpg.giveMoney,
-		options: (builder) =>
-			builder
-				.addUserOption((o) =>
-					o.setName('user').setDescription('Der Spieler, dem du Geld geben willst').setRequired(true)
-				)
-				.addIntegerOption((o) =>
-					o.setName('amount').setDescription('Die Menge an Geld, die du geben willst').setRequired(true)
 				),
 	},
 
@@ -156,15 +111,14 @@ const commands: Record<string, CommandHandler> = {
 			),
 		handler: simpleGames.minesweeper,
 	},
-	[Command.CASINO_SLOTMACHINE]: {
-		description: 'Startet ein neues Slot Machine Spiel',
-		options: (builder) =>
-			builder.addIntegerOption((o) => o.setName('bet').setDescription('Einsatz').setRequired(true)),
-		handler: casino.slotMachine,
+	[Command.RPG_CREATE_GAME]: {
+		description: 'Erstellt ein neues RPG Spiel in diesem Server',
+		handler: rpg.createGame,
 	},
-	[Command.CASINO_BLACKJACK]: {
-		description: 'Startet ein neues Blackjack Spiel',
-		handler: casino.blackjack,
+	[Command.RPG_ADD_PLAYER]: {
+		description: 'Fügt einen Spieler zum RPG Spiel hinzu',
+		permission: PermissionFlagsBits.ManageGuild,
+		handler: rpg.addPlayer,
 	},
 }
 

@@ -34,16 +34,13 @@ export async function newHint({ interaction, getModule }: CommandParams) {
 	await interaction.editReply(hint)
 }
 
-export async function guessItem({ interaction, getModule, player }: CommandParams) {
+export async function guessItem({ interaction, getModule }: CommandParams) {
 	const guessrGame = getModule('GuessrGame')
 	if (!guessrGame.item) return await interaction.editReply(`Es wurde noch kein ${guessrGame.type} ausgewählt!`)
 	let guess = interaction.options.get('guess', true).value as string
 	let result = guessrGame.guessItem(guess)
 	if (!result.correct) {
-		await player?.addStats({ health: -1 })
-		return await interaction.editReply(
-			`❌ **${guess}** ist leider nicht korrekt!\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
-		)
+		return await interaction.editReply(`❌ **${guess}** ist leider nicht korrekt!`)
 	}
 	let item = guessrGame.getItem()
 	let content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
@@ -72,9 +69,6 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	}
 	guessrGame.item = null
 	let exp = Math.floor(difficultyExp[guessrGame.difficulty] * bonus)
-	await player?.addStats({ exp }, interaction.channel)
-	await player?.unlockAchievement('guessr_pro', interaction.channel)
-	await player?.unlockAchievement('guessr_legend', interaction.channel)
 	await redisClient.deleteCache(`${guessrGame.guildId}:guessrItem`)
 }
 

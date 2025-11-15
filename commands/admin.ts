@@ -1,7 +1,7 @@
 import { get7TVEmote } from '../util/fetchData'
 import Log from '../util/log'
 
-export async function addEmote({ interaction, getModule, player }: CommandParams) {
+export async function addEmote({ interaction, getModule }: CommandParams) {
 	const emote = interaction.options.get('emote')?.value as string
 	const name = interaction.options.get('name')?.value as string
 	if (!emote) return await interaction.editReply('Bitte gib einen 7TV Emote Link an!')

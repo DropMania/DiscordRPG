@@ -1,7 +1,7 @@
 import { User } from 'discord.js'
-import Player from '../rpg/Player'
 import Module from './_Module'
 import { createCanvas } from 'canvas'
+
 type PicrossCell = { block: boolean; filled: boolean }
 type PicrossBoard = PicrossCell[][]
 export default class Picross extends Module {
@@ -9,7 +9,7 @@ export default class Picross extends Module {
 	verticalHints: number[][]
 	horizontalHints: number[][]
 	lastUser: User
-	rewards: Map<Player, { correct: number; wrong: number }>
+	rewards: Map<string, { correct: number; wrong: number }>
 	correct: number
 	wrong: number
 
@@ -25,7 +25,7 @@ export default class Picross extends Module {
 		this.verticalHints = this.generateVerticalHints(this.board)
 		this.horizontalHints = this.generateHorizontalHints(this.board)
 	}
-	async onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
+	async onMessageCommand(command: string, args: string, { message }: MessageParams) {
 		if (command !== 'pic') return
 		if (!this.board)
 			return await message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/picross`')
@@ -40,7 +40,7 @@ export default class Picross extends Module {
 			return await message.channel.send('Ungültige Koordinaten!')
 		if (this.board[x][y].filled) return await message.channel.send('Hier wurde bereits gefüllt!')
 		this.lastUser = message.author
-		let result = this.guess(x, y, player)
+		let result = this.guess(x, y, message.author.id)
 		let out = ``
 		if (result) {
 			out += '✅ Korrekt!'
@@ -54,13 +54,7 @@ export default class Picross extends Module {
 		if (this.checkWin()) {
 			this.board = null
 			let rewardText = ''
-			this.rewards.forEach(({ correct, wrong }, player) => {
-				if (!player) return
-				player.addStats({ exp: correct * 10 })
-				rewardText += `${player.user}: ${correct} Korrekt, ${wrong} Falsch! **+${correct * 10} EXP** (jetzt ${
-					player.experience
-				})\n`
-			})
+			this.rewards.forEach(({ correct, wrong }, player) => {})
 			await message.channel.send(`🎉 Ihr habt gewonnen!\n${rewardText}`)
 		}
 	}
@@ -153,7 +147,7 @@ export default class Picross extends Module {
 		}
 		return canvas.toBuffer()
 	}
-	guess(x: number, y: number, player: Player): boolean {
+	guess(x: number, y: number, player: string): boolean {
 		this.board[x][y].filled = true
 		if (!this.rewards.has(player)) {
 			this.rewards.set(player, { correct: 0, wrong: 0 })

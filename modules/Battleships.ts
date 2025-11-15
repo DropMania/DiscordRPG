@@ -1,4 +1,3 @@
-import Player from '../rpg/Player'
 import Module from './_Module'
 import { User } from 'discord.js'
 
@@ -7,11 +6,11 @@ export default class Battleships extends Module {
 	playBoard: string[][]
 	lastUser: User
 	bombs: number
-	rewards: Map<Player, number>
+	rewards: Map<string, number>
 	constructor(guildId: string) {
 		super(guildId)
 	}
-	onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
+	onMessageCommand(command: string, args: string, { message }: MessageParams) {
 		if (command !== 'bomb') return
 		if (!this.board)
 			return message.channel.send('Das Spiel wurde noch nicht gestartet! Starte es mit `/battleships`')
@@ -24,10 +23,10 @@ export default class Battleships extends Module {
 		this.lastUser = message.author
 		if (result.hit) {
 			message.channel.send(`${this.showBoard()}\n✅ Treffer!`)
-			if (player && this.rewards.has(player)) {
-				this.rewards.set(player, this.rewards.get(player) + 5)
-			} else if (player) {
-				this.rewards.set(player, 5)
+			if (message.author.id && this.rewards.has(message.author.id)) {
+				this.rewards.set(message.author.id, this.rewards.get(message.author.id) + 5)
+			} else if (message.author.id) {
+				this.rewards.set(message.author.id, 5)
 			}
 		} else {
 			message.channel.send(`${this.showBoard()}\n❌ Daneben!`)
@@ -36,9 +35,9 @@ export default class Battleships extends Module {
 			this.board = null
 			let rewardText = ''
 			this.rewards.forEach((amount, player) => {
-				if (!player) return
+				/* if (!player) return
 				player.addStats({ exp: amount })
-				rewardText += `${player.user}: ${amount / 5} Bomben! **+${amount} EXP** (jetzt ${player.experience})\n`
+				rewardText += `${player.user}: ${amount / 5} Bomben! **+${amount} EXP** (jetzt ${player.experience})\n` */
 			})
 			message.channel.send(`🎉 Ihr habt gewonnen! In ${this.bombs} Zügen!\n${rewardText}`)
 		}

@@ -20,7 +20,7 @@ const GUILDS: GuildConfig[] = [
 			answerChance: 0,
 			initiateChannels: ['980947899628273714', '980947904422379520', '1248643273522937938'],
 		},
-	},
+	} /* ,
 	{
 		id: '1059613070785257494', //illu
 		goldRole: '1354157905473179860',
@@ -42,7 +42,7 @@ const GUILDS: GuildConfig[] = [
 			answerChance: 0,
 			initiateChannels: [],
 		},
-	},
+	}, */,
 ]
 export default GUILDS
 

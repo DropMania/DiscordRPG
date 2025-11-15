@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>RPG JSON Editor</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+			integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+			crossorigin="anonymous"
+		/>
+		<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+	</head>
+	<body class="container">
+		<div id="guild_list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px"></div>
+		<hr />
+		<button onclick="save()" style="margin-bottom: 10px">Save</button>
+		<br />
+		<div id="editor_holder"></div>
+	</body>
+	<script>
+		const editorHolder = document.getElementById('editor_holder')
+		let editor
+		const guildList = document.getElementById('guild_list')
+		let currentGuildId = null
+
+		JSONEditor.defaults.options.theme = 'bootstrap4'
+		init()
+		async function init() {
+			const guilds = await loadGuilds()
+			guildList.innerHTML = guilds
+				.map((guild) => `<button onclick="loadGuild('${guild.id}')">${guild.name}</button>`)
+				.join('')
+			if (guilds.length > 0) {
+				loadGuild(guilds[0].id)
+			}
+		}
+		async function loadGuilds() {
+			const res = await fetch('/get-guilds')
+			return res.json()
+		}
+		async function loadGuild(guildId) {
+			currentGuildId = guildId
+			const res = await fetch(`/get-rpg?guildId=${guildId}`)
+			const data = await res.json()
+			editorHolder.innerHTML = ''
+			editor = new JSONEditor(editorHolder, {
+				schema: {},
+				startval: data,
+				compact: true,
+			})
+		}
+
+		async function save() {
+			if (!currentGuildId) {
+				alert('No guild selected')
+				return
+			}
+			if (!editor) {
+				alert('Editor not initialized')
+				return
+			}
+			const data = editor.getValue()
+			const res = await fetch('/set-rpg?guildId=' + currentGuildId, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			})
+			if (res.ok) {
+				alert('Saved successfully')
+			} else {
+				alert('Error saving data')
+			}
+		}
+	</script>
+</html>
