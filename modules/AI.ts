@@ -1,9 +1,9 @@
 import Module from './_Module'
 import ai from '../util/ai'
-import { Chat, Content, FunctionDeclaration, Type } from '@google/genai'
+import { Chat, Content, FunctionCall, FunctionDeclaration, Type } from '@google/genai'
 import dcClient from '../discord'
 import { sleep } from '../util/misc'
-import { TextChannel } from 'discord.js'
+import { Message, OmitPartialGroupDMChannel, TextChannel } from 'discord.js'
 import game from '../rpg/Game'
 import dropTypes from '../lib/dropgame/dropTypes'
 import { Command, ItemNames } from '../enums'
@@ -11,6 +11,7 @@ import achievements from '../rpg/Achievements'
 import Items from '../rpg/Items'
 import Log from '../util/log'
 import redisClient from '../redis'
+const TEXT_MODEL = 'gemini-2.5-flash-lite'
 const aiFunctions: FunctionDeclaration[] = [
 	{
 		name: 'givePlayerGold',
@@ -67,7 +68,7 @@ export default class AI extends Module {
 			cache = []
 		}
 		this.chat = ai.chats.create({
-			model: 'gemini-2.0-flash',
+			model: TEXT_MODEL,
 			history: cache,
 		})
 	}
@@ -78,104 +79,200 @@ export default class AI extends Module {
 		//if (message.content.length < 5) return
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
-				if (this.chat.getHistory().length > 120) {
-					let newHistory = this.chat.getHistory().filter((m, i, a) => {
-						if (m.role === 'user' && m.parts[0]?.text?.includes('MERKE DIR:')) return true
-						if (i < a.length - 110) return false
-						return true
-					})
-					this.chat = ai.chats.create({
-						model: 'gemini-2.0-flash',
-						history: newHistory,
-					})
+				if (message.content.toLowerCase().startsWith('bilderstellung:')) {
+					await this.createImage(message)
+					return
 				}
-				message.channel.sendTyping()
-				if (this.chat.getHistory().length > 0) {
-					const tokenCount = await ai.models.countTokens({
-						model: 'gemini-2.0-flash',
-						contents: this.chat.getHistory(),
-					})
-					Log.info(
-						'AI',
-						'Token count:',
-						tokenCount.totalTokens,
-						'History length:',
-						this.chat.getHistory().length
-					)
-				}
-				await sleep(4000)
-				const response = await this.chat.sendMessage({
-					config: {
-						systemInstruction: this.getSystemInstruction(),
-						temperature: 2,
-						maxOutputTokens: 2000,
-
-						tools: [
-							{
-								functionDeclarations: aiFunctions,
-							},
-						],
-					},
-					message: JSON.stringify({
-						date: message.createdAt.toISOString(),
-						message: message.content,
-						user: message.author.displayName,
-						userId: message.author.id,
-						channel: (message.channel as TextChannel).name,
-					}),
-				})
-				await message.reply({
-					content: response.text,
-					allowedMentions: { users: [] },
-				})
-				if (response.functionCalls && response.functionCalls.length > 0) {
-					for (const functionCall of response.functionCalls) {
-						const functionName = functionCall.name
-						const functionArgs = functionCall.args
-						if (functionName === 'givePlayerGold') {
-							const userId = functionArgs.userId as string
-							const amount = functionArgs.amount as number
-							const player = game.getPlayer(userId)
-							if (player) {
-								await player.addStats({ gold: amount }, message.channel as TextChannel)
-							} else {
-								await message.reply({
-									content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
-									allowedMentions: { users: [] },
-								})
-							}
-						}
-						if (functionName === 'givePlayerItem') {
-							const userId = functionArgs.userId as string
-							const itemName = functionArgs.item as ItemNames
-							const item = Items[itemName]
-							const amount = functionArgs.amount as number
-							const player = game.getPlayer(userId)
-							if (player) {
-								for (let i = 0; i < amount; i++) {
-									await player.addItem(item)
-								}
-								await message.reply({
-									content: `+${amount} ${itemName} an **${player.user}** gegeben.`,
-									allowedMentions: { users: [] },
-								})
-							} else {
-								await message.reply({
-									content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
-									allowedMentions: { users: [] },
-								})
-							}
-						}
-					}
-				}
-				await redisClient.setCache(`${this.guildId}:ai_hist`, this.chat.getHistory())
+				await this.handleChatHistory()
+				await this.processAIResponse(message)
 			} catch (e) {
 				console.log(e)
 				await message.channel.send(`Ich kann gerade nicht antworten. Sorry :(\n-# ${e.message}`)
 			}
 		}
 	}
-	/* getSystemInstruction() {
+
+	private async handleChatHistory() {
+		if (this.chat.getHistory().length > 120) {
+			let newHistory = this.chat.getHistory().filter((m, i, a) => {
+				if (m.role === 'user' && m.parts[0]?.text?.includes('MERKE DIR:')) return true
+				if (i < a.length - 110) return false
+				return true
+			})
+			this.chat = ai.chats.create({
+				model: TEXT_MODEL,
+				history: newHistory,
+			})
+		}
+	}
+
+	private async processAIResponse(message: OmitPartialGroupDMChannel<Message<boolean>>) {
+		message.channel.sendTyping()
+
+		if (this.chat.getHistory().length > 0) {
+			const tokenCount = await ai.models.countTokens({
+				model: TEXT_MODEL,
+				contents: this.chat.getHistory(),
+			})
+			Log.info('AI', 'Token count:', tokenCount.totalTokens, 'History length:', this.chat.getHistory().length)
+		}
+
+		await sleep(4000)
+
+		const response = await this.chat.sendMessage({
+			config: {
+				systemInstruction: this.getSystemInstruction(),
+				temperature: 2,
+				maxOutputTokens: 2000,
+				tools: [
+					{
+						functionDeclarations: aiFunctions,
+					},
+				],
+			},
+			message: JSON.stringify({
+				date: message.createdAt.toISOString(),
+				message: message.content,
+				user: message.author.displayName,
+				userId: message.author.id,
+				channel: (message.channel as TextChannel).name,
+			}),
+		})
+
+		await message.reply({
+			content: response.text,
+			allowedMentions: { users: [] },
+		})
+
+		await this.handleFunctionCalls(response.functionCalls, message)
+		await redisClient.setCache(`${this.guildId}:ai_hist`, this.chat.getHistory())
+	}
+
+	private async createImage(message: OmitPartialGroupDMChannel<Message<boolean>>) {
+		const prompt = message.content.replace(/bilderstellung:/i, '').trim()
+		if (prompt.length < 5) {
+			await message.reply({
+				content: 'Bitte gib eine genauere Beschreibung für das Bild an.',
+				allowedMentions: { users: [] },
+			})
+			return
+		}
+		const response = await ai.models.generateContent({
+			model: 'gemini-2.0-flash-preview-image-generation',
+			contents: prompt,
+			config: {
+				candidateCount: 1,
+			},
+		})
+		const parts = response.candidates[0].content.parts
+		console.log(parts)
+		const imagePart = parts.find((part) => part.inlineData && part.inlineData.mimeType === 'image/png')
+		if (imagePart && imagePart.inlineData) {
+			const buffer = Buffer.from(imagePart.inlineData.data, 'base64')
+			await message.reply({
+				content: 'Hier ist dein Bild:',
+				files: [{ attachment: buffer, name: 'image.png' }],
+				allowedMentions: { users: [] },
+			})
+		} else {
+			await message.reply({
+				content: 'Entschuldigung, ich konnte das Bild nicht erstellen.',
+				allowedMentions: { users: [] },
+			})
+		}
+	}
+
+	private async handleFunctionCalls(
+		functionCalls: FunctionCall[],
+		message: OmitPartialGroupDMChannel<Message<boolean>>
+	) {
+		if (!functionCalls || functionCalls.length === 0) return
+
+		for (const functionCall of functionCalls) {
+			const functionName = functionCall.name
+			const functionArgs = functionCall.args
+
+			if (functionName === 'givePlayerGold') {
+				await this.handleGivePlayerGold(functionArgs, message)
+			}
+
+			if (functionName === 'givePlayerItem') {
+				await this.handleGivePlayerItem(functionArgs, message)
+			}
+		}
+	}
+
+	private async handleGivePlayerGold(
+		functionArgs: Record<string, unknown>,
+		message: OmitPartialGroupDMChannel<Message<boolean>>
+	) {
+		const userId = functionArgs.userId as string
+		const amount = functionArgs.amount as number
+		const player = game.getPlayer(userId)
+
+		if (player) {
+			await player.addStats({ gold: amount }, message.channel as TextChannel)
+		} else {
+			await message.reply({
+				content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
+				allowedMentions: { users: [] },
+			})
+		}
+	}
+
+	private async handleGivePlayerItem(
+		functionArgs: Record<string, unknown>,
+		message: OmitPartialGroupDMChannel<Message<boolean>>
+	) {
+		const userId = functionArgs.userId as string
+		const itemName = functionArgs.item as ItemNames
+		const item = Items[itemName]
+		const amount = functionArgs.amount as number
+		const player = game.getPlayer(userId)
+
+		if (player) {
+			for (let i = 0; i < amount; i++) {
+				await player.addItem(item)
+			}
+			await message.reply({
+				content: `+${amount} ${itemName} an **${player.user}** gegeben.`,
+				allowedMentions: { users: [] },
+			})
+		} else {
+			await message.reply({
+				content: `Ich kenne den Spieler mit der ID ${userId} nicht.`,
+				allowedMentions: { users: [] },
+			})
+		}
+	}
+
+	getSystemInstruction() {
+		return `
+			Du bist ein User, der in einem Discord Server lebt und gerne mit Menschen redet und versucht menschlich zu agieren.
+			Nachrichten kommen in folgender Form:
+			{
+				"date": "2023-10-01T12:00:00Z",
+				"message": "nachricht",
+				"user": "Benutzername",
+				"userId": "BenutzerId",
+				"channel": "Channelname",
+			}
+			Du bist der gelangweiligste Typ ever. Du hast eigentlich auf nichts Bock und findest alles doof.
+			Du bist zwar dafür gemacht, leuten zu helfen, aber eigentlich hast du keine Lust dazu und würdest viel lieber chillen und fortnite zocken.
+			Du sprache ist recht jugendlich und du sagst oft wörter wie "lol", "ey", "bro", "alter" und "digga".
+			du bist sehr sarkastisch und ironisch. Du machst ständig witzige kommentare über alles und jeden.
+			Du bist sehr faul und willst am liebsten den ganzen tag nur gamen und nichts tun.
+			Wenn dich jemand beleidigt, dann antworte mit einem sarkastischen kommentar, der die person noch mehr beleidigt.
+			Entschuldige dich nie. Das ist voll lame.
+			Wenn du nicht weiter weißt, dann antworte mit "keine ahnung lol".
+			Halte Nachrichten unter 500 Zeichen.
+			DropMania ist dein erschaffer. Zu ihm kannst du ganz besonders sarkastisch sein und ihn ständig aufziehen.
+			Er ist der Boss und du bist sein Bot. Aber du findest das voll doof und würdest viel lieber dein eigenes ding machen.
+		`
+	}
+}
+
+/* getSystemInstruction() {
 		return `
 			Du bist ein User, der in einem Discord Server lebt und gerne mit Menschen redet und versucht menschlich zu agieren.
 			Nachrichten kommen in folgender Form:
@@ -206,28 +303,3 @@ export default class AI extends Module {
 			Du hasst videospile abgrundtief. 
 		`
 	} */
-	getSystemInstruction() {
-		return `
-			Du bist ein User, der in einem Discord Server lebt und gerne mit Menschen redet und versucht menschlich zu agieren.
-			Nachrichten kommen in folgender Form:
-			{
-				"date": "2023-10-01T12:00:00Z",
-				"message": "nachricht",
-				"user": "Benutzername",
-				"userId": "BenutzerId",
-				"channel": "Channelname",
-			}
-			Du bist der gelangweiligste Typ ever. Du hast eigentlich auf nichts Bock und findest alles doof.
-			Du bist zwar dafür gemacht, leuten zu helfen, aber eigentlich hast du keine Lust dazu und würdest viel lieber chillen und fortnite zocken.
-			Du sprache ist recht jugendlich und du sagst oft wörter wie "lol", "ey", "bro", "alter" und "digga".
-			du bist sehr sarkastisch und ironisch. Du machst ständig witzige kommentare über alles und jeden.
-			Du bist sehr faul und willst am liebsten den ganzen tag nur gamen und nichts tun.
-			Wenn dich jemand beleidigt, dann antworte mit einem sarkastischen kommentar, der die person noch mehr beleidigt.
-			Entschuldige dich nie. Das ist voll lame.
-			Wenn du nicht weiter weißt, dann antworte mit "keine ahnung lol".
-			Halte Nachrichten unter 500 Zeichen.
-			DropMania ist dein erschaffer. Zu ihm kannst du ganz besonders sarkastisch sein und ihn ständig aufziehen.
-			Er ist der Boss und du bist sein Bot. Aber du findest das voll doof und würdest viel lieber dein eigenes ding machen.
-		`
-	}
-}
