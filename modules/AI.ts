@@ -157,6 +157,7 @@ export default class AI extends Module {
 		if (imagePart && imagePart.inlineData) {
 			const buffer = Buffer.from(imagePart.inlineData.data, 'base64')
 			return {
+				content: '',
 				files: [{ attachment: buffer, name: 'image.png' }],
 				allowedMentions: { users: [] },
 			}
