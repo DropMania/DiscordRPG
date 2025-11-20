@@ -4,6 +4,7 @@ import * as simpleGames from './commands/simpleGames'
 import * as shop from './commands/shop'
 import * as casino from './commands/casino'
 import * as admin from './commands/admin'
+import * as ai from './commands/ai'
 import { Command, GuessrDifficulty, GuessrType } from './enums'
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 
@@ -165,6 +166,14 @@ const commands: Record<string, CommandHandler> = {
 	[Command.CASINO_BLACKJACK]: {
 		description: 'Startet ein neues Blackjack Spiel',
 		handler: casino.blackjack,
+	},
+	[Command.AI_CREATE_IMAGE]: {
+		description: 'Erstellt ein Bild mit AI',
+		handler: ai.createImage,
+		options: (builder) =>
+			builder.addStringOption((o) =>
+				o.setName('prompt').setDescription('Die Beschreibung des Bildes').setRequired(true)
+			),
 	},
 }
 

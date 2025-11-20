@@ -64,6 +64,7 @@ declare global {
 		| 'SlotMachine'
 		| 'Blackjack'
 		| 'Tenor'
+		| 'AI'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
@@ -85,6 +86,8 @@ declare global {
 		? import('../modules/Blackjack.js').default
 		: T extends 'Tenor'
 		? import('../modules/Tenor.js').default
+		: T extends 'AI'
+		? import('../modules/AI.js').default
 		: never
 
 	type CommandParams = {

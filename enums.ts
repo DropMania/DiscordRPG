@@ -22,6 +22,8 @@ export enum Command {
 
 	CASINO_SLOTMACHINE = 'slot-machine',
 	CASINO_BLACKJACK = 'blackjack',
+
+	AI_CREATE_IMAGE = 'create-image',
 }
 
 export enum GuessrType {

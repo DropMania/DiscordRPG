@@ -79,10 +79,6 @@ export default class AI extends Module {
 		//if (message.content.length < 5) return
 		if (message.mentions.has(message.client.user) || Math.random() < this.guildConfig.ai.answerChance) {
 			try {
-				if (message.content.toLowerCase().startsWith('bilderstellung:')) {
-					await this.createImage(message)
-					return
-				}
 				await this.handleChatHistory()
 				await this.processAIResponse(message)
 			} catch (e) {
@@ -148,37 +144,27 @@ export default class AI extends Module {
 		await redisClient.setCache(`${this.guildId}:ai_hist`, this.chat.getHistory())
 	}
 
-	private async createImage(message: OmitPartialGroupDMChannel<Message<boolean>>) {
-		const prompt = message.content.replace(/bilderstellung:/i, '').trim()
-		if (prompt.length < 5) {
-			await message.reply({
-				content: 'Bitte gib eine genauere Beschreibung für das Bild an.',
-				allowedMentions: { users: [] },
-			})
-			return
-		}
+	public async createImage(prompt: string) {
 		const response = await ai.models.generateContent({
-			model: 'gemini-2.0-flash-preview-image-generation',
+			model: 'gemini-2.5-flash-image',
 			contents: prompt,
 			config: {
 				candidateCount: 1,
 			},
 		})
 		const parts = response.candidates[0].content.parts
-		console.log(parts)
 		const imagePart = parts.find((part) => part.inlineData && part.inlineData.mimeType === 'image/png')
 		if (imagePart && imagePart.inlineData) {
 			const buffer = Buffer.from(imagePart.inlineData.data, 'base64')
-			await message.reply({
-				content: 'Hier ist dein Bild:',
+			return {
 				files: [{ attachment: buffer, name: 'image.png' }],
 				allowedMentions: { users: [] },
-			})
+			}
 		} else {
-			await message.reply({
+			return {
 				content: 'Entschuldigung, ich konnte das Bild nicht erstellen.',
 				allowedMentions: { users: [] },
-			})
+			}
 		}
 	}
 
