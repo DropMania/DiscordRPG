@@ -3,7 +3,7 @@ import ai from '../util/ai'
 import { Chat, Content, FunctionCall, FunctionDeclaration, Type } from '@google/genai'
 import dcClient from '../discord'
 import { sleep } from '../util/misc'
-import { Message, OmitPartialGroupDMChannel, TextChannel } from 'discord.js'
+import { Attachment, Message, OmitPartialGroupDMChannel, TextChannel } from 'discord.js'
 import game from '../rpg/Game'
 import dropTypes from '../lib/dropgame/dropTypes'
 import { Command, ItemNames } from '../enums'
@@ -164,6 +164,47 @@ export default class AI extends Module {
 		} else {
 			return {
 				content: 'Entschuldigung, ich konnte das Bild nicht erstellen.',
+				allowedMentions: { users: [] },
+			}
+		}
+	}
+	public async changeImage(image: Attachment, prompt: string) {
+		const imgRes = await fetch(image.url)
+		const imgBuffer = await imgRes.arrayBuffer()
+		let contents = [
+			{ text: prompt },
+			{
+				inlineData: {
+					mimeType: image.contentType,
+					data: Buffer.from(imgBuffer).toString('base64'),
+				},
+			},
+		]
+		const response = await ai.models.generateContent({
+			model: 'gemini-2.5-flash-image',
+			contents,
+			config: {
+				candidateCount: 1,
+			},
+		})
+		const parts = response.candidates[0].content.parts
+		const imagePart = parts.find((part) => part.inlineData && part.inlineData.mimeType === 'image/png')
+		if (imagePart && imagePart.inlineData) {
+			const buffer = Buffer.from(imagePart.inlineData.data, 'base64')
+			return {
+				content: prompt,
+				files: [
+					{
+						attachment: image.url,
+						name: 'original.png',
+					},
+					{ attachment: buffer, name: 'changed_image.png' },
+				],
+				allowedMentions: { users: [] },
+			}
+		} else {
+			return {
+				content: 'Entschuldigung, ich konnte das Bild nicht ändern.',
 				allowedMentions: { users: [] },
 			}
 		}

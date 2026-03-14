@@ -4,14 +4,13 @@ import fs from 'fs/promises'
 const moduleFiles = await fs.readdir('./modules')
 let moduleNames = moduleFiles.map((file) => file.split('.')[0])
 moduleNames = moduleNames.filter((name) => !['_Module'].includes(name))
-
 const moduleClasses = await Promise.all(
 	moduleNames.map((name) => {
 		return import(`./modules/${name}.js`) as Promise<{
 			default: new (guildId: string) => Module
 			scope: string
 		}>
-	})
+	}),
 )
 
 if (!moduleClasses) throw new Error('Error loading modules')

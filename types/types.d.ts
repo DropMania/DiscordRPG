@@ -65,30 +65,33 @@ declare global {
 		| 'Blackjack'
 		| 'Tenor'
 		| 'AI'
+		| 'Game2048'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
 		: T extends 'Hangman'
-		? import('../modules/Hangman.js').default
-		: T extends 'DropGame'
-		? import('../modules/DropGame.js').default
-		: T extends 'Battleships'
-		? import('../modules/Battleships.js').default
-		: T extends 'Picross'
-		? import('../modules/Picross.js').default
-		: T extends 'Minesweeper'
-		? import('../modules/Minesweeper.js').default
-		: T extends 'Shop'
-		? import('../modules/Shop.js').default
-		: T extends 'SlotMachine'
-		? import('../modules/SlotMachine.js').default
-		: T extends 'Blackjack'
-		? import('../modules/Blackjack.js').default
-		: T extends 'Tenor'
-		? import('../modules/Tenor.js').default
-		: T extends 'AI'
-		? import('../modules/AI.js').default
-		: never
+			? import('../modules/Hangman.js').default
+			: T extends 'DropGame'
+				? import('../modules/DropGame.js').default
+				: T extends 'Battleships'
+					? import('../modules/Battleships.js').default
+					: T extends 'Picross'
+						? import('../modules/Picross.js').default
+						: T extends 'Minesweeper'
+							? import('../modules/Minesweeper.js').default
+							: T extends 'Shop'
+								? import('../modules/Shop.js').default
+								: T extends 'SlotMachine'
+									? import('../modules/SlotMachine.js').default
+									: T extends 'Blackjack'
+										? import('../modules/Blackjack.js').default
+										: T extends 'Tenor'
+											? import('../modules/Tenor.js').default
+											: T extends 'AI'
+												? import('../modules/AI.js').default
+												: T extends 'Game2048'
+													? import('../modules/2048.js').default
+													: never
 
 	type CommandParams = {
 		interaction: CommandInteraction

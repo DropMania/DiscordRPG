@@ -19,11 +19,13 @@ export enum Command {
 	GAME_BATTLESHIP = 'battleships',
 	GAME_PICROSS = 'picross',
 	GAME_MINESWEEPER = 'minesweeper',
+	GAME_2048 = '2048',
 
 	CASINO_SLOTMACHINE = 'slot-machine',
 	CASINO_BLACKJACK = 'blackjack',
 
 	AI_CREATE_IMAGE = 'create-image',
+	AI_CHANGE_IMAGE = 'change-image',
 }
 
 export enum GuessrType {

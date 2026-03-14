@@ -28,7 +28,7 @@ const commands: Record<string, CommandHandler> = {
 					o
 						.setName('name')
 						.setDescription('Der Name des Emotes, der angezeigt werden soll')
-						.setRequired(false)
+						.setRequired(false),
 				),
 	},
 	[Command.ADD_ME]: {
@@ -51,7 +51,7 @@ const commands: Record<string, CommandHandler> = {
 				o
 					.setName('benutze')
 					.setDescription('Das zu benutzende Item (siehe Nummer mit /show-items')
-					.setRequired(true)
+					.setRequired(true),
 			),
 	},
 	[Command.SHOP]: {
@@ -68,10 +68,10 @@ const commands: Record<string, CommandHandler> = {
 		options: (builder) =>
 			builder
 				.addUserOption((o) =>
-					o.setName('user').setDescription('Der Spieler, dem du Geld geben willst').setRequired(true)
+					o.setName('user').setDescription('Der Spieler, dem du Geld geben willst').setRequired(true),
 				)
 				.addIntegerOption((o) =>
-					o.setName('amount').setDescription('Die Menge an Geld, die du geben willst').setRequired(true)
+					o.setName('amount').setDescription('Die Menge an Geld, die du geben willst').setRequired(true),
 				),
 	},
 
@@ -85,7 +85,7 @@ const commands: Record<string, CommandHandler> = {
 						.setChoices(Object.values(GuessrType).map((type) => ({ name: type, value: type })))
 						.setName('typ')
 						.setDescription('Der Typ des Spiels')
-						.setRequired(true)
+						.setRequired(true),
 				)
 				.addStringOption((o) =>
 					o
@@ -96,14 +96,14 @@ const commands: Record<string, CommandHandler> = {
 							{ name: 'schwer', value: GuessrDifficulty.HARD },
 							{ name: 'sehr schwer', value: GuessrDifficulty.VERY_HARD },
 							{ name: 'unmöglich', value: GuessrDifficulty.IMPOSSIBLE },
-							{ name: 'Terminsendung💀', value: GuessrDifficulty.TERMINSENDUNG }
+							{ name: 'Terminsendung💀', value: GuessrDifficulty.TERMINSENDUNG },
 						)
 						.setName('difficulty')
 						.setDescription('Schwierigkeitsgrad')
-						.setRequired(false)
+						.setRequired(false),
 				)
 				.addStringOption((o) =>
-					o.setName('filter').setDescription('Filter').setRequired(false).setAutocomplete(true)
+					o.setName('filter').setDescription('Filter').setRequired(false).setAutocomplete(true),
 				),
 		automcomplete: guessrGame.autocompleteFilter,
 	},
@@ -152,10 +152,14 @@ const commands: Record<string, CommandHandler> = {
 						{ name: 'leicht', value: 'easy' },
 						{ name: 'mittel', value: 'medium' },
 						{ name: 'schwer', value: 'hard' },
-						{ name: 'unmöglich', value: 'insane' }
-					)
+						{ name: 'unmöglich', value: 'insane' },
+					),
 			),
 		handler: simpleGames.minesweeper,
+	},
+	[Command.GAME_2048]: {
+		description: 'Startet ein neues 2048 Spiel',
+		handler: simpleGames.game2048,
 	},
 	[Command.CASINO_SLOTMACHINE]: {
 		description: 'Startet ein neues Slot Machine Spiel',
@@ -172,8 +176,22 @@ const commands: Record<string, CommandHandler> = {
 		handler: ai.createImage,
 		options: (builder) =>
 			builder.addStringOption((o) =>
-				o.setName('prompt').setDescription('Die Beschreibung des Bildes').setRequired(true)
+				o.setName('prompt').setDescription('Die Beschreibung des Bildes').setRequired(true),
 			),
+	},
+	[Command.AI_CHANGE_IMAGE]: {
+		description: 'Ändert ein Bild mit AI',
+		handler: ai.changeImage,
+		options: (builder) =>
+			builder
+				.addAttachmentOption((o) =>
+					o.setName('image').setDescription('Das Bild, das du ändern willst').setRequired(true),
+				)
+				.addStringOption((o) =>
+					o.setName('prompt').setDescription('Die Beschreibung der Änderung').setRequired(true),
+				),
+		permission: PermissionFlagsBits.ManageGuild,
+		automcomplete: async () => [],
 	},
 }
 
