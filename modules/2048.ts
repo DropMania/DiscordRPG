@@ -4,6 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import { TextChannel, User } from 'discord.js'
 import Player from '../rpg/Player'
+import redisClient from '../redis'
 
 export type Direction = 'up' | 'down' | 'left' | 'right'
 
@@ -13,6 +14,17 @@ export interface GameState {
 	gameOver: boolean
 	won: boolean
 	canMove: boolean
+}
+
+type Cache2048Type = {
+	grid: number[][]
+	score: number
+	gameOver: boolean
+	won: boolean
+	canMove: boolean
+	lastUser: { id: string; username: string } | null
+	rewards: Array<{ playerId: string; moves: number; score: number }>
+	totalMoves: number
 }
 
 export class Game2048 extends Module {
@@ -36,8 +48,35 @@ export class Game2048 extends Module {
 		this.initializeGrid()
 	}
 
-	init() {
-		this.newGame()
+	async init() {
+		// Try to load cached game state
+		const cachedGame = await redisClient.getCache<Cache2048Type>(`${this.guildId}:2048Game`)
+		if (cachedGame) {
+			// Restore game state from cache
+			this.grid = cachedGame.grid
+			this.score = cachedGame.score
+			this.gameOver = cachedGame.gameOver
+			this.won = cachedGame.won
+			this.canMove = cachedGame.canMove
+			this.totalMoves = cachedGame.totalMoves
+
+			// Restore lastUser if exists
+			if (cachedGame.lastUser) {
+				this.lastUser = { id: cachedGame.lastUser.id, username: cachedGame.lastUser.username } as User
+			}
+
+			// Restore rewards - note: we can only cache player IDs, not full Player objects
+			this.rewards = new Map()
+			for (const reward of cachedGame.rewards) {
+				// Player objects will be created fresh when commands are executed
+				// For now we store a placeholder that gets replaced on first interaction
+				const placeholderPlayer = { userId: reward.playerId } as Player
+				this.rewards.set(placeholderPlayer, { moves: reward.moves, score: reward.score })
+			}
+		} else {
+			// No cached game, start new
+			this.newGame()
+		}
 	}
 
 	async onMessageCommand(command: string, args: string, { message, player }: MessageParams) {
@@ -88,6 +127,39 @@ export class Game2048 extends Module {
 		this.initializeGrid()
 		this.addRandomTile()
 		this.addRandomTile()
+		// Clear cache when starting new game
+		this.clearGameCache()
+	}
+
+	private async saveGameState() {
+		// Convert rewards Map to array for serialization
+		const rewardsArray: Array<{ playerId: string; moves: number; score: number }> = []
+		for (const [player, stats] of this.rewards.entries()) {
+			rewardsArray.push({
+				playerId: player.userId,
+				moves: stats.moves,
+				score: stats.score,
+			})
+		}
+
+		const cacheData: Cache2048Type = {
+			grid: this.grid,
+			score: this.score,
+			gameOver: this.gameOver,
+			won: this.won,
+			canMove: this.canMove,
+			lastUser: this.lastUser ? { id: this.lastUser.id, username: this.lastUser.username } : null,
+			rewards: rewardsArray,
+			totalMoves: this.totalMoves,
+		}
+
+		await redisClient.setCache(`${this.guildId}:2048Game`, cacheData)
+	}
+
+	private async clearGameCache() {
+		// We need to manually clear the cache since Redis client doesn't have a direct delete cache method
+		// We'll use a workaround by setting an empty cache that expires immediately
+		await redisClient.setCache(`${this.guildId}:2048Game`, null)
 	}
 
 	private initializeGrid() {
@@ -150,14 +222,37 @@ export class Game2048 extends Module {
 		this.addRandomTile()
 		this.totalMoves++
 
-		// Track player progress
-		if (!this.rewards.has(player)) this.rewards.set(player, { moves: 0, score: 0 })
-		const playerReward = this.rewards.get(player)
+		// Track player progress - handle cached vs new players
+		let playerReward = this.rewards.get(player)
+		if (!playerReward) {
+			// Check if this player ID exists in our cached rewards (from initial load)
+			let existingPlayerKey = null
+			for (const [cachedPlayer, _] of this.rewards.entries()) {
+				if (cachedPlayer.userId === player.userId) {
+					existingPlayerKey = cachedPlayer
+					break
+				}
+			}
+
+			if (existingPlayerKey) {
+				// Transfer cached data to new player object
+				playerReward = this.rewards.get(existingPlayerKey)
+				this.rewards.delete(existingPlayerKey)
+				this.rewards.set(player, playerReward)
+			} else {
+				// New player
+				this.rewards.set(player, { moves: 0, score: 0 })
+				playerReward = this.rewards.get(player)
+			}
+		}
 		playerReward.moves++
 		playerReward.score = this.score
 
 		this.checkWinCondition()
 		this.checkGameOver()
+
+		// Save game state to cache after each move
+		await this.saveGameState()
 
 		const scoreGained = this.score - previousScore
 		let message = `✅ ${direction.toUpperCase()} bewegt!`
@@ -466,8 +561,9 @@ export class Game2048 extends Module {
 
 		await channel.send(rewardText)
 
-		// Reset the game
+		// Reset the game and clear cache
 		this.grid = []
+		await this.clearGameCache()
 	}
 
 	private async sendGameBoard(channel: TextChannel) {
