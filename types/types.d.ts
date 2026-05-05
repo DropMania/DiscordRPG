@@ -1,6 +1,7 @@
 import type {
 	AutocompleteInteraction,
 	ButtonInteraction,
+	ChatInputCommandInteraction,
 	CommandInteraction,
 	Message,
 	OmitPartialGroupDMChannel,
@@ -17,6 +18,7 @@ declare global {
 		goldRole: string
 		gambleRole: string
 		dropRole: string
+		movieNightRole: string
 		minesweeper: {
 			nightTime: {
 				start: number
@@ -66,6 +68,7 @@ declare global {
 		| 'Tenor'
 		| 'AI'
 		| 'Game2048'
+		| 'MovieNight'
 
 	type ModuleType<T> = T extends 'GuessrGame'
 		? import('../modules/GuessrGame.js').default
@@ -91,10 +94,12 @@ declare global {
 												? import('../modules/AI.js').default
 												: T extends 'Game2048'
 													? import('../modules/2048.js').default
-													: never
+													: T extends 'MovieNight'
+														? import('../modules/MovieNight.js').default
+														: never
 
 	type CommandParams = {
-		interaction: CommandInteraction
+		interaction: ChatInputCommandInteraction
 		getModule: <T extends Modules>(moduleName: T) => ModuleType<T>
 		player?: Player
 	}

@@ -1,12 +1,12 @@
-import { GuessrDifficulty, GuessrType } from '../enums'
-import { similarity } from '../util/similarity'
-import getTMDB from '../lib/guessrGameData/getTMDB'
-import getGame from '../lib/guessrGameData/getGame'
-import Module from './_Module'
-import { GuessrGameItem } from '../types/varTypes'
-import Log from '../util/log'
-import getSong from '../lib/guessrGameData/getSong'
-import redisClient from '../redis'
+import { GuessrDifficulty, GuessrType } from '../enums.js'
+import { similarity } from '../util/similarity.js'
+import getTMDB from '../lib/guessrGameData/getTMDB.js'
+import getGame from '../lib/guessrGameData/getGame.js'
+import Module from './_Module.js'
+import { GuessrGameItem } from '../types/varTypes.js'
+import Log from '../util/log.js'
+import getSong from '../lib/guessrGameData/getSong.js'
+import redisClient from '../redis.js'
 
 const getData = {
 	[GuessrType.MOVIE]: getTMDB,
@@ -43,25 +43,25 @@ export default class GuessrGame extends Module {
 		Log.info('GuessrGame', 'pickItem', this.item)
 		this.difficulty = difficulty
 		this.type = type
-		await redisClient.setCache<CacheType>(`${this.guildId}:guessrItem`, { item: this.item, type, difficulty })
+		await redisClient.setCache<CacheType>(`${this.guildId}:guessrItem`, { item: this.item!, type, difficulty })
 	}
 
 	getImage() {
-		if (this.item.images.length === 0) return null
-		let randomIndex = Math.floor(Math.random() * this.item.images.length)
-		let image = this.item.images.splice(randomIndex, 1)[0]
+		if (this.item!.images.length === 0) return null
+		let randomIndex = Math.floor(Math.random() * this.item!.images.length)
+		let image = this.item!.images.splice(randomIndex, 1)[0]
 		return image
 	}
 	getHint() {
-		if (this.item.hints.length === 0) return null
-		let randomIndex = Math.floor(Math.random() * this.item.hints.length)
-		let hint = this.item.hints.splice(randomIndex, 1)[0]
+		if (this.item!.hints.length === 0) return null
+		let randomIndex = Math.floor(Math.random() * this.item!.hints.length)
+		let hint = this.item!.hints.splice(randomIndex, 1)[0]
 		return hint
 	}
 
 	guessItem(name: string) {
-		let correct = this.item.names.some((itemName) => similarity(name, itemName) > 0.5)
-		let bonus = this.item.names.some((itemName) => similarity(name, itemName) > 0.95)
+		let correct = this.item!.names.some((itemName) => similarity(name, itemName) > 0.5)
+		let bonus = this.item!.names.some((itemName) => similarity(name, itemName) > 0.95)
 		return { correct, bonus }
 	}
 

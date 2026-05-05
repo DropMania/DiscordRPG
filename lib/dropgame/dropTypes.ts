@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildTextBasedChannel, MessageCreateOptions } from 'discord.js'
-import { Drops, ItemNames } from '../../enums'
-import Player from '../../rpg/Player'
-import Items from '../../rpg/Items'
-import { BDAY } from '../../constants'
+import { Drops, ItemNames } from '../../enums.js'
+import Player from '../../rpg/Player.js'
+import Items from '../../rpg/Items.js'
+import { BDAY } from '../../constants.js'
 
 type DropType = {
 	chance: number
@@ -25,7 +25,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Käfer erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.BUG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.BUG).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -46,7 +46,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Eine wilde Ratte erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.RAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.RAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -67,7 +67,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Schaf erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.SHEEP).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.SHEEP).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -88,7 +88,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Hund erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.DOG).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.DOG).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -109,7 +109,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Eine wilde Katze erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.CAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.CAT).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -130,7 +130,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Wolf erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.WOLF).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.WOLF).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -151,7 +151,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Bär erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.BEAR).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.BEAR).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -172,7 +172,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Eine wilde Echse erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.LIZARD).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.LIZARD).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -193,7 +193,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Affe erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.APE).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.APE).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -214,7 +214,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Ork erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.ORC).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.ORC).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -235,7 +235,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein wilder Drache erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.DRAGON).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.DRAGON).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -256,7 +256,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Godzilla erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.GODZILLA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.GODZILLA).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -277,7 +277,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ghidorah erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.GHIDORAH).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.GHIDORAH).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -298,7 +298,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Saitama erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.SAITAMA).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.SAITAMA).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -319,7 +319,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Jho erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.JHO).setEmoji('⚔️').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.JHO).setEmoji('⚔️').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -338,7 +338,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein haufen mit Münzen erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.COIN).setEmoji('💰').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.COIN).setEmoji('💰').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -357,7 +357,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Heiltrank erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.HEAL_POTION).setEmoji('🩹').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.HEAL_POTION).setEmoji('🩹').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -375,7 +375,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Stärketrank erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.STRENGTH_POTION).setEmoji('💪').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.STRENGTH_POTION).setEmoji('💪').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -393,7 +393,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein Erfahrungstrank erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.EXP_POTION).setEmoji('📚').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.EXP_POTION).setEmoji('📚').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -414,7 +414,7 @@ const dropTypes: Record<string, DropType> = {
 			content: 'Ein giftiger Pilz erscheint!',
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.POISON_SHROOM).setEmoji('🍄').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.POISON_SHROOM).setEmoji('🍄').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},
@@ -432,7 +432,7 @@ const dropTypes: Record<string, DropType> = {
 			content: `Ein Geschenk erscheint!  (Nur für <@${BDAY}>)`,
 			components: [
 				new ActionRowBuilder<ButtonBuilder>().addComponents(
-					new ButtonBuilder().setCustomId(Drops.PRESENT).setEmoji('🎁').setStyle(ButtonStyle.Primary)
+					new ButtonBuilder().setCustomId(Drops.PRESENT).setEmoji('🎁').setStyle(ButtonStyle.Primary),
 				),
 			],
 		},

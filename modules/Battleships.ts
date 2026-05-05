@@ -1,13 +1,13 @@
-import Player from '../rpg/Player'
-import Module from './_Module'
+import Player from '../rpg/Player.js'
+import Module from './_Module.js'
 import { User } from 'discord.js'
 
 export default class Battleships extends Module {
-	board: string[][] = null
-	playBoard: string[][]
-	lastUser: User
-	bombs: number
-	rewards: Map<Player, number>
+	board: string[][] | null = null
+	playBoard!: string[][]
+	lastUser: User | null = null
+	bombs!: number
+	rewards!: Map<Player, number>
 	constructor(guildId: string) {
 		super(guildId)
 	}
@@ -25,7 +25,7 @@ export default class Battleships extends Module {
 		if (result.hit) {
 			message.channel.send(`${this.showBoard()}\n✅ Treffer!`)
 			if (player && this.rewards.has(player)) {
-				this.rewards.set(player, this.rewards.get(player) + 5)
+				this.rewards.set(player, (this.rewards.get(player) ?? 0) + 5)
 			} else if (player) {
 				this.rewards.set(player, 5)
 			}
@@ -51,8 +51,8 @@ export default class Battleships extends Module {
 		this.lastUser = null
 		this.bombs = 0
 	}
-	createBoard() {
-		let board = []
+	createBoard(): string[][] {
+		let board: string[][] = []
 		for (let i = 0; i < 10; i++) {
 			board.push([])
 			for (let j = 0; j < 10; j++) {
@@ -76,7 +76,7 @@ export default class Battleships extends Module {
 				} while (!this.isValidPlacement(x, y, ship, orientation))
 
 				for (let j = 0; j < ship; j++) {
-					this.board[y][x + j] = 'X'
+					this.board![y][x + j] = 'X'
 				}
 			} else {
 				do {
@@ -85,7 +85,7 @@ export default class Battleships extends Module {
 				} while (!this.isValidPlacement(x, y, ship, orientation))
 
 				for (let j = 0; j < ship; j++) {
-					this.board[y + j][x] = 'X'
+					this.board![y + j][x] = 'X'
 				}
 			}
 		}
@@ -97,7 +97,7 @@ export default class Battleships extends Module {
 			}
 
 			for (let i = x; i < x + ship; i++) {
-				if (this.board[y][i] === 'X' || this.isAdjacentShip(y, i)) {
+				if (this.board![y][i] === 'X' || this.isAdjacentShip(y, i)) {
 					return false
 				}
 			}
@@ -107,7 +107,7 @@ export default class Battleships extends Module {
 			}
 
 			for (let i = y; i < y + ship; i++) {
-				if (this.board[i][x] === 'X' || this.isAdjacentShip(i, x)) {
+				if (this.board![i][x] === 'X' || this.isAdjacentShip(i, x)) {
 					return false
 				}
 			}
@@ -132,7 +132,7 @@ export default class Battleships extends Module {
 			let newCol = col + offsetCol
 
 			if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10) {
-				if (this.board[newRow][newCol] === 'X') {
+				if (this.board![newRow][newCol] === 'X') {
 					return true
 				}
 			}
@@ -141,8 +141,8 @@ export default class Battleships extends Module {
 	}
 	showShips() {
 		let output = ''
-		for (let i = 0; i < this.board.length; i++) {
-			output += this.board[i].join(' | ') + '\n'
+		for (let i = 0; i < this.board!.length; i++) {
+			output += this.board![i].join(' | ') + '\n'
 		}
 		console.log(output)
 	}
@@ -176,9 +176,9 @@ export default class Battleships extends Module {
 			return result
 		}
 		this.bombs++
-		if (this.board[yI][xI] === 'X') {
+		if (this.board![yI][xI] === 'X') {
 			this.playBoard[yI][xI] = 'X'
-			this.board[yI][xI] = ' '
+			this.board![yI][xI] = ' '
 			hit = true
 		} else {
 			this.playBoard[yI][xI] = 'O'
@@ -188,7 +188,7 @@ export default class Battleships extends Module {
 		return result
 	}
 	hasWon() {
-		for (let row of this.board) {
+		for (let row of this.board!) {
 			for (let col of row) {
 				if (col === 'X') {
 					return false

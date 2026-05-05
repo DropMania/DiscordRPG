@@ -1,11 +1,12 @@
-import * as rpg from './commands/rpg'
-import * as guessrGame from './commands/guessrGame'
-import * as simpleGames from './commands/simpleGames'
-import * as shop from './commands/shop'
-import * as casino from './commands/casino'
-import * as admin from './commands/admin'
-import * as ai from './commands/ai'
-import { Command, GuessrDifficulty, GuessrType } from './enums'
+import * as movieNight from './commands/movieNight.js'
+import * as rpg from './commands/rpg.js'
+import * as guessrGame from './commands/guessrGame.js'
+import * as simpleGames from './commands/simpleGames.js'
+import * as shop from './commands/shop.js'
+import * as casino from './commands/casino.js'
+import * as admin from './commands/admin.js'
+import * as ai from './commands/ai.js'
+import { Command, GuessrDifficulty, GuessrType } from './enums.js'
 import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js'
 
 type CommandHandler = {
@@ -82,7 +83,12 @@ const commands: Record<string, CommandHandler> = {
 			builder
 				.addStringOption((o) =>
 					o
-						.setChoices(Object.values(GuessrType).map((type) => ({ name: type, value: type })))
+						.setChoices(
+							...Object.values(GuessrType).map((type) => ({
+								name: type as string,
+								value: type as string,
+							})),
+						)
 						.setName('typ')
 						.setDescription('Der Typ des Spiels')
 						.setRequired(true),
@@ -192,6 +198,21 @@ const commands: Record<string, CommandHandler> = {
 				),
 		permission: PermissionFlagsBits.ManageGuild,
 		automcomplete: async () => [],
+	},
+	[Command.MOVIE_NIGHT_ADD]: {
+		description: 'Fügt einen Film zur Movie Night Liste hinzu',
+		handler: movieNight.addMovie,
+		options: (builder) =>
+			builder.addStringOption((o) => o.setName('title').setDescription('Der Titel des Films').setRequired(true)),
+	},
+	[Command.MOVIE_NIGHT_LIST]: {
+		description: 'Zeigt die Movie Night Liste',
+		handler: movieNight.listMovies,
+	},
+	[Command.MOVIE_NIGHT_PICK]: {
+		description: 'Wählt einen zufälligen Film aus der Movie Night Liste',
+		permission: PermissionFlagsBits.ManageGuild,
+		handler: movieNight.pickMovie,
 	},
 }
 

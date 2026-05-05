@@ -1,5 +1,5 @@
-import { searchGifsTenor } from '../util/fetchData'
-import Module from './_Module'
+import { searchGifsTenor } from '../util/fetchData.js'
+import Module from './_Module.js'
 const BASE_URL = ''
 export default class Tenor extends Module {
 	constructor(guildId: string) {

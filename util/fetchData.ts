@@ -1,5 +1,5 @@
-import { getTwitchAccessToken } from '../twitch'
-import { Emote7Tv, TenorSearchResponse } from '../types/responses'
+import { getTwitchAccessToken } from '../twitch.js'
+import { Emote7Tv, TenorSearchResponse } from '../types/responses.js'
 
 export async function callTMDBApi<T>(path: string, queryParameters: Record<string, string>) {
 	const response = await fetch(`https://api.themoviedb.org/3/${path}?${new URLSearchParams(queryParameters)}`, {
@@ -15,7 +15,7 @@ export async function callIGDBApi<T>(path: string, query: string) {
 	const response = await fetch(`https://api.igdb.com/v4/${path}`, {
 		method: 'POST',
 		headers: {
-			'Client-ID': process.env.TWITCH_CLIENT_ID,
+			'Client-ID': process.env.TWITCH_CLIENT_ID!,
 			Authorization: `Bearer ${getTwitchAccessToken()}`,
 			'Content-Type': 'text/plain',
 		},
@@ -44,7 +44,7 @@ export async function searchGifsTenor(query: string, limit: number = 8) {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-		}
+		},
 	)
 	return (await response.json()) as TenorSearchResponse
 }

@@ -1,4 +1,4 @@
-import { sleep } from '../util/misc'
+import { sleep } from '../util/misc.js'
 
 export async function hangman({ interaction, getModule }: CommandParams) {
 	let hangman = getModule('Hangman')

@@ -1,20 +1,21 @@
 import { User } from 'discord.js'
-import Player from '../rpg/Player'
-import Module from './_Module'
+import Player from '../rpg/Player.js'
+import Module from './_Module.js'
 import { createCanvas } from 'canvas'
 type PicrossCell = { block: boolean; filled: boolean }
 type PicrossBoard = PicrossCell[][]
 export default class Picross extends Module {
-	board: PicrossBoard
-	verticalHints: number[][]
-	horizontalHints: number[][]
-	lastUser: User
-	rewards: Map<Player, { correct: number; wrong: number }>
-	correct: number
-	wrong: number
+	board: PicrossBoard | null
+	verticalHints!: number[][]
+	horizontalHints!: number[][]
+	lastUser!: User
+	rewards!: Map<Player, { correct: number; wrong: number }>
+	correct!: number
+	wrong!: number
 
 	constructor(guildId: string) {
 		super(guildId)
+		this.board = null
 	}
 	init() {}
 	startGame(dim: number) {
@@ -39,6 +40,7 @@ export default class Picross extends Module {
 		if (x < 0 || y < 0 || x >= this.board.length || y >= this.board.length)
 			return await message.channel.send('Ungültige Koordinaten!')
 		if (this.board[x][y].filled) return await message.channel.send('Hier wurde bereits gefüllt!')
+		if (!player) return
 		this.lastUser = message.author
 		let result = this.guess(x, y, player)
 		let out = ``
@@ -66,14 +68,14 @@ export default class Picross extends Module {
 	}
 	renderBoard(): Buffer {
 		let letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-		let dim = this.board.length
+		let dim = this.board!.length
 		let longestHorizontal = Math.max(...this.horizontalHints.map((v) => v.length))
 		let longestVertical = Math.max(...this.verticalHints.map((v) => v.length))
 		let cellSize = 40
 		let letterOffset = 25
 		let canvas = createCanvas(
 			dim * cellSize + longestVertical * cellSize + letterOffset,
-			dim * cellSize + longestHorizontal * cellSize + letterOffset
+			dim * cellSize + longestHorizontal * cellSize + letterOffset,
 		)
 		let ctx = canvas.getContext('2d')
 		ctx.fillStyle = 'black'
@@ -88,7 +90,7 @@ export default class Picross extends Module {
 					ctx.fillText(
 						hints[j].toString(),
 						j * cellSize + cellSize / 4,
-						i * cellSize + longestHorizontal * cellSize + cellSize / 2
+						i * cellSize + longestHorizontal * cellSize + cellSize / 2,
 					)
 				}
 			}
@@ -100,20 +102,20 @@ export default class Picross extends Module {
 					ctx.fillText(
 						hints[j].toString(),
 						i * cellSize + cellSize / 4 + longestVertical * cellSize,
-						j * cellSize + cellSize / 2
+						j * cellSize + cellSize / 2,
 					)
 				}
 			}
 		}
 		for (let i = 0; i < dim; i++) {
 			for (let j = 0; j < dim; j++) {
-				if (this.board[i][j].filled) {
-					ctx.fillStyle = this.board[i][j].block ? 'green' : 'red'
+				if (this.board![i][j].filled) {
+					ctx.fillStyle = this.board![i][j].block ? 'green' : 'red'
 					ctx.fillRect(
 						j * cellSize + longestVertical * cellSize,
 						i * cellSize + longestHorizontal * cellSize,
 						cellSize,
-						cellSize
+						cellSize,
 					)
 				}
 			}
@@ -125,14 +127,14 @@ export default class Picross extends Module {
 			ctx.fillText(
 				letters[i],
 				i * cellSize + longestVertical * cellSize + cellSize / 2,
-				(dim + longestHorizontal) * cellSize + letterOffset / 2
+				(dim + longestHorizontal) * cellSize + letterOffset / 2,
 			)
 		}
 		for (let i = 0; i < dim; i++) {
 			ctx.fillText(
 				(i + 1).toString(),
 				(dim + longestVertical) * cellSize + letterOffset / 2,
-				i * cellSize + longestHorizontal * cellSize + cellSize / 2
+				i * cellSize + longestHorizontal * cellSize + cellSize / 2,
 			)
 		}
 
@@ -154,26 +156,26 @@ export default class Picross extends Module {
 		return canvas.toBuffer()
 	}
 	guess(x: number, y: number, player: Player): boolean {
-		this.board[x][y].filled = true
+		this.board![x][y].filled = true
 		if (!this.rewards.has(player)) {
 			this.rewards.set(player, { correct: 0, wrong: 0 })
 		}
-		if (this.board[x][y].block) {
+		if (this.board![x][y].block) {
 			this.correct++
-			this.rewards.get(player).correct += 1
+			this.rewards.get(player)!.correct += 1
 			return true
 		}
 		this.wrong++
-		this.rewards.get(player).wrong += 1
+		this.rewards.get(player)!.wrong += 1
 		return false
 	}
 	checkWin() {
-		let totalBlocks = this.board.flat(2).filter((cell) => cell.block).length
+		let totalBlocks = this.board!.flat(2).filter((cell) => cell.block).length
 		return this.correct === totalBlocks
 	}
 	generateBoard(dim: number): PicrossBoard {
 		return Array.from({ length: dim }, () =>
-			Array.from({ length: dim }, () => ({ block: Math.random() > 0.5, filled: false }))
+			Array.from({ length: dim }, () => ({ block: Math.random() > 0.5, filled: false })),
 		)
 	}
 

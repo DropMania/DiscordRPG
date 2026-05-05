@@ -1,5 +1,5 @@
-import { get7TVEmote } from '../util/fetchData'
-import Log from '../util/log'
+import { get7TVEmote } from '../util/fetchData.js'
+import Log from '../util/log.js'
 
 export async function addEmote({ interaction, getModule, player }: CommandParams) {
 	const emote = interaction.options.get('emote')?.value as string
@@ -15,25 +15,25 @@ export async function addEmote({ interaction, getModule, player }: CommandParams
 	const maxSize = 256000 // 256kb
 	let sizeName = '4x.png'
 	if (emoteData.animated) {
-		let filteredEmotes = emoteData.host.files.filter((f) => f.format === 'GIF')
-		filteredEmotes = filteredEmotes.sort((a, b) => b.size - a.size)
-		const fitEmote = filteredEmotes.find((f) => f.size < maxSize)
+		let filteredEmotes = emoteData.host.files.filter((f: any) => f.format === 'GIF')
+		filteredEmotes = filteredEmotes.sort((a: any, b: any) => b.size - a.size)
+		const fitEmote = filteredEmotes.find((f: any) => f.size < maxSize)
 		if (!fitEmote) return await interaction.editReply('Der Emote ist zu groß!')
 		sizeName = fitEmote.name
 	} else {
-		let filteredEmotes = emoteData.host.files.filter((f) => f.format === 'PNG')
-		filteredEmotes = filteredEmotes.sort((a, b) => b.size - a.size)
-		const fitEmote = filteredEmotes.find((f) => f.size < maxSize)
+		let filteredEmotes = emoteData.host.files.filter((f: any) => f.format === 'PNG')
+		filteredEmotes = filteredEmotes.sort((a: any, b: any) => b.size - a.size)
+		const fitEmote = filteredEmotes.find((f: any) => f.size < maxSize)
 		if (!fitEmote) return await interaction.editReply('Der Emote ist zu groß!')
 		sizeName = fitEmote.name
 	}
 	Log.info(
-		`Adding emote ${emoteName} (${emoteId}) to guild ${interaction.guild.name} (${
-			interaction.guild.id
-		}) with size ${sizeName} (${emoteData.host.files.find((f) => f.name === sizeName)?.size})`
+		`Adding emote ${emoteName} (${emoteId}) to guild ${interaction.guild!.name} (${
+			interaction.guild!.id
+		}) with size ${sizeName} (${emoteData.host.files.find((f: any) => f.name === sizeName)?.size})`,
 	)
 	const emoteUrl = `https://cdn.7tv.app/emote/${emoteId}/${sizeName}`
-	const newEmote = await interaction.guild.emojis.create({
+	const newEmote = await interaction.guild!.emojis.create({
 		name: emoteName,
 		attachment: emoteUrl,
 	})

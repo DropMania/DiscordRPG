@@ -14,10 +14,13 @@ const moduleClasses = await Promise.all(
 )
 
 if (!moduleClasses) throw new Error('Error loading modules')
-const moduleTmp = guilds.reduce((acc, guild) => {
-	acc[guild.id] = {}
-	return acc
-}, {})
+const moduleTmp = guilds.reduce(
+	(acc: Record<string, Record<string, Module>>, guild) => {
+		acc[guild.id] = {}
+		return acc
+	},
+	{} as Record<string, Record<string, Module>>,
+)
 const modules = moduleClasses.reduce((acc, module) => {
 	guilds.forEach((guild) => {
 		acc[guild.id][module.default.name] = new module.default(guild.id)
@@ -34,13 +37,13 @@ export default modules
 export function callAllModules(method: string, ...args: any[]) {
 	for (const guild in modules) {
 		for (const module in modules[guild]) {
-			modules[guild][module][method]?.(...args)
+			;(modules[guild][module] as any)[method]?.(...args)
 		}
 	}
 }
 export function callModules(method: string, guildId: string, ...args: any[]) {
 	for (const module in modules[guildId]) {
-		modules[guildId][module][method]?.(...args)
+		;(modules[guildId][module] as any)[method]?.(...args)
 	}
 }
 export function getModule<T extends Modules>(guildId: string, moduleName: T): ModuleType<T> {

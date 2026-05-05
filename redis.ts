@@ -1,5 +1,5 @@
 import { createClient } from 'redis'
-import Player from './rpg/Player'
+import Player from './rpg/Player.js'
 
 const client = await createClient({
 	url: process.env.REDIS_URL,

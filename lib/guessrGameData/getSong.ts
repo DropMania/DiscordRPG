@@ -1,8 +1,8 @@
 import fs from 'fs'
 import * as cheerio from 'cheerio'
-import { GuessrDifficulty, GuessrType } from '../../enums'
-import { SpotifyItem } from '../../types/responses'
-import { GuessrGameItem } from '../../types/varTypes'
+import { GuessrDifficulty, GuessrType } from '../../enums.js'
+import { SpotifyItem } from '../../types/responses.js'
+import { GuessrGameItem } from '../../types/varTypes.js'
 const SONGS = JSON.parse(fs.readFileSync('./lib/data/spotifySongs.json', 'utf-8')) as SpotifyItem[]
 const GAME_SONGS = JSON.parse(fs.readFileSync('./lib/data/spotifySongs_games.json', 'utf-8')) as SpotifyItem[]
 
@@ -17,14 +17,14 @@ async function getPreviewUrl(song: string) {
 export default async function getSong(
 	type: GuessrType,
 	difficulty: GuessrDifficulty,
-	filter: string
+	filter: string,
 ): Promise<GuessrGameItem> {
 	let songs = SONGS
 	/* if (type === GuessrType.GAME_SONG) {
 		songs = GAME_SONGS
 	} */
 	songs.sort((a, b) => a.popularity - b.popularity)
-	let pages = getPages(difficulty)
+	let pages = getPages(difficulty) ?? songs.length
 	if (difficulty === GuessrDifficulty.TERMINSENDUNG) {
 		pages = songs.length
 	}

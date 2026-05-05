@@ -1,7 +1,7 @@
-import { callIGDBApi } from '../../util/fetchData'
-import { IGDBGame } from '../../types/responses'
-import { GuessrGameItem } from '../../types/varTypes'
-import { GuessrDifficulty, GuessrType } from '../../enums'
+import { callIGDBApi } from '../../util/fetchData.js'
+import { IGDBGame } from '../../types/responses.js'
+import { GuessrGameItem } from '../../types/varTypes.js'
+import { GuessrDifficulty, GuessrType } from '../../enums.js'
 
 const categoryEnum = [
 	'Hauptspiel',
@@ -23,7 +23,7 @@ const categoryEnum = [
 export default async function getGame(
 	type: GuessrType,
 	difficulty: GuessrDifficulty,
-	filter: string
+	filter: string,
 ): Promise<GuessrGameItem> {
 	let ratings = getRatings(difficulty)
 	let countQuery = `where total_rating_count > ${ratings}`
@@ -57,9 +57,12 @@ export default async function getGame(
 	console.log(query)
 	let response = await callIGDBApi<IGDBGame[]>('games', query)
 	let game = response[0]
-	let names = [game.name, ...(game.alternative_names ? game.alternative_names.map((name) => name.name) : [])]
+	let names = [
+		game.name,
+		...(game.alternative_names ? game.alternative_names.map((n: { name: string }) => n.name) : []),
+	]
 	let images = game.screenshots
-		? game.screenshots.map((screenshot) => 'https:' + screenshot.url.replace('thumb', '1080p'))
+		? game.screenshots.map((screenshot: { url: string }) => 'https:' + screenshot.url.replace('thumb', '1080p'))
 		: []
 	let hints = createHints(game)
 	let cover = game.cover?.url ? 'https:' + game.cover.url.replace('thumb', '1080p') : ''

@@ -1,13 +1,14 @@
 import { TextChannel } from 'discord.js'
-import { sleep } from '../util/misc'
+import { sleep } from '../util/misc.js'
 
 export async function slotMachine({ interaction, getModule, player }: CommandParams) {
 	let bet = interaction.options.get('bet')?.value as number
+	if (!player) return await interaction.editReply('Du bist noch nicht als Spieler registriert!')
 	if (bet < 1) return await interaction.editReply('Der Einsatz muss mindestens 1 sein!')
 	if (bet > player.gold) return await interaction.editReply('Du hast nicht genug Gold!')
 	//if (bet > 1000) return await interaction.editReply('Der Einsatz darf maximal 1000 sein!')
 	await interaction.editReply(
-		`${interaction.user} Neues Spiel Slot Machine gestartet! Einsatz: **${bet}** Gold! (Aktuell: ${player.gold})`
+		`${interaction.user} Neues Spiel Slot Machine gestartet! Einsatz: **${bet}** Gold! (Aktuell: ${player.gold})`,
 	)
 	await player.addStats({ gold: -bet })
 	let followup = await interaction.followUp({
@@ -29,6 +30,6 @@ export async function blackjack({ interaction, getModule, player }: CommandParam
 	blackjack.createGame(interaction.channel as TextChannel)
 	await interaction.editReply(
 		`${interaction.user} Neues Spiel Blackjack gestartet! \nSchreibe z.B. \`!bj 100\` um mit 100 Gold einzusteigen.
-\nSchreibe \`!start-bj\` um das Spiel zu starten!`
+\nSchreibe \`!start-bj\` um das Spiel zu starten!`,
 	)
 }

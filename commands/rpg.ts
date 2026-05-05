@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js'
-import game from '../rpg/Game'
-import { drawAchievements } from '../rpg/Achievements'
+import game from '../rpg/Game.js'
+import { drawAchievements } from '../rpg/Achievements.js'
 
 export async function addPlayer({ interaction }: CommandParams) {
 	let success = game.addPlayer(interaction.user.id)
@@ -22,7 +22,7 @@ export async function showStats({ interaction, player }: CommandParams) {
 			{ name: 'Attack', value: String(player.attack), inline: true },
 			{ name: 'Defense', value: String(player.defense), inline: true },
 			{ name: 'EXP', value: String(player.experience), inline: true },
-			{ name: 'Gold', value: String(player.gold), inline: true }
+			{ name: 'Gold', value: String(player.gold), inline: true },
 		)
 	await interaction.editReply({ embeds: [embed] })
 }
@@ -52,7 +52,7 @@ export async function useItem({ interaction, player }: CommandParams) {
 	let itemIdx = interaction.options.get('benutze', true).value as number
 	let item = player.items[itemIdx - 1]
 	if (!item) return await interaction.editReply('Dieses Item existiert nicht!')
-	await player.useItem(itemIdx - 1, interaction.channel)
+	await player.useItem(itemIdx - 1, interaction.channel as any)
 	await interaction.deleteReply()
 }
 
@@ -76,6 +76,6 @@ export async function giveMoney({ interaction, player }: CommandParams) {
 	await player.addStats({ gold: -amount })
 	await targetPlayer.addStats({ gold: amount })
 	await interaction.editReply(
-		`${interaction.user} hast ${user} **${amount}** Gold gegeben!\n-# ${user} hat jetzt **${targetPlayer.gold}** Gold!\n-# ${interaction.user} hat jetzt **${player.gold}** Gold!`
+		`${interaction.user} hast ${user} **${amount}** Gold gegeben!\n-# ${user} hat jetzt **${targetPlayer.gold}** Gold!\n-# ${interaction.user} hat jetzt **${player.gold}** Gold!`,
 	)
 }

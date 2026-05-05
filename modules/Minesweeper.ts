@@ -1,17 +1,19 @@
 import { TextChannel, User } from 'discord.js'
-import Player from '../rpg/Player'
-import Module from './_Module'
+import Player from '../rpg/Player.js'
+import Module from './_Module.js'
 import { createCanvas } from 'canvas'
 type MineCell = { bomb: boolean; explored: boolean; nearbyBombs: number; marked: boolean }
 type MineBoard = MineCell[][]
 export default class Minesweeper extends Module {
-	board: MineBoard
-	lastUser: User
-	rewards: Map<Player, { correct: number }>
-	correct: number
+	board: MineBoard | null
+	lastUser: User | null
+	rewards!: Map<Player, { correct: number }>
+	correct!: number
 
 	constructor(guildId: string) {
 		super(guildId)
+		this.board = null
+		this.lastUser = null
 	}
 	init() {}
 	startGame(difficulty: string) {
@@ -38,6 +40,7 @@ export default class Minesweeper extends Module {
 			if (this.lastUser?.id === message.author.id && time >= endTime && time < startTime)
 				return await message.channel.send('Du darfst nicht zweimal hintereinander!')
 			if (this.board[x][y].explored) return await message.channel.send('Hier wurde bereits gegraben!')
+			if (!player) return
 			this.lastUser = message.author
 			let result = this.digCell(x, y, player)
 			if (result) {
@@ -59,7 +62,7 @@ export default class Minesweeper extends Module {
 			}
 			this.correct++
 			if (!this.rewards.has(player)) this.rewards.set(player, { correct: 0 })
-			this.rewards.get(player).correct++
+			this.rewards.get(player)!.correct++
 
 			await message.channel.send({
 				content: '✅ Erfolgreich gegraben!',
@@ -94,7 +97,7 @@ export default class Minesweeper extends Module {
 		}
 	}
 	revealBoard() {
-		for (let row of this.board) {
+		for (let row of this.board!) {
 			for (let cell of row) {
 				cell.explored = true
 			}
@@ -144,7 +147,7 @@ export default class Minesweeper extends Module {
 		return board
 	}
 	digCell(x: number, y: number, player: Player) {
-		let cell = this.board[x][y]
+		let cell = this.board![x][y]
 		if (cell.explored) return false
 		cell.explored = true
 		if (cell.bomb) {
@@ -153,7 +156,7 @@ export default class Minesweeper extends Module {
 		if (cell.nearbyBombs === 0) {
 			for (let i = -1; i <= 1; i++) {
 				for (let j = -1; j <= 1; j++) {
-					if (x + i < 0 || x + i >= this.board.length || y + j < 0 || y + j >= this.board.length) continue
+					if (x + i < 0 || x + i >= this.board!.length || y + j < 0 || y + j >= this.board!.length) continue
 					this.digCell(x + i, y + j, player)
 				}
 			}
@@ -161,7 +164,7 @@ export default class Minesweeper extends Module {
 		return false
 	}
 	checkWin() {
-		for (let row of this.board) {
+		for (let row of this.board!) {
 			for (let cell of row) {
 				if (!cell.explored && !cell.bomb) return false
 			}
@@ -174,7 +177,7 @@ export default class Minesweeper extends Module {
 		const FRONT_BLOCK_BRIGHT_SIDE = '#FDFDFD'
 		const FRONT_BLOCK_DARK_SIDE = '#7F7F7F'
 		const NUMBER_COLORS = ['#0000FF', '#008000', '#FF0000', '#000080', '#800000', '#008080', '#000000', '#808080']
-		let size = this.board.length
+		let size = this.board!.length
 		let cellSize = 50
 		let canvas = createCanvas(size * cellSize + cellSize, size * cellSize + cellSize)
 		let ctx = canvas.getContext('2d')
@@ -182,7 +185,7 @@ export default class Minesweeper extends Module {
 		ctx.fillRect(0, 0, canvas.width, canvas.height)
 		for (let i = 0; i < size; i++) {
 			for (let j = 0; j < size; j++) {
-				let cell = this.board[i][j]
+				let cell = this.board![i][j]
 				let x = i * cellSize
 				let y = j * cellSize
 				ctx.fillStyle = cell.explored ? '#FFFFFF' : FRONT_BLOCK_COLOR

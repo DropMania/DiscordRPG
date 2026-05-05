@@ -1,5 +1,5 @@
-import Module from './_Module'
-import Log from '../util/log'
+import Module from './_Module.js'
+import Log from '../util/log.js'
 import fs from 'fs'
 import { GuildTextBasedChannel } from 'discord.js'
 const WORDS = fs.readFileSync('./lib/data/wordlist.txt', 'utf-8').split('\n')
@@ -100,7 +100,7 @@ export default class Hangman extends Module {
 			} else {
 				await player?.addStats({ health: -1 })
 				await message.channel.send(
-					`Verloren! Das Wort war: ${this.word}\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
+					`Verloren! Das Wort war: ${this.word}\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`,
 				)
 			}
 			this.going = false

@@ -1,5 +1,5 @@
-import { Command, GuessrDifficulty, GuessrType } from '../enums'
-import redisClient from '../redis'
+import { Command, GuessrDifficulty, GuessrType } from '../enums.js'
+import redisClient from '../redis.js'
 
 export async function pickItem({ interaction, getModule }: CommandParams) {
 	const guessrGame = getModule('GuessrGame')
@@ -42,20 +42,20 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 	if (!result.correct) {
 		await player?.addStats({ health: -1 })
 		return await interaction.editReply(
-			`❌ **${guess}** ist leider nicht korrekt!\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`
+			`❌ **${guess}** ist leider nicht korrekt!\nDu hast einen **-1** Lebenspunkt verloren! (${player?.health}/${player?.maxHealth})`,
 		)
 	}
 	let item = guessrGame.getItem()
-	let content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
+	let content = `✅ **${guess}** ist korrekt! Der gesuchte ${guessrGame.type} war: **${item!.names[0]}**`
 	let bonus = 1
 	if (result.bonus) {
 		content = `${content}\n🎉 Du hast den exakten Titel gewusst! **+10% Bonus EXP!**`
 		bonus = 1.1
 	}
-	let files = [item.cover || 'https://via.placeholder.com/150.png']
-	if (!item.cover.endsWith('.png') && !item.cover.endsWith('.jpg')) {
+	let files = [item!.cover || 'https://via.placeholder.com/150.png']
+	if (!item!.cover.endsWith('.png') && !item!.cover.endsWith('.jpg')) {
 		files = []
-		content = `${content}\n${item.cover}`
+		content = `${content}\n${item!.cover}`
 	}
 	await interaction.editReply({
 		content,
@@ -71,10 +71,10 @@ export async function guessItem({ interaction, getModule, player }: CommandParam
 		[GuessrDifficulty.TERMINSENDUNG]: 100,
 	}
 	guessrGame.item = null
-	let exp = Math.floor(difficultyExp[guessrGame.difficulty] * bonus)
-	await player?.addStats({ exp }, interaction.channel)
-	await player?.unlockAchievement('guessr_pro', interaction.channel)
-	await player?.unlockAchievement('guessr_legend', interaction.channel)
+	let exp = Math.floor(difficultyExp[guessrGame.difficulty!] * bonus)
+	await player?.addStats({ exp }, interaction.channel as any)
+	await player?.unlockAchievement('guessr_pro', interaction.channel as any)
+	await player?.unlockAchievement('guessr_legend', interaction.channel as any)
 	await redisClient.deleteCache(`${guessrGame.guildId}:guessrItem`)
 }
 
@@ -82,11 +82,11 @@ export async function showItem({ interaction, getModule }: CommandParams) {
 	const guessrGame = getModule('GuessrGame')
 	if (!guessrGame.item) return await interaction.editReply(`Es wurde noch kein ${guessrGame.type} ausgewählt!`)
 	let item = guessrGame.getItem()
-	let content = `Der gesuchte ${guessrGame.type} war: **${item.names[0]}**`
-	let files = [item.cover || 'https://via.placeholder.com/150.png']
-	if (!item.cover.endsWith('.png') && !item.cover.endsWith('.jpg')) {
+	let content = `Der gesuchte ${guessrGame.type} war: **${item!.names[0]}**`
+	let files = [item!.cover || 'https://via.placeholder.com/150.png']
+	if (!item!.cover.endsWith('.png') && !item!.cover.endsWith('.jpg')) {
 		files = []
-		content = `Der gesuchte ${guessrGame.type} war: **${item.names[0]}**\n${item.cover}`
+		content = `Der gesuchte ${guessrGame.type} war: **${item!.names[0]}**\n${item!.cover}`
 	}
 	await interaction.editReply({
 		content,
@@ -98,7 +98,7 @@ export async function showItem({ interaction, getModule }: CommandParams) {
 
 export async function autocompleteFilter({ interaction, getModule }: AutocompleteParams) {
 	let guessrType = interaction.options.get('typ', true).value as GuessrType
-	let filters = []
+	let filters: { value: string; name: string }[] = []
 	if (guessrType === GuessrType.GAME) {
 		filters = [
 			{

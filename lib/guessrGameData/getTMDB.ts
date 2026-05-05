@@ -1,14 +1,14 @@
-import { GuessrDifficulty, GuessrType } from '../../enums'
-import { TMDB } from '../../types/responses'
-import { GuessrGameItem } from '../../types/varTypes'
-import { callTMDBApi } from '../../util/fetchData'
+import { GuessrDifficulty, GuessrType } from '../../enums.js'
+import { TMDB } from '../../types/responses.js'
+import { GuessrGameItem } from '../../types/varTypes.js'
+import { callTMDBApi } from '../../util/fetchData.js'
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original'
 
 export default async function getTMDB(
 	type: GuessrType,
 	difficulty: GuessrDifficulty,
-	filter: string
+	filter: string,
 ): Promise<GuessrGameItem> {
 	switch (type) {
 		case GuessrType.MOVIE:
@@ -17,6 +17,8 @@ export default async function getTMDB(
 			return await getShowData(difficulty)
 		case GuessrType.ACTOR:
 			return await getActorData(difficulty)
+		default:
+			throw new Error(`Unknown type: ${type}`)
 	}
 }
 const moviePages = {
@@ -44,8 +46,8 @@ async function getMovieData(difficulty: GuessrDifficulty) {
 		include_image_language: 'null',
 		append_to_response: 'images,alternative_titles',
 	})
-	let names = [movie.title, ...movieData.alternative_titles.titles.map((title) => title.title)]
-	let images = movieData.images.backdrops.map((image) => `${IMAGE_BASE_URL}${image.file_path}`)
+	let names = [movie.title, ...movieData.alternative_titles.titles.map((title: any) => title.title)]
+	let images = movieData.images.backdrops.map((image: any) => `${IMAGE_BASE_URL}${image.file_path}`)
 	let hints = createMovieHints(movieData)
 	let cover = `${IMAGE_BASE_URL}${movie.poster_path}`
 	return {
@@ -58,10 +60,12 @@ async function getMovieData(difficulty: GuessrDifficulty) {
 function createMovieHints(movieData: TMDB.FullMovieResponse) {
 	let hints: string[] = []
 	if (movieData.genres.length > 0) {
-		hints.push(`Genre des Films: **${movieData.genres.map((genre) => genre.name).join(', ')}**`)
+		hints.push(`Genre des Films: **${movieData.genres.map((genre: any) => genre.name).join(', ')}**`)
 	}
 	if (movieData.production_countries.length > 0) {
-		hints.push(`Produktionsländer: **${movieData.production_countries.map((country) => country.name).join(', ')}**`)
+		hints.push(
+			`Produktionsländer: **${movieData.production_countries.map((country: any) => country.name).join(', ')}**`,
+		)
 	}
 	if (movieData.budget > 0) {
 		hints.push(`Budget: **$${movieData.budget.toLocaleString()}**`)
@@ -70,7 +74,9 @@ function createMovieHints(movieData: TMDB.FullMovieResponse) {
 		hints.push(`Ausschnitt der Handlung: ${movieData.overview.substring(0, 100)}...`)
 	}
 	if (movieData.production_companies.length > 0) {
-		hints.push(`Produktionsfirmen: **${movieData.production_companies.map((company) => company.name).join(', ')}**`)
+		hints.push(
+			`Produktionsfirmen: **${movieData.production_companies.map((company: any) => company.name).join(', ')}**`,
+		)
 	}
 	if (movieData.release_date) {
 		let date = new Date(movieData.release_date)
@@ -111,8 +117,8 @@ async function getShowData(difficulty: GuessrDifficulty) {
 		include_image_language: 'null',
 		append_to_response: 'images,alternative_titles',
 	})
-	let names = [show.name, ...showData.alternative_titles.results.map((title) => title.title)]
-	let images = showData.images.backdrops.map((image) => `${IMAGE_BASE_URL}${image.file_path}`)
+	let names = [show.name, ...showData.alternative_titles.results.map((title: any) => title.title)]
+	let images = showData.images.backdrops.map((image: any) => `${IMAGE_BASE_URL}${image.file_path}`)
 	let hints = createShowHints(showData)
 	let cover = `${IMAGE_BASE_URL}${show.poster_path}`
 	return {
@@ -125,7 +131,7 @@ async function getShowData(difficulty: GuessrDifficulty) {
 function createShowHints(showData: TMDB.FullShowResponse) {
 	let hints: string[] = []
 	if (showData.genres?.length > 0) {
-		hints.push(`Genre der Serie: **${showData.genres.map((genre) => genre.name).join(', ')}**`)
+		hints.push(`Genre der Serie: **${showData.genres.map((genre: any) => genre.name).join(', ')}**`)
 	}
 	if (showData.origin_country?.length > 0) {
 		hints.push(`Ursprungsland: **${showData.origin_country.join(', ')}**`)
@@ -134,7 +140,9 @@ function createShowHints(showData: TMDB.FullShowResponse) {
 		hints.push(`Ausschnitt der Handlung: ${showData.overview.substring(0, 100)}...`)
 	}
 	if (showData.production_companies?.length > 0) {
-		hints.push(`Produktionsfirmen: **${showData.production_companies.map((company) => company.name).join(', ')}**`)
+		hints.push(
+			`Produktionsfirmen: **${showData.production_companies.map((company: any) => company.name).join(', ')}**`,
+		)
 	}
 	if (showData.first_air_date) {
 		let date = new Date(showData.first_air_date)
@@ -174,16 +182,16 @@ async function getActorData(difficulty: GuessrDifficulty) {
 	let actorData = await callTMDBApi<TMDB.FullActorResponse>(`person/${actor.id}`, {
 		append_to_response: 'images,combined_credits',
 	})
-	let characters = actorData.combined_credits.cast.map((credit) => credit.character)
+	let characters = actorData.combined_credits.cast.map((credit: any) => credit.character)
 	let set = new Set(characters)
 	characters = [...set]
-	characters = characters.filter((character, i) => {
+	characters = characters.filter((character: any, i: any) => {
 		if (!character) return false
 		if (character.toLowerCase().includes('self')) return false
 		return true
 	}, [])
 	let names = [actor.name, ...actorData.also_known_as, ...characters]
-	let images = actorData.images.profiles.map((image) => `${IMAGE_BASE_URL}${image.file_path}`)
+	let images = actorData.images.profiles.map((image: any) => `${IMAGE_BASE_URL}${image.file_path}`)
 	let hints = createActorHints(actorData)
 	let cover = `${IMAGE_BASE_URL}${actor.profile_path}`
 	return {
@@ -203,8 +211,8 @@ function createActorHints(actorData: TMDB.FullActorResponse) {
 		hints.push(`Geburtsort: **${actorData.place_of_birth}**`)
 	}
 	if (actorData.combined_credits.cast.length > 0) {
-		let list = actorData.combined_credits.cast.filter((_, i) => i < 5)
-		let credits = list.map((credit) => {
+		let list = actorData.combined_credits.cast.filter((_: any, i: any) => i < 5)
+		let credits = list.map((credit: any) => {
 			if (credit.media_type === 'movie') {
 				return `Film: **${credit.title}** (${credit.release_date})`
 			} else {

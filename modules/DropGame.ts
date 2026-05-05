@@ -1,11 +1,11 @@
-import { ChannelType, PermissionFlagsBits, TextChannel } from 'discord.js'
-import dcClient from '../discord'
-import { Drops } from '../enums'
-import dropTypes from '../lib/dropgame/dropTypes'
-import Module from './_Module'
-import Log from '../util/log'
-import messageDeleter from '../messageDeleter'
-import { BDAY } from '../constants'
+import { ChannelType, GuildTextBasedChannel, PermissionFlagsBits, TextChannel } from 'discord.js'
+import dcClient from '../discord.js'
+import { Drops } from '../enums.js'
+import dropTypes from '../lib/dropgame/dropTypes.js'
+import Module from './_Module.js'
+import Log from '../util/log.js'
+import messageDeleter from '../messageDeleter.js'
+import { BDAY } from '../constants.js'
 
 export default class DropGame extends Module {
 	constructor(guildId: string) {
@@ -34,21 +34,24 @@ export default class DropGame extends Module {
 	calculateChances() {
 		let allDropTypes = Object.entries(dropTypes)
 		let totalChance = allDropTypes.reduce((a, [_, dropType]) => a + dropType.chance, 0)
-		let chanceTable = allDropTypes.reduce((a, [name, dropType]) => {
-			a.push([name, `${((dropType.chance / totalChance) * 100).toFixed(2)}%`])
-			return a
-		}, [] as [string, string][])
+		let chanceTable = allDropTypes.reduce(
+			(a, [name, dropType]) => {
+				a.push([name, `${((dropType.chance / totalChance) * 100).toFixed(2)}%`])
+				return a
+			},
+			[] as [string, string][],
+		)
 		//Log.info('DropGame', 'Drop Chances:', chanceTable)
 	}
 	getChannels() {
-		let validRoles = [dcClient.guilds.cache.get(this.guildId).roles.cache.get(this.guildConfig.dropRole)]
+		let validRoles = [dcClient.guilds.cache.get(this.guildId)!.roles.cache.get(this.guildConfig.dropRole)!]
 		let channels = dcClient.channels.cache.toJSON()
 		let channelIds = channels.reduce((a, c) => {
 			if (
 				c.type === ChannelType.GuildText &&
 				c.guildId === this.guildId &&
 				validRoles.some((r) =>
-					c.permissionsFor(r).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel])
+					c.permissionsFor(r).has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]),
 				)
 			) {
 				a.push(c.id)
@@ -61,10 +64,13 @@ export default class DropGame extends Module {
 		let allDropTypes = Object.entries(dropTypes)
 		let totalChance = allDropTypes.reduce((a, [_, dropType]) => a + dropType.chance, 0)
 		let random = Math.floor(Math.random() * totalChance)
-		let chanceTable = allDropTypes.reduce((a, [name, dropType]) => {
-			a[name] = dropType.chance
-			return a
-		}, {} as Record<Drops, number>)
+		let chanceTable = allDropTypes.reduce(
+			(a, [name, dropType]) => {
+				;(a as any)[name] = dropType.chance
+				return a
+			},
+			{} as Record<Drops, number>,
+		)
 		let total = 0
 		let dropName = Drops.RAT
 		for (let [name, chance] of Object.entries(chanceTable)) {
@@ -94,7 +100,7 @@ export default class DropGame extends Module {
 	async onButtonPress(id: Drops, { player, interaction }: ButtonParams) {
 		if (!(id in dropTypes)) return
 		if (!player)
-			return interaction.channel.send({
+			return (interaction.channel as TextChannel)!.send({
 				content: `${interaction.user} Du hast noch keinen Charakter! Schreibe \`/add-me\` um hinzugefügt zu werden!`,
 			})
 		let dropType = dropTypes[id]
@@ -103,20 +109,20 @@ export default class DropGame extends Module {
 		let missingText = ''
 		if (id === Drops.PRESENT && interaction.user.id !== BDAY) {
 			await player.addStats({ health: -10 })
-			return await interaction.channel.send(
-				`${interaction.user} Kannst du nicht lesen?! -10 HP! (HP: ${player.health}/${player.maxHealth})`
+			return await (interaction.channel as TextChannel)!.send(
+				`${interaction.user} Kannst du nicht lesen?! -10 HP! (HP: ${player.health}/${player.maxHealth})`,
 			)
 		}
-		Object.entries(required).forEach(([stat, value]) => {
-			if (player[stat] < value) {
+		Object.entries(required).forEach(([stat, value]: [string, number]) => {
+			if ((player as any)[stat] < value) {
 				doable = false
-				missingText = `${interaction.user} Du hast nicht genug ${stat}! (${player[stat]}/${value})`
+				missingText = `${interaction.user} Du hast nicht genug ${stat}! (${(player as any)[stat]}/${value})`
 			}
 		})
 		if (!doable) return interaction.update({ components: [], files: [], content: missingText })
-		await dropType.handler(player, interaction.channel)
-		await player.unlockAchievement('monster_killer', interaction.channel)
-		await player.unlockAchievement('monster_legend', interaction.channel)
+		await dropType.handler(player, interaction.channel as GuildTextBasedChannel)
+		await player.unlockAchievement('monster_killer', interaction.channel as any)
+		await player.unlockAchievement('monster_legend', interaction.channel as any)
 		await interaction.update({ components: [], files: [], content: `${interaction.user} ${dropType.winMessage}` })
 	}
 }

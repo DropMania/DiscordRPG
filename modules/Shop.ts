@@ -8,10 +8,10 @@ import {
 	ButtonBuilder,
 	TextInputBuilder,
 } from 'discord.js'
-import Module from './_Module'
-import Player from '../rpg/Player'
-import Items from '../rpg/Items'
-import { ItemNames } from '../enums'
+import Module from './_Module.js'
+import Player from '../rpg/Player.js'
+import Items from '../rpg/Items.js'
+import { ItemNames } from '../enums.js'
 type ShopHandlerParams = {
 	interaction: ButtonInteraction
 	guildConfig: GuildConfig
@@ -32,12 +32,16 @@ const SHOP_ITEMS: ShopItem[] = [
 		description: 'Kaufe dir die Gold-Gräber Rolle und hab einen Gold-Namen!',
 		handler: async ({ interaction, guildConfig }) => {
 			let user = interaction.user
-			let role = interaction.guild.roles.cache.get(guildConfig.goldRole)
+			let role = interaction.guild!.roles.cache.get(guildConfig.goldRole)
 			if (!role) {
 				await interaction.reply('Die Gold-Rolle wurde nicht gefunden!')
 				return false
 			}
-			let member = interaction.guild.members.cache.get(user.id)
+			let member = interaction.guild!.members.cache.get(user.id)
+			if (!member) {
+				await interaction.reply('Mitglied nicht gefunden!')
+				return false
+			}
 			if (member.roles.cache.has(role.id)) {
 				await interaction.reply(`${user} Du hast die Gold-Rolle bereits!`)
 				return false
@@ -54,12 +58,16 @@ const SHOP_ITEMS: ShopItem[] = [
 		description: 'Zeige wie unfassbar süchtig du nach gamblen bist :)',
 		handler: async ({ interaction, guildConfig }) => {
 			let user = interaction.user
-			let role = interaction.guild.roles.cache.get(guildConfig.gambleRole)
+			let role = interaction.guild!.roles.cache.get(guildConfig.gambleRole)
 			if (!role) {
 				await interaction.reply('Die Gamble-Rolle wurde nicht gefunden!')
 				return false
 			}
-			let member = interaction.guild.members.cache.get(user.id)
+			let member = interaction.guild!.members.cache.get(user.id)
+			if (!member) {
+				await interaction.reply('Mitglied nicht gefunden!')
+				return false
+			}
 			if (member.roles.cache.has(role.id)) {
 				await interaction.reply(`${user} Du hast die Gamble-Rolle bereits!`)
 				return false
@@ -87,7 +95,7 @@ const SHOP_ITEMS: ShopItem[] = [
 			await player.removeItem(ItemNames.EXP_POTION, 3)
 			await player.addItem(Items[ItemNames.SUPER_EXP_POTION])
 			await interaction.reply(
-				`${interaction.user} Du hast eine ${ItemNames.SUPER_EXP_POTION} erhalten! (-3 EXP Potions)`
+				`${interaction.user} Du hast eine ${ItemNames.SUPER_EXP_POTION} erhalten! (-3 EXP Potions)`,
 			)
 			return true
 		},
@@ -110,7 +118,7 @@ const SHOP_ITEMS: ShopItem[] = [
 			await player.removeItem(ItemNames.HEAL_POTION, 2)
 			await player.addItem(Items[ItemNames.EXP_POTION])
 			await interaction.reply(
-				`${interaction.user} Du hast eine ${ItemNames.EXP_POTION} erhalten! (-2 Health Potions)`
+				`${interaction.user} Du hast eine ${ItemNames.EXP_POTION} erhalten! (-2 Health Potions)`,
 			)
 			return true
 		},
@@ -125,6 +133,7 @@ export default class Shop extends Module {
 		if (!id.startsWith('shop_')) return
 		let item = SHOP_ITEMS.find((item) => item.id === id.slice(5))
 		if (!item) return
+		if (!player) return
 		if (player.gold < item.price) {
 			await interaction.reply(`${interaction.user} Du hast nicht genug Gold!`)
 			return
@@ -135,7 +144,7 @@ export default class Shop extends Module {
 		}
 	}
 	showShop(): InteractionEditReplyOptions {
-		let components = []
+		let components: ActionRowBuilder<ButtonBuilder>[] = []
 		SHOP_ITEMS.forEach((item) => {
 			let button = new ButtonBuilder()
 				.setStyle(ButtonStyle.Primary)
@@ -148,7 +157,7 @@ export default class Shop extends Module {
 				.setDisabled(true)
 			//let textField = new TextInputBuilder().setCustomId(`shop_${item.id}`).setValue(item.description)
 
-			let row = new ActionRowBuilder().addComponents([button, button2])
+			let row = new ActionRowBuilder<ButtonBuilder>().addComponents([button, button2])
 
 			components.push(row)
 		})

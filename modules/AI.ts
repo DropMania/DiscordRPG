@@ -1,16 +1,16 @@
-import Module from './_Module'
-import ai from '../util/ai'
-import { Chat, Content, FunctionCall, FunctionDeclaration, Type } from '@google/genai'
-import dcClient from '../discord'
-import { sleep } from '../util/misc'
+import Module from './_Module.js'
+import ai from '../util/ai.js'
+import { Chat, Content, FunctionCall, FunctionDeclaration, Part, Type } from '@google/genai'
+import dcClient from '../discord.js'
+import { sleep } from '../util/misc.js'
 import { Attachment, Message, OmitPartialGroupDMChannel, TextChannel } from 'discord.js'
-import game from '../rpg/Game'
-import dropTypes from '../lib/dropgame/dropTypes'
-import { Command, ItemNames } from '../enums'
-import achievements from '../rpg/Achievements'
-import Items from '../rpg/Items'
-import Log from '../util/log'
-import redisClient from '../redis'
+import game from '../rpg/Game.js'
+import dropTypes from '../lib/dropgame/dropTypes.js'
+import { Command, ItemNames } from '../enums.js'
+import achievements from '../rpg/Achievements.js'
+import Items from '../rpg/Items.js'
+import Log from '../util/log.js'
+import redisClient from '../redis.js'
 const TEXT_MODEL = 'gemini-2.5-flash-lite'
 const aiFunctions: FunctionDeclaration[] = [
 	{
@@ -58,7 +58,7 @@ const aiFunctions: FunctionDeclaration[] = [
 	},
 ]
 export default class AI extends Module {
-	chat: Chat
+	chat!: Chat
 	constructor(guildId: string) {
 		super(guildId)
 	}
@@ -83,7 +83,7 @@ export default class AI extends Module {
 				await this.processAIResponse(message)
 			} catch (e) {
 				console.log(e)
-				await message.channel.send(`Ich kann gerade nicht antworten. Sorry :(\n-# ${e.message}`)
+				await message.channel.send(`Ich kann gerade nicht antworten. Sorry :(\n-# ${(e as Error).message}`)
 			}
 		}
 	}
@@ -91,7 +91,7 @@ export default class AI extends Module {
 	private async handleChatHistory() {
 		if (this.chat.getHistory().length > 120) {
 			let newHistory = this.chat.getHistory().filter((m, i, a) => {
-				if (m.role === 'user' && m.parts[0]?.text?.includes('MERKE DIR:')) return true
+				if (m.role === 'user' && m.parts?.[0]?.text?.includes('MERKE DIR:')) return true
 				if (i < a.length - 110) return false
 				return true
 			})
@@ -140,7 +140,7 @@ export default class AI extends Module {
 			allowedMentions: { users: [] },
 		})
 
-		await this.handleFunctionCalls(response.functionCalls, message)
+		await this.handleFunctionCalls(response.functionCalls ?? [], message)
 		await redisClient.setCache(`${this.guildId}:ai_hist`, this.chat.getHistory())
 	}
 
@@ -152,10 +152,10 @@ export default class AI extends Module {
 				candidateCount: 1,
 			},
 		})
-		const parts = response.candidates[0].content.parts
-		const imagePart = parts.find((part) => part.inlineData && part.inlineData.mimeType === 'image/png')
+		const parts = response.candidates![0].content!.parts
+		const imagePart = parts!.find((part: Part) => part.inlineData && part.inlineData.mimeType === 'image/png')
 		if (imagePart && imagePart.inlineData) {
-			const buffer = Buffer.from(imagePart.inlineData.data, 'base64')
+			const buffer = Buffer.from(imagePart.inlineData.data!, 'base64')
 			return {
 				content: prompt,
 				files: [{ attachment: buffer, name: 'image.png' }],
@@ -171,11 +171,11 @@ export default class AI extends Module {
 	public async changeImage(image: Attachment, prompt: string) {
 		const imgRes = await fetch(image.url)
 		const imgBuffer = await imgRes.arrayBuffer()
-		let contents = [
+		let contents: Part[] = [
 			{ text: prompt },
 			{
 				inlineData: {
-					mimeType: image.contentType,
+					mimeType: image.contentType ?? 'image/png',
 					data: Buffer.from(imgBuffer).toString('base64'),
 				},
 			},
@@ -187,10 +187,10 @@ export default class AI extends Module {
 				candidateCount: 1,
 			},
 		})
-		const parts = response.candidates[0].content.parts
-		const imagePart = parts.find((part) => part.inlineData && part.inlineData.mimeType === 'image/png')
+		const parts = response.candidates![0].content!.parts
+		const imagePart = parts!.find((part: Part) => part.inlineData && part.inlineData.mimeType === 'image/png')
 		if (imagePart && imagePart.inlineData) {
-			const buffer = Buffer.from(imagePart.inlineData.data, 'base64')
+			const buffer = Buffer.from(imagePart.inlineData.data!, 'base64')
 			return {
 				content: prompt,
 				files: [
@@ -212,7 +212,7 @@ export default class AI extends Module {
 
 	private async handleFunctionCalls(
 		functionCalls: FunctionCall[],
-		message: OmitPartialGroupDMChannel<Message<boolean>>
+		message: OmitPartialGroupDMChannel<Message<boolean>>,
 	) {
 		if (!functionCalls || functionCalls.length === 0) return
 
@@ -221,18 +221,18 @@ export default class AI extends Module {
 			const functionArgs = functionCall.args
 
 			if (functionName === 'givePlayerGold') {
-				await this.handleGivePlayerGold(functionArgs, message)
+				await this.handleGivePlayerGold(functionArgs ?? {}, message)
 			}
 
 			if (functionName === 'givePlayerItem') {
-				await this.handleGivePlayerItem(functionArgs, message)
+				await this.handleGivePlayerItem(functionArgs ?? {}, message)
 			}
 		}
 	}
 
 	private async handleGivePlayerGold(
 		functionArgs: Record<string, unknown>,
-		message: OmitPartialGroupDMChannel<Message<boolean>>
+		message: OmitPartialGroupDMChannel<Message<boolean>>,
 	) {
 		const userId = functionArgs.userId as string
 		const amount = functionArgs.amount as number
@@ -250,7 +250,7 @@ export default class AI extends Module {
 
 	private async handleGivePlayerItem(
 		functionArgs: Record<string, unknown>,
-		message: OmitPartialGroupDMChannel<Message<boolean>>
+		message: OmitPartialGroupDMChannel<Message<boolean>>,
 	) {
 		const userId = functionArgs.userId as string
 		const itemName = functionArgs.item as ItemNames

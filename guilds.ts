@@ -4,6 +4,7 @@ const GUILDS: GuildConfig[] = [
 		goldRole: '1354157905473179860',
 		dropRole: '1071029552186396782',
 		gambleRole: '1357095753310540067',
+		movieNightRole: '1411345513390932061',
 		minesweeper: {
 			nightTime: {
 				start: 23,
@@ -26,6 +27,8 @@ const GUILDS: GuildConfig[] = [
 		goldRole: '1354157905473179860',
 		dropRole: '1059634799679115285',
 		gambleRole: '1357095753310540067',
+		movieNightRole: '1411345513390932061',
+
 		minesweeper: {
 			nightTime: {
 				start: 23,

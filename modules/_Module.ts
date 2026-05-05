@@ -1,12 +1,12 @@
-import Log from '../util/log'
-import { getGuild } from '../guilds'
+import Log from '../util/log.js'
+import { getGuild } from '../guilds.js'
 
 export default class Module {
 	guildId: string
 	guildConfig: GuildConfig
 	constructor(guildId: string) {
 		this.guildId = guildId
-		this.guildConfig = getGuild(guildId)
+		this.guildConfig = getGuild(guildId)!
 	}
 	init() {}
 	onMessage(params: MessageParams) {

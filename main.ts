@@ -1,65 +1,73 @@
-import { Events, CommandInteraction, TextChannel, ButtonInteraction, AutocompleteInteraction } from 'discord.js'
-import dcClient from './discord'
-import registerCommands from './registerCommands'
-import commandHandler from './commands'
-import guilds from './guilds'
-import { callAllModules, callModules, getModule } from './modules'
-import { refreshAccessToken } from './twitch'
-import game from './rpg/Game'
-import messageDeleter from './messageDeleter'
-import { Drops } from './enums'
+import {
+	Events,
+	CommandInteraction,
+	TextChannel,
+	ButtonInteraction,
+	AutocompleteInteraction,
+	Client,
+	Interaction,
+	Message,
+} from 'discord.js'
+import dcClient from './discord.js'
+import registerCommands from './registerCommands.js'
+import commandHandler from './commands.js'
+import guilds from './guilds.js'
+import { callAllModules, callModules, getModule } from './modules.js'
+import { refreshAccessToken } from './twitch.js'
+import game from './rpg/Game.js'
+import messageDeleter from './messageDeleter.js'
+import { Drops } from './enums.js'
 import readline from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
-import { loadGraphics } from './lib/casino/cards'
-import ai from './util/ai'
+import { loadGraphics } from './lib/casino/cards.js'
+import ai from './util/ai.js'
 
 await refreshAccessToken()
 await loadGraphics()
 
-guilds.forEach((guild) => {
+guilds.forEach((guild: GuildConfig) => {
 	registerCommands(guild.id)
 })
 
-dcClient.once(Events.ClientReady, (readyClient) => {
+dcClient.once(Events.ClientReady, (readyClient: Client<true>) => {
 	callAllModules('init')
 
-	//getModule(guilds[0].id, 'DropGame').drop('980947899628273714', Drops.PRESENT) 
+	//getModule(guilds[0].id, 'DropGame').drop('980947899628273714', Drops.PRESENT)
 	//messageDeleter.cleanUp(guilds[0])
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`)
 })
 
-dcClient.on(Events.InteractionCreate, async (interaction) => {
+dcClient.on(Events.InteractionCreate, async (interaction: Interaction) => {
 	if (interaction.isAutocomplete()) {
 		const params = getCommandParams(interaction)
 		const focusedValue = interaction.options.getFocused()
-		if (!commandHandler[interaction.commandName].automcomplete) return
-		let options = await commandHandler[interaction.commandName].automcomplete({ ...params, value: focusedValue })
-		await interaction.respond(options)
+		let options = await commandHandler[interaction.commandName].automcomplete?.({ ...params, value: focusedValue })
+		if (options) await interaction.respond(options)
 	}
 	if (interaction.isButton()) {
 		const params = getCommandParams(interaction)
-		callModules('onButton', interaction.guildId, params)
+		callModules('onButton', interaction.guildId!, params)
 	}
 	if (!interaction.isCommand()) return
 	await interaction.deferReply()
 	const commandName = interaction.commandName
 	const params = getCommandParams(interaction)
-	commandHandler[commandName].handler(params)
+	commandHandler[commandName].handler(params as unknown as CommandParams)
 })
 
-dcClient.on(Events.MessageCreate, (message) => {
+dcClient.on(Events.MessageCreate, (message: Message) => {
 	if (message.author.bot) return
-	const getGuildModule = <T extends Modules>(moduleName: T): ModuleType<T> => getModule(message.guildId, moduleName)
+	const getGuildModule = <T extends Modules>(moduleName: T): ModuleType<T> => getModule(message.guildId!, moduleName)
 	let player = game.getPlayer(message.author.id)
 	const params = { message, getModule: getGuildModule, player }
-	callModules('onMessage', message.guildId, params)
+	callModules('onMessage', message.guildId!, params)
 })
 
 function getCommandParams<Interaction extends ButtonInteraction | CommandInteraction | AutocompleteInteraction>(
-	interaction: Interaction
+	interaction: Interaction,
 ) {
 	const getGuildModule = <T extends Modules>(moduleName: T): ModuleType<T> =>
-		getModule(interaction.guildId, moduleName)
+		getModule(interaction.guildId!, moduleName)
 	const player = game.getPlayer(interaction.user.id)
 	return { interaction, getModule: getGuildModule, player }
 }

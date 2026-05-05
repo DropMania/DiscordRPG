@@ -1,9 +1,9 @@
-import Module from './_Module'
-import getDeck from '../lib/casino/cards'
-import type { Card } from '../lib/casino/cards'
-import Player from '../rpg/Player'
+import Module from './_Module.js'
+import getDeck from '../lib/casino/cards.js'
+import type { Card } from '../lib/casino/cards.js'
+import Player from '../rpg/Player.js'
 import { TextChannel } from 'discord.js'
-import { sleep } from '../util/misc'
+import { sleep } from '../util/misc.js'
 enum GameState {
 	WAITING = 'waiting',
 	PLAYING = 'playing',
@@ -51,7 +51,7 @@ export default class Blackjack extends Module {
 		this.game.state = GameState.PLAYING
 		this.getDealerCard()
 		this.game.players.forEach((player) => {
-			player.hand = [this.game.deck.pop(), this.game.deck.pop()]
+			player.hand = [this.game!.deck.pop()!, this.game!.deck.pop()!]
 		})
 		this.displayGame()
 		await this.game.channel.send({
@@ -60,7 +60,8 @@ export default class Blackjack extends Module {
 	}
 	async onMessageCommand(command: string, args: string, { player, message }: MessageParams) {
 		if (!this.game) return
-		let reply = this.game.channel.send
+		if (!player) return
+		let reply = this.game.channel.send.bind(this.game.channel)
 		if (command === 'start-bj') {
 			if (this.game.state !== GameState.WAITING) return
 			await this.startGame()
@@ -97,7 +98,7 @@ export default class Blackjack extends Module {
 	}
 	getDealerCard() {
 		if (!this.game) return
-		let hand = [this.game.deck.pop()]
+		let hand = [this.game.deck.pop()!]
 		this.game.dealer.hand = hand
 	}
 	getHandValue(hand: Card[]) {
@@ -127,7 +128,7 @@ export default class Blackjack extends Module {
 	async hit() {
 		if (!this.game) return
 		let player = this.game.players[this.game.activePlayer]
-		let card = this.game.deck.pop()
+		let card = this.game.deck.pop()!
 		player.hand.push(card)
 		if (this.getHandValue(player.hand) > 21) {
 			await this.nextPlayer()
@@ -142,7 +143,7 @@ export default class Blackjack extends Module {
 		let player = this.game.players[this.game.activePlayer]
 		if (player.bet * 2 > player.player.gold) return
 		player.bet *= 2
-		let card = this.game.deck.pop()
+		let card = this.game.deck.pop()!
 		player.hand.push(card)
 		await this.nextPlayer()
 	}
@@ -153,7 +154,7 @@ export default class Blackjack extends Module {
 		})
 		while (this.getHandValue(this.game.dealer.hand) < 17) {
 			await sleep(1000)
-			let card = this.game.deck.pop()
+			let card = this.game.deck.pop()!
 			this.game.dealer.hand.push(card)
 			await this.game.channel.send({
 				content: `Dealer zieht eine Karte... ${card.display}${card.suit}`,

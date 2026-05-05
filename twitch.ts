@@ -1,4 +1,4 @@
-import Log from './util/log'
+import Log from './util/log.js'
 
 let twitch_access_token = ''
 

@@ -1,7 +1,7 @@
 import { ChannelType, GuildTextBasedChannel, Message } from 'discord.js'
-import redisClient from './redis'
-import dcClient from './discord'
-import Log from './util/log'
+import redisClient from './redis.js'
+import dcClient from './discord.js'
+import Log from './util/log.js'
 type MessageToDelete = {
 	cId: string
 	mId: string
@@ -52,7 +52,7 @@ class MessageDeleter {
 		redisClient.client.set('messageDeleter', JSON.stringify(this.messages))
 	}
 	async cleanUp(guildId: string) {
-		let channels = dcClient.guilds.cache.get(guildId).channels.cache.toJSON() as GuildTextBasedChannel[]
+		let channels = dcClient.guilds.cache.get(guildId)!.channels.cache.toJSON() as GuildTextBasedChannel[]
 		channels = channels.filter((c) => c.type === ChannelType.GuildText)
 		await Promise.all(
 			channels.map(async (channel) => {
@@ -60,14 +60,14 @@ class MessageDeleter {
 				await Promise.all(
 					messages.map(async (m) => {
 						if (
-							m.author.id === dcClient.user.id &&
+							m.author.id === dcClient.user!.id &&
 							(m.content.startsWith('Gratulation') || m.content.includes('Du hast'))
 						) {
 							await m.delete()
 						}
-					})
+					}),
 				)
-			})
+			}),
 		)
 	}
 }

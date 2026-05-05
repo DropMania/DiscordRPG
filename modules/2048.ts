@@ -1,10 +1,10 @@
-import Module from './_Module'
+import Module from './_Module.js'
 import { createCanvas, Canvas, registerFont } from 'canvas'
 import fs from 'fs'
 import path from 'path'
 import { TextChannel, User } from 'discord.js'
-import Player from '../rpg/Player'
-import redisClient from '../redis'
+import Player from '../rpg/Player.js'
+import redisClient from '../redis.js'
 
 export type Direction = 'up' | 'down' | 'left' | 'right'
 
@@ -38,9 +38,9 @@ export class Game2048 extends Module {
 	private gridSize = 4
 	private padding = 10
 	private canvasSize = this.tileSize * this.gridSize + this.padding * (this.gridSize + 1)
-	lastUser: User
-	rewards: Map<Player, { moves: number; score: number }>
-	totalMoves: number
+	lastUser: User | null = null
+	rewards!: Map<Player, { moves: number; score: number }>
+	totalMoves!: number
 
 	constructor(guildId: string) {
 		super(guildId)
@@ -108,6 +108,7 @@ export class Game2048 extends Module {
 			return await message.channel.send('Du darfst nicht zweimal hintereinander!')
 
 		this.lastUser = message.author
+		if (!player) return
 		await this.move(direction, player, message.channel as TextChannel)
 	}
 
@@ -238,15 +239,15 @@ export class Game2048 extends Module {
 				// Transfer cached data to new player object
 				playerReward = this.rewards.get(existingPlayerKey)
 				this.rewards.delete(existingPlayerKey)
-				this.rewards.set(player, playerReward)
+				this.rewards.set(player, playerReward!)
 			} else {
 				// New player
 				this.rewards.set(player, { moves: 0, score: 0 })
 				playerReward = this.rewards.get(player)
 			}
 		}
-		playerReward.moves++
-		playerReward.score = this.score
+		playerReward!.moves++
+		playerReward!.score = this.score
 
 		this.checkWinCondition()
 		this.checkGameOver()

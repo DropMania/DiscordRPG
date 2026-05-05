@@ -26,6 +26,10 @@ export enum Command {
 
 	AI_CREATE_IMAGE = 'create-image',
 	AI_CHANGE_IMAGE = 'change-image',
+
+	MOVIE_NIGHT_ADD = 'movie-night-add',
+	MOVIE_NIGHT_LIST = 'movie-night-list',
+	MOVIE_NIGHT_PICK = 'movie-night-pick',
 }
 
 export enum GuessrType {
